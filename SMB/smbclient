@@ -1,0 +1,37 @@
+smbclient -N -L \\\\{IP ADDRESS}\\
+    -N -> no password
+    -L -> list shares using this IP address
+
+    OUTPUT:
+        Sharename       Type      Comment
+        ---------       ----      -------
+        ADMIN$          Disk      Remote Admin
+        backups         Disk      
+        C$              Disk      Default share
+        IPC$            IPC       Remote IPC
+
+
+smbclient -N \\\\{IP ADDRESS}\\backups
+    this command will connect us to a directory called backups
+
+These are the available commands we can use once connected to backups:
+    allinfo        altname        archive        backup         
+    blocksize      cancel         case_sensitive cd             chmod          
+    chown          close          del            deltree        dir            
+    du             echo           exit           get            getfacl        
+    geteas         hardlink       help           history        iosize         
+    lcd            link           lock           lowercase      ls             
+    l              mask           md             mget           mkdir          
+    more           mput           newer          notify         open           
+    posix          posix_encrypt  posix_open     posix_mkdir    posix_rmdir    
+    posix_unlink   posix_whoami   print          prompt         put            
+    pwd            q              queue          quit           readlink       
+    rd             recurse        reget          rename         reput          
+    rm             rmdir          showacls       setea          setmode        
+    scopy          stat           symlink        tar            tarmode        
+    timeout        translate      unlock         volume         vuid           
+    wdel           logon          listconnect    showconnect    tcon           
+    tdis           tid            utimes         logoff         ..             
+    !
+
+To download a file to our local machine, we can use the "get" command

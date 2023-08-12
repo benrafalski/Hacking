@@ -1,0 +1,2 @@
+# finds all directories under website.com/ using the wordlist
+gobuster dir -u <WEBSITE.com> -w wordlist.txt

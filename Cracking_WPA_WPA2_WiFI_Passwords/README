@@ -1,0 +1,44 @@
+DICTIONARY ATTACK USING HASHCAT
+1. this is how to crack WPA and WPA2 WiFi Passwords fast using GPU
+2. this only works on netgear Passwords
+3. to do this just use hashcat to do a dictionary attack
+    i. you just need to provide a handshake file and a dictionary
+    ii. the handshake file has a MIC (message integrity check) and the nonce
+
+DICTIONARY ATTACK USING ROCKYOU.TXT DICTIONARY WPA2
+1. must have a wifi adapter with monitor mode
+2. turn on monitor mode on the interface
+3. using the interface, capture the handshake file (see below)
+4. using the handshake file and the dictionary use command below to crack the password
+    aircrack-ng handshake.cap -w rockyou.txt
+
+BRUTE FORCE A WPA2 PASSWORD
+1.  https://www.youtube.com/watch?v=J8A8rKFZW-M
+2. https://www.youtube.com/watch?v=s4jhe4XsoZI&t=7s
+
+
+GET HANDSHAKE FILE:
+1. 
+
+CORRECT WIFI ADAPTERS:
+1. must support monitor mode and packet injection
+2. to test if your network adapter has monitor mode use the command
+    sudo airmon-ng start ${interface}
+where interface is the interface found using "ifconfig"
+    or 
+    iw list
+    or 
+    iwconfig
+3. 
+
+
+
+
+TODO:
+wpa,wep
+wps
+eccid, bssid
+rogue access point
+evil twin
+wifi bubble
+

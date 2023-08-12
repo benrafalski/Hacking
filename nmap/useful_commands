@@ -1,0 +1,18 @@
+# determine port service versions
+nmap -sV <IPADDRESS>
+
+# equivalent to --script=default
+nmap -sC <IPADDRESS>
+
+# stealth scan -> syn-synack-rst
+nmap -sS <IPADDRESS>
+
+# full handshake scan -> syn-synack-ack-rst
+nmap -sT <IPADDRESS>
+
+# list hosts to scan
+nmap -sL 
+
+# use os detection
+nmap -O 
+
