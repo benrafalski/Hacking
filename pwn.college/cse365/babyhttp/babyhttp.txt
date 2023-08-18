@@ -1,0 +1,203 @@
+1. pwn.college{cDl6F5wzUd0qhcztjm8ftmCYBd4.0FO2IzMsITNxUzW}
+curl http://127.0.0.1:80
+
+2. pwn.college{cZFvTe9PmDd1M_u21M2XJYKp1oT.0VO2IzMsITNxUzW}
+nc localhost 80
+GET /flag HTTP/1.1
+
+3. pwn.college{MQmsreXMdn-6NUbmGSq0jwLca6l.0FM3IzMsITNxUzW}
+python3
+>>> import requests
+>>> x = requests.get('http://127.0.0.1:80/flag')
+>>> print(x.text)
+
+4. pwn.college{MVPBu1TzVwvPj6VeygfgLNGPuhr.0VM3IzMsITNxUzW}
+curl http://127.0.0.1:80
+Incorrect host: value `127.0.0.1`, should be `9813ff643bf380336c321acafc5d48ff`
+curl http://127.0.0.1:80 -H "Host:9813ff643bf380336c321acafc5d48ff"
+
+5. pwn.college{AVLh5NFvvE6iDXw8U0iP6xXw9_M.0lM3IzMsITNxUzW}
+nc localhost 80
+GET /flag HTTP/1.1
+Host: a266c1ff10bc3311b59562b5566e6c22
+
+6. pwn.college{sagJtDBR1XgczxgB0V2U8r3HN6y.01M3IzMsITNxUzW}
+python3
+>>> import requests
+>>> x = requests.get('http://127.0.0.1:80/flag', headers={"Host":"92a06e366501d82f9ce2e4e4522ded26"})
+>>> print(x.text)
+
+7. pwn.college{k_zWdxH_teZK3TYYLLsZK6O3a71.0FN3IzMsITNxUzW}
+curl http://127.0.0.1:80/5ecc71d7a754ffa0e0ec3ef17a8f6f25
+
+8. pwn.college{sBd2fuVA2agIJ-KrRK8PTFjm4pL.0VN3IzMsITNxUzW}
+nc localhost 80
+GET /d3f9cd0d8b41c76c19e3a5e0c4423e81 HTTP/1.1
+
+9. pwn.college{gh_65F3BCEmXlgGNbqrlMWLcaKZ.0lN3IzMsITNxUzW}
+python3
+>>> import requests
+>>> x = requests.get('http://127.0.0.1:80/854e02a47d98f7625b4df46c1b90b5ed')
+>>> print(x.text)
+
+10. pwn.college{sUhoa-t5ctG_u2dkyVA1GCxX5-D.01N3IzMsITNxUzW}
+curl http://127.0.0.1:80/a6c665f0%20cc331e7e/6dfb9eff%208296b031
+
+11. pwn.college{IvyEioxPISjBGLnxZvT7EJhb3_7.0FO3IzMsITNxUzW}
+nc localhost 80
+GET /9ce9e5ee%20d45a37fb/dd24e6c9%20f391db88 HTTP/1.1
+
+12. pwn.college{oirZiYvDp9uJo60JUgspO5flquu.0VO3IzMsITNxUzW}
+python3
+>>> import requests
+>>> x = requests.get('http://127.0.0.1:80/929ca240%204cbfff30/a96c1c9b%2058dc2670')
+>>> print(x.text)
+
+13. pwn.college{EQ-4_Nx-3RwZ6bRQi0jJ6orFiX_.0FM4IzMsITNxUzW}
+curl http://127.0.0.1:80/?a=8f233d069f9a143a74b6c259f257a45e
+
+14. pwn.college{Y3YRHTb1GsyVuhfy7GGDeCSe--L.0VM4IzMsITNxUzW}
+nc localhost 80
+GET /?a=68521ff86169c2618cb2410422d5be36 HTTP/1.1
+
+15. pwn.college{caZJ1VsJYHxOqz7C_FFBjvDg5x8.0lM4IzMsITNxUzW}
+python3
+>>> import requests
+>>> x = requests.get('http://127.0.0.1:80/?a=f169bdf25ef54e4d4b3958589c16667e'); print(x.text)
+
+16. pwn.college{k0pTCP5YrQUcyDq1x9wE3mf-5hQ.01M4IzMsITNxUzW}
+curl 'http://127.0.0.1:80/?a=69d5ad6d1d7b58d5e6f0c5b8560fa396&b=347a7726%20bf61efd1%260251a924%23720876a4'
+
+17. pwn.college{4GYjHmo1o2tMkhhwiLZRGSHgWzC.0FN4IzMsITNxUzW}
+nc localhost 80
+GET /?a=6f8a71d6c129868a7bdd54f0838026c9&b=f12403d0%207ecb28a8%2662f4c170%23c91100f5 HTTP/1.1
+
+18. pwn.college{otwgl18TO3EfHtDfwooS81LAPUm.0VN4IzMsITNxUzW}
+python3
+>>> import requests
+>>> x = requests.get('http://127.0.0.1:80/?a=d3d02e11cc851a32bf19245e67cdb8cb&b=a5465e61%2056e9e186%26eb5013f0%239559be12'); print(x.text)
+
+19. pwn.college{M1Ippuy-tZHVa_NsNJGB3He-hVv.0lN4IzMsITNxUzW}
+curl -X POST -F 'a=85acbfb2c06235954a4f83f782e754f8' http://127.0.0.1:80
+
+20. pwn.college{EKMpczpWSdYmZUeh5SrLLQKGXDs.01N4IzMsITNxUzW}
+nc localhost 80
+POST / HTTP/1.0
+Host: http://127.0.0.1:80
+Content-Length: 34
+Content-Type: application/x-www-form-urlencoded
+
+a=f38dc8006df5a17d0000ca43b18e8ea0
+
+21. pwn.college{kbl3ZY-Mj8nwZjSGZ-uzIQ31Nrr.0FO4IzMsITNxUzW}
+server = requests.post('http://127.0.0.1:80', data={'a': '096b1c0f2fefcc8cc16b27fa4d3c0cc3'})
+print(server.text)
+
+22. pwn.college{EkwlVseEzG2rhy_fhRysFHBO94h.0VO4IzMsITNxUzW}
+curl -X POST -F 'a=57e6ace137f108fc1921e7a29d8c9c12' -F 'b=9f05ff9c 11d923f2&c565d525#f510153e' http://127.0.0.1:80
+
+23. pwn.college{U0qp19F0ZsRSazdcex9snrfLhyR.0FM5IzMsITNxUzW}
+nc localhost 80
+POST / HTTP/1.0
+Host: http://127.0.0.1:80
+Content-Length: 78
+Content-Type: application/x-www-form-urlencoded
+
+a=284aebe99f9b3f7738ed11b5242fe84f&b=01cd8e51%208f3e5492%260ed7508d%233a3467b7
+
+24. pwn.college{A0iuHwn7bQTzyB4wHBVEAr0GUKX.0VM5IzMsITNxUzW}
+server = requests.post('http://127.0.0.1:80', data={'a': 'd63e2debddc25102e109275d5271b2cd', 'b':'1763a0d3 438067d9&11aaf582#1ffcb06d'})
+print(server.text)
+
+25. pwn.college{QvhLst8_sy39wlpgGqrorboE1om.0lM5IzMsITNxUzW} 
+curl -X POST http://127.0.0.1:80 -H 'Content-Type: application/json' -d '{"a":"2a725d14d8842c1ab4872be53080fd10"}'
+
+26. pwn.college{o97lwecMORCLkvXg6OUzi4YEPva.01M5IzMsITNxUzW}
+payload="{\"a\": \"099e276bc2ed878292be8d47e840689f\"}"
+request="POST / HTTP/1.0\r\nHost: http://127.0.0.1:80\r\nContent-Length: ${#payload}\r\nContent-Type: application/json\r\n\r\n${payload}"
+echo -ne "$request" | nc localhost 80
+
+27. pwn.college{k4chR9LytNtvYE-GJzCgZe3mYwI.0FN5IzMsITNxUzW}
+server = requests.post('http://127.0.0.1:80', json={'a': 'b848de26d81e3c657cb56b032a11bfee'})
+print(server.text)
+
+28. pwn.college{Q8PvR1I_4kGeVDIdsR8SRaGtLnQ.0VN5IzMsITNxUzW}
+curl -X POST http://127.0.0.1:80 -H 'Content-Type: application/json' -d '{"a":"278ed125d54f21ae0678243cc8e5af95","b":{'\"'c'\"': '\"'fe9c38e8'\"', '\"'d'\"': ['\"'16906b3c'\"', '\"'d9d039a6 d99190e8&cc7a0fe1#f85f0835'\"']}}'
+
+29. pwn.college{8H0zDeu5Doi9C3Wmw0lUK70fYRz.0lN5IzMsITNxUzW}
+payload="{\"a\": \"ac803ead6c08d3ed72785d898be4e216\", \"b\":{\"c\": \"4c157bdb\", \"d\": [\"e80467e5\", \"7c10b51c a8f75fbb&5bd11892#4f3ee45c\"]}}"
+request="POST / HTTP/1.0\r\nHost: http://127.0.0.1:80\r\nContent-Length: ${#payload}\r\nContent-Type: application/json\r\n\r\n${payload}"
+echo -ne "$request" | nc localhost 80
+
+30. pwn.college{YV8F0l6H6qY2ECAM264CdvlWSmo.01N5IzMsITNxUzW}
+server = requests.post('http://127.0.0.1:80', json={'a': '51f54444f90688f3c72778fd1cf5d83d', 'b': {'c': '9a1b2174', 'd': ['20ee96ac', '134f762e 9fc2d176&881bbd74#a10ff895']}})
+print(server.text)
+
+31. pwn.college{wogQ8yYVVeuAuPDLsDhArm6_fIQ.0FO5IzMsITNxUzW}
+curl http://127.0.0.1:80/40d951dcc57a1661bdd007a8d64957f4
+
+32. pwn.college{8ugjhWCrJbOTDDuh7SXGktag8wv.0VO5IzMsITNxUzW}
+request="GET /c80bd74fa604397a3fbf456bc2dde1ec HTTP/1.0\r\n\r\n"
+echo -ne "$request" | nc localhost 80
+
+33. pwn.college{UwrbxEa_BMbMBteiNoCSXUMHwWB.0FMwMzMsITNxUzW}
+server = requests.get('http://127.0.0.1:80/f3185303e9fff83e392569a749c1e634')
+print(server.text)
+
+34. pwn.college{QX9i3B8xh0jCtsLMTWRnV-0xROZ.0VMwMzMsITNxUzW}
+curl http://127.0.0.1:80/40d951dcc57a1661bdd007a8d64957f4 --cookie "cookie=d1bdaa71b3f353cbfd2a64b10e0ca38c"
+
+35. pwn.college{gqGfZr5VF3gtiM3G5ZLYvbTy_oH.0lMwMzMsITNxUzW}
+request="GET /c80bd74fa604397a3fbf456bc2dde1ec HTTP/1.1\r\nCookie: cookie=580bce22b0f306190593b3d3afabccda; Path=/\r\n\r\n"
+echo -ne "$request" | nc localhost 80
+
+36. pwn.college{EjoE_dGR2hzQE8fnQyQ-8ml0dGd.01MwMzMsITNxUzW}
+server = requests.get('http://127.0.0.1:80/f3185303e9fff83e392569a749c1e634')
+print(server.text)
+
+37. pwn.college{oER5S1p7gDl4Dmn2NLfDqCNd2cP.0FNwMzMsITNxUzW}
+curl http://127.0.0.1:80/40d951dcc57a1661bdd007a8d64957f4 --cookie "session=eyJzdGF0ZSI6MX0.Y5IzTQ.q67wEEmlm4FTiXj1N9M58iJ6kCw"
+curl http://127.0.0.1:80/40d951dcc57a1661bdd007a8d64957f4 --cookie "session=eyJzdGF0ZSI6Mn0.Y5IzYw.VOpL_bVT0BO15aU5npcNYj9bbaQ"
+curl http://127.0.0.1:80/40d951dcc57a1661bdd007a8d64957f4 --cookie "session=eyJzdGF0ZSI6M30.Y5Izhw.H6JcZIMnRwFRE5vMUglUPYw1hE0"
+
+38. pwn.college{sNdQi6HkXyuY4opbjo5EtsNXd4X.0VNwMzMsITNxUzW}
+request="GET /c80bd74fa604397a3fbf456bc2dde1ec HTTP/1.1\r\nCookie: session=eyJzdGF0ZSI6MX0.Y5Iz9A.DGNqm9VdoSFHYFl4ic-ypCCOkjk; Path=/\r\n\r\n"
+state2="GET /c80bd74fa604397a3fbf456bc2dde1ec HTTP/1.1\r\nCookie: session=eyJzdGF0ZSI6Mn0.Y5I0AA.KtElAPv6xdym1SLJMuI2f0yEAH8; Path=/\r\n\r\n"
+state3="GET /c80bd74fa604397a3fbf456bc2dde1ec HTTP/1.1\r\nCookie: session=eyJzdGF0ZSI6M30.Y5I0Tw.EX5H6rhLP4ALdtekF2hte1kAdJg; Path=/\r\n\r\n"
+echo -ne "$request" | nc localhost 80
+echo -ne "$state2" | nc localhost 80
+echo -ne "$state3" | nc localhost 80
+
+39. pwn.college{APJneQykWnqbBewVlGea9sou6TX.0lNwMzMsITNxUzW}
+server = requests.get('http://127.0.0.1:80/f3185303e9fff83e392569a749c1e634')
+print(server.text)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

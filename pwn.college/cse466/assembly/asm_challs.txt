@@ -1,0 +1,407 @@
+1. pwn.college{AZaKMGOztHwDv5U49Ha1C_4hKFV.QX0kTMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rdi, 0x1337
+
+
+2. pwn.college{Mp3CHEJQjZjP80b39NHmz3ugZA5.QX1kTMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    add rdi, 0x331337
+
+3. pwn.college{It9E1qjoaVEA9N-JPUo-kReRQ_s.QX2kTMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, rdi
+    mov rdi, rdx
+    mul rsi
+    add rax, rdi
+
+4. pwn.college{sPZltgFEuzuBqf7ZqvuOswL-Kok.QX3kTMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, rdi
+    div rsi
+
+5. pwn.college{4axKUmnnwWfSFrxqEXIHwFrursA.QX4kTMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, rdi
+    div rsi
+    mov rax, rdx
+
+6. pwn.college{0PPLz7wSbF6WdkqKGCMgkJnoKgP.QX5kTMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov al, dil
+    mov bx, si
+
+7. pwn.college{kKxlBgzUjnwEqSTLxo9ENYHr-Bc.QXwAjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    shl rdi, 24
+    shr rdi, 56
+    mov rax, rdi
+
+8. pwn.college{YdR1vpF2cLhk-m1nA3O5TwZawAS.QXxAjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    and rdi, rsi
+    and rax, rdi
+
+9. pwn.college{YrPBifCIvFvoMibesVIIXkKeWoh.QXyAjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    and rdi, 0x1
+    and rax, 0x0
+    and rax, rdi
+
+10. pwn.college{ErS4lobKhEl7tz6p06trIaPAMF1.QXzAjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, [0x404000]
+    mov rdi, rax
+    add rdi, 0x1337
+    mov [0x404000], rdi
+
+11. pwn.college{wmb21eKvuuOPcnFsZQPZQHCD6qd.QX0AjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov al, byte ptr [0x404000]
+    mov bx, word ptr [0x404000]
+    mov ecx, dword ptr [0x404000]
+    mov rdx, qword ptr [0x404000]
+
+12. pwn.college{87R845mfNv0pas6go9-ua4scIn4.QX1AjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, 0xdeadbeef00001337
+    mov [rdi], rax
+    mov rax, 0xc0ffee0000
+    mov [rsi], rax
+
+13. pwn.college{M441tU9NsSaknqtOvemAQIYV9OT.QX2AjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rdx, qword ptr [rdi]
+    mov rcx, qword ptr [rdi+8]
+    add rdx, rcx
+    mov [rsi], rdx
+
+14. pwn.college{cS1_YpzZheIbZbKqQRsP7llbwzl.QX3AjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    pop rdx
+    sub rdx, rdi 
+    push rdx
+
+15. pwn.college{sCUjXHo7uKORRwE3RQXNElk_YRm.QX4AjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    push rdi
+    push rsi
+    pop rdi
+    pop rsi
+
+16. pwn.college{suSDYyvma1_m3TVMzXAi5FrRXfh.QX5AjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rbx, 0x4
+    mov rax, qword ptr [rsp+0x18]
+    add rax, qword ptr [rsp+0x10]
+    add rax, qword ptr [rsp+0x8]
+    add rax, qword ptr [rsp]
+    div rbx
+    push rax
+
+17. pwn.college{0f409TL8j4zl7SZ4GjGR3iFOzm4.QXwEjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    jmp lab
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+    nop
+lab:
+    pop rdi
+    mov rsi, 0x403000
+    jmp rsi
+
+18. pwn.college{AYZp1MHfoP-MCcIeRoDxa1Y0KPe.QXxEjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov ebx, 0x7f454c46
+    cmp [edi], ebx
+    je if 
+    mov ebx, 0x00005A4D
+    cmp [edi], ebx
+    je elif
+    add eax, [edi+0x4]
+    mov ebx, [edi+0x8]
+    mul ebx
+    mov ebx, [edi+0xc] 
+    mul ebx
+    jmp done
+
+if:
+    add eax, [edi+0x4]
+    add eax, [edi+0x8]
+    add eax, [edi+0xc]
+    jmp done
+
+elif:
+    add eax, [edi+0x4]
+    sub eax, [edi+0x8]
+    sub eax, [edi+0xc]
+    jmp done
+
+done:
+
+19. pwn.college{UWODeZZdmfTQvvaNZdDXPUKfbCj.QXyEjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rbx, 3
+    cmp rdi, rbx
+    jg def 
+    mov rax, 0x8
+    mul rdi
+    jmp [rsi+rax]
+def:
+    jmp [rsi+0x20]
+
+20. pwn.college{wAnn4a0wXZwgRCm0D9AnhQ5h47K.QXzEjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rbx, 0x8
+    mov rax, qword ptr [rdi]
+    mov rcx, 0x1
+    jmp loop
+
+
+loop:
+    cmp rcx, rsi 
+    je done
+    add rax, qword ptr [rdi+rbx]
+    add rbx, 0x8
+    inc rcx
+    jmp loop
+
+done:
+    div rsi
+
+21. pwn.college{wxkoiGEUmwB3B43ydUEX9VEvu5e.QX0EjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, 0x0
+    mov bl, 0x0
+    cmp rdi, rax
+    je done
+    jmp while
+
+while:
+    cmp bl, byte ptr [rdi]
+    je done
+    inc rax
+    add rdi, 0x1
+    jmp while
+
+done:
+
+22. pwn.college{EELp2gBrkCoQuL-dNz-kdQGijE7.QX1EjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rdx, 0x0
+    cmp rdi, 0x0
+    je done
+
+while:
+    mov rsi, qword ptr [rdi]
+    cmp rsi, 0x0
+    je done
+    cmp byte ptr [rdi], 0x5a
+    jg not_if
+    push rdi
+    mov rdi, qword ptr [rdi]
+    mov rbx, 0x403000
+    call rbx
+    pop rdi
+    mov qword ptr [rdi], rax
+    inc rdx
+
+not_if:
+    inc rdi
+    jmp while
+
+done:
+    mov rax, rdx
+    ret
+
+23. pwn.college{ETB5zF2VpJSxWQELKAjPuw8jQM4.QX2EjMsITNxUzW}
+
+.global _start
+.intel_syntax noprefix
+_start:
+    push rbp
+    mov rbp, rsp
+    sub rsp, 0x100 
+    mov r8, 0x0
+for:
+    cmp r8, rsi
+    je aft_for 
+    mov rcx, 0x0
+    mov cl, byte ptr [rdi+r8]
+    mov r10, rbp 
+    sub r10, rcx 
+    inc byte ptr [r10]
+    inc r8
+    jmp for
+
+aft_for:
+    mov rbx, 0x0
+    mov r9, 0x0
+    mov r10, 0x0
+
+sec_for:
+    cmp rbx, 0x100
+    je done 
+    mov rax, 0x0
+    mov r13, rbp 
+    sub r13, rbx 
+    mov al, byte ptr[r13]
+    cmp rax, r9 
+    jle end
+    mov r9, rax 
+    mov r10, rbx
+
+end:
+    inc rbx
+    jmp sec_for
+
+done:
+    mov rax, r10
+    leave
+    ret
+
+
+

