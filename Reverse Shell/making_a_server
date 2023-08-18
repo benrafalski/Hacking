@@ -1,4 +1,8 @@
+
+# make web server
 sudo python3 -m http.server 80
+# make ftp server
+python3 -m pyftpdblib -p 21 -w
 
 sudo nc -lvnp 443
 
