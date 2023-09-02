@@ -1,0 +1,5 @@
+# once you have a stable shell, you can make it fully interactive like so
+python3 -c 'import pty;pty.spawn("/bin/bash")'
+stty raw -echo
+fg
+export TERM=xterm

