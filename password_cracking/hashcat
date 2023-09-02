@@ -1,0 +1,3 @@
+# crack an MD5 hash using brute force
+echo '2cb42f8734ea607eefed3b70af13bbd3' > hash
+hashcat -m 0 -a 0 hash /usr/share/wordlists/kali-wordlists/rockyou.txt

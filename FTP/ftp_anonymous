@@ -1,0 +1,10 @@
+# requires no password
+ftp anonymous@{target_IP}
+
+# once in ftp service
+# list the dir
+> dir
+# get a file
+> get filename.txt
+# leave
+> exit

