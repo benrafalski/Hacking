@@ -1,7 +1,7 @@
 # FTP
 ## Overview
 ### Port Numbers
-* **Command Port** : tcp/20
+* **Command Port** : tcp/21
 * **Data Port** :  tcp/20
 
 ## FTP Anonymous
