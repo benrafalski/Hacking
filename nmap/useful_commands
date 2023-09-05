@@ -11,8 +11,8 @@ nmap -sS <IPADDRESS>
 nmap -sT <IPADDRESS>
 
 # list hosts to scan
-nmap -sL 
+nmap -sL <IPADDRESS>
 
 # use os detection
-nmap -O 
+nmap -O <IPADDRESS>
 

