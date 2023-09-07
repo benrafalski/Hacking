@@ -4,6 +4,10 @@
 * **SQL Server**: tcp/1433
 * **MySQL**: tcp/3306
 
+## SLQ Injection
+https://slides.com/christophe-cybr/sql-explained#/2
+
+
 ## sqlmap
 command to find an sql injection vulnerability when there is security using cookies on a webpage
 ```console
