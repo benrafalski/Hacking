@@ -186,14 +186,14 @@ events {}
 ### Rewrite
 Rewrites will serve content to the user from a different directory than where they originally requested.
 
-To define that if a user goes to */there* but will be served the content inside of */here*, we can use th the *rewrite* directive:
+To define that if a user goes to */here* but will be served the content inside of */there*, we can use th the *rewrite* directive:
 ```nginx
 http {
     server {
         listen  8080;
         root    /path/to/index;
 
-        rewrite /there /here;
+        rewrite /here /there;
     }
 }
 
