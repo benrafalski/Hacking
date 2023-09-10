@@ -8,7 +8,7 @@
 List shares
 * *-N* &#8594; no password
 * *-L* &nbsp;&#8594; list shares using this IP address
-```console
+```bash
 ~$ smbclient -N -L \\\\{IP ADDRESS}\\
 
 Sharename       Type      Comment
@@ -20,19 +20,19 @@ IPC$            IPC       Remote IPC
 ```
 
 This command will connect us to a directory called backups
-```console
+```bash
 ~$ smbclient -N \\\\{IP ADDRESS}\\backups
 ```
 
 ### Useful commands after connecting to a share
 Download a file to our local machine
-```console
+```bash
 > get {filename}
 ```
 
 These are the available commands we can use once connected to backups:
 
-```console
+```bash
 allinfo        altname        archive        backup         
 blocksize      cancel         case_sensitive cd             chmod          
 chown          close          del            deltree        dir            

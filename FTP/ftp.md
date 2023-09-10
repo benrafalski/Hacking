@@ -7,19 +7,19 @@
 ## FTP Anonymous
 ### In the console
 requires no password
-```console
+```bash
 ~$ ftp anonymous@{target_IP}
 ```
 ### Once in ftp service
 list the dir
-```console
+```bash
 > dir
 ```
 get a file
-```console
+```bash
 > get filename.txt
 ```
 leave
-```console
+```bash
 > exit
 ```
