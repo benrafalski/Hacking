@@ -13,3 +13,26 @@ jndi
 jdk
 sdk
 base64 encoding
+
+NTLM
+Kerberos
+responder
+John the ripper
+apache web servers
+gobuster
+ftp
+WinRM -> getting a shell (powershell)
+name-based virtual hosting
+/etc/hosts
+Local File Inclusion (LFI) 
+Remote File Inclusion
+PHP include()
+SMB
+active directory
+NTHash
+reverse shell
+amazon s3
+netbios
+impacket
+xp_cmdshell
+winPEAS
