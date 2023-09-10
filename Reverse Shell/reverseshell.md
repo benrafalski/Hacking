@@ -12,7 +12,7 @@ On victim machine
 ```
 
 ### Making shell interactive
-```console
+```bash
 ~$ python3 -c 'import pty;pty.spawn("/bin/bash")'
 CTRL+Z
 ~$ stty raw -echo; fg
@@ -21,11 +21,11 @@ CTRL+Z
 
 ## Making Servers
 ### HTTP
-```console
+```bash
 ~$ sudo python3 -m http.server {PORT-NUMBER}
 ```
 ### FTP
-```console
+```bash
 ~$ sudo python3 -m pyftpdblib -p 21 -w
 ```
 
