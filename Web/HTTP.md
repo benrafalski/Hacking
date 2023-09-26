@@ -135,10 +135,17 @@ both do the same thing, just different syntax
 // using .then
 promise.then((message) => {
     console.log(`Message: ${message}`)
+}).catch((message) => {
+    console.log(`Message: ${message}`)
 })
 // using await
-const message = await promise
-console.log(`Message: ${message}`)
+try{
+    const message = await promise
+    console.log(`Message: ${message}`)
+} catch (err){
+    console.log(err)
+}
+
 ```
 
 ### new Promise vs async
@@ -161,8 +168,103 @@ async function getPromiseForUserData() {
     return user
 }
 const promise = getPromiseForUserData()
-
-
 ```
 
+# HTTP Headers
+- Allows additional content to be passed with each request/response. 
+- Headers are often used for authentication in HTTP.
 
+## headers.get()
+Use this to get header value from request/response
+```javascript
+const response = await fetchResponse()
+const headers = response.headers.get('content-type')
+console.log(headers)
+```
+```output
+application/json
+```
+
+## View in browser
+1. Right-click -> Inspect 
+2. Go to the Network tab
+3. Reload the page and click on a request to view the headers for the request
+
+
+# JSON
+- JavaScript object notation
+- structred way of sending information over HTTP
+
+# Syntax
+- always an object at the highest level
+- objects are key: value pairs, where the key is always a string
+- values can have string, int, float, bool, list, or object
+```output
+{
+    "string": "value",
+    "integer" : 2,
+    "float": 1.92,
+    "boolean": true,
+    "list": [
+        "1": 1,
+        "2": 2
+    ],
+    "object": {
+        "field1": "value",
+        "field2": "value"
+    }
+}
+```
+
+## .json() and JSON.parse()
+- need to use when recieving JSON objects
+- .json() is asynchronous
+- .parse() is synchronous
+```javascript
+const resp = await fetchRespons()
+
+// .json()
+const json = await resp.json()
+console.log(json)
+
+// .parse()
+const parse = JSON.parse(resp)
+console.log(parse)
+```
+```output
+{"name":"John", "age":30, "car":null}
+{"name":"John", "age":30, "car":null}
+```
+
+## JSON.stringfy()
+- need to use when sending JSON objects
+```javascript
+const response = await fetch(path, {
+    method: "PUT",
+    mode: "cors",
+    headers: getHeaders(),
+    body: JSON.stringify(myBody)
+})
+```
+
+## XML
+- alternative to JSON
+### JSON vs XML
+```json
+// JSON
+{
+    "id":"1",
+    "genre":"Action",
+    "title":"Iron Man",
+    "director":"Jon Favreau",
+}
+```
+```xml
+<!-- XML -->
+<root>
+    <id>1</id>
+    <genre>Action</genre>
+    <title>Iron Man</title>
+    <director>Jon Favreau</director>
+</root>
+```
