@@ -195,7 +195,7 @@ application/json
 - JavaScript object notation
 - structred way of sending information over HTTP
 
-# Syntax
+## Syntax
 - always an object at the highest level
 - objects are key: value pairs, where the key is always a string
 - values can have string, int, float, bool, list, or object
@@ -267,4 +267,93 @@ const response = await fetch(path, {
     <title>Iron Man</title>
     <director>Jon Favreau</director>
 </root>
+```
+
+
+# HTTP Methods
+
+## CRUD
+- create, read, update, delete
+- create: POST
+- read: GET
+- update: PUT/PATCH
+- delete: DELETE
+
+## GET
+- read information from an HTTP server
+
+```javascript
+const getReq = await fetch(url, {
+    method: 'GET',
+    mode: 'cors',
+    headers: {
+        'API-Key': '_idmykeyforgetrequest'
+    }
+})
+```
+
+## POST
+- sends information to an HTTP server to create new information
+```javascript
+const postReq = await fetch(url, {
+    method: 'POST',
+    mode: 'cors',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+    body: JSON.stringify(data)
+})
+```
+
+
+## PUT
+- used for updating a resource or creating a resource
+- if you send a new resource it will create it
+- if you send the same resource again it will update it
+- PUT is intended to modify an entire resource
+- PATCH is intended to partially modify a resource
+- most people just use PUT for both use cases
+```javascript
+const putReq = await fetch(url, {
+    method: 'PUT',
+    mode: 'cors',
+    headers: {
+        'Content-Type': 'application/json'
+    }
+    body: JSON.stringify(data)
+})
+```
+
+## DELETE
+- deletes a resource
+```javascript
+const putReq = await fetch(url, {
+    method: 'DELETE',
+    mode: 'cors'
+})
+```
+
+## Status Codes
+- *100-199*: informational responses, very rare
+- *200-299*: successful responses
+- *300-399*: redirection responses
+- *400-499*: client error responses
+- *500-599*: server error responses
+
+### Common Codes
+- *200*: OK
+- *201*: Created successfully (response to POST)
+- *301*: Moved permanently
+- *400*: Bad Request
+- *403*: Unauthorized
+- *404*: Not found
+- *500*: Internal server error
+
+### .status
+```javascript
+const response = await fetchResponse(url, apiKey)
+console.log(response.status)
+```
+```output
+404
 ```
