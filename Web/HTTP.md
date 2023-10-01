@@ -65,7 +65,7 @@ const responseData = await response.json()
 - appears after the *?* in the URL
 - set of key value pairs in the form *key=value*
 - multiple queries are split using the *&*
-- Example: https://www.google.com/search?q=hello?a=world
+- Example: https://www.google.com/search?q=hello&a=world
 
 ### Example
 
@@ -357,3 +357,23 @@ console.log(response.status)
 ```output
 404
 ```
+
+# URL Paths
+
+## RESTful APIs
+- representaional state transfer 
+- client and server are separate and agnostic from each other
+- stateless, client and server do not keep track of past interactions
+- path is used to specify what resource is being interacted with (using CRUD)
+
+
+# Security with HTTPS
+- HTTPS is just HTTP with encryption
+- keeps data private but not identity
+- has authentication
+
+## TLS
+
+## SSL
+
+## Digital Signatures
