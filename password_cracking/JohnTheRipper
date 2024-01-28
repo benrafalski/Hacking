@@ -1,3 +1,4 @@
 # get the hashes for a password protected zip file then crack the password
-zip2john file.zip > hashes
-john -wordlist=/usr/share/wordlists/rockyou.txt hashes
+# zip2john file.zip > hashes
+echo '$SHA1p$d$uP0_QaVBpDWFeo8-dRzDqRwXQ2I=' > hashes
+john john --format=sha1-gen hashes

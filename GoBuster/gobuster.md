@@ -2,9 +2,14 @@
 
 ## dir buster
 ```bash
-~$ gobuster dir -u http://website.com -w /usr/share/wordlists/SecLists/Discovery/Web-Content/raft-medium-directories.txt
+gobuster dir -u http://website.com -w /usr/share/wordlists/SecLists/Discovery/Web-Content/raft-medium-directories.txt
 ```
 ## vhost buster
 ```bash
-~$ gobuster vhost -u http://website.com -w /opt/SecList/Discovery/DNS/subdomains-top1million-5000.txt
+gobuster vhost -u http://website.com -w /opt/SecList/Discovery/DNS/subdomains-top1million-5000.txt
+```
+
+## subdomain buster
+```bash
+gobuster dns -d devvortex.htb -w /usr/share/wordlists/SecLists/Discovery/DNS/subdomains-top1million-20000.txt -t 20
 ```

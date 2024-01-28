@@ -1,7 +1,12 @@
 # crack an MD5 hash using brute force
-echo '5077e3ece2de15c196ceb78594169353' > hash
-hashcat -m 900 -a 0 hash /usr/share/wordlists/kali-wordlists/rockyou.txt
+echo '47ca69ebb4bdc9ae0adec130880165d2cc05db1a' > hash
+hashcat -m 100 -a 0 hash /usr/share/wordlists/kali-wordlists/rockyou.txt
 
+
+# $SHA1$d$uP0_QaVBpDWFeo8-dRzDqRwXQ2I=
+# $SHA$d$uP0_QaVBpDWFeo8-dRzDqRwXQ2I
+# d:47ca69ebb4bdc9ae0adec130880165d2cc05db1a
 
 # MD5 -m 0
 # MD4 -m 900
+# SHA1 -m 100
