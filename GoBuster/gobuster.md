@@ -11,5 +11,5 @@ gobuster vhost -u http://website.com -w /opt/SecList/Discovery/DNS/subdomains-to
 
 ## subdomain buster
 ```bash
-gobuster dns -d devvortex.htb -w /usr/share/wordlists/SecLists/Discovery/DNS/subdomains-top1million-20000.txt -t 20
+gobuster dns -d website.com -w /usr/share/wordlists/SecLists/Discovery/DNS/subdomains-top1million-20000.txt -t 20
 ```
