@@ -3,10 +3,20 @@
 - HTML/DOM manipultion, CSS manipution, HTML event methods, effects/animations, AJAX
 
 # Table of Contents
-1. [Include Library](#include-library)
-2. [Example2](#example2)
-3. [Third Example](#third-example)
-4. [Fourth Example](#fourth-examplehttpwwwfourthexamplecom)
+- [Include Library](#include-library)
+- [Syntax](#syntax)
+- [Events](#events)
+  - [Ready Event](#ready-event)
+  - [Mouse Event](#mouse-event)
+  - [Keyboard Event](#keyboard-event)
+  - [Form Event](#form-event)
+  - [Document Event](#document-event)
+  - [On Event](#on-event)
+- [Effects](#effects)
+  - [Hide, Show, Toggle](#hide-show-toggle)
+  - [Fade](#fade)
+  - [Sliding](#sliding)
+  - [Animations](#animations)
 
 ## Include Library <a name="include-library"></a>
 ```html
@@ -27,7 +37,7 @@ $("#test").hide()   // hides the element with id="test".
 // full list of selectors are here: https://www.w3schools.com/jquery/jquery_ref_selectors.asp
 ```
 ## Events
-### Ready Event
+### Ready Event <a name="ready-event"></a>
 ```javascript
 // make sure the document has loaded before executing script
 $(document).ready(function(){
@@ -38,7 +48,7 @@ $(function(){
   // jQuery methods go here...
 });
 ```
-### Mouse Events
+### Mouse Events <a name="mouse-event"></a>
 ```javascript
 // click
 $("p").click(function(){
@@ -72,13 +82,13 @@ function(){
   $(this).show(); // shows the <p> element on mouseleave()
 })
 ```
-### Keyboard Events
+### Keyboard Events <a name="keyboard-event"></a>
 ```javascript
 $("p").keypress()
 $("p").keydown()
 $("p").keyup()
 ```
-### Form Events
+### Form Events <a name="form-event"></a>
 ```javascript
 $("p").submit()
 $("p").change()
@@ -91,14 +101,14 @@ $("input").blur(function(){
     $(this).css("background-color", "green"); // when you unselect the input field it will turn green
 });
 ```
-### Document/Window Events
+### Document/Window Events <a name="document-event"></a>
 ```javascript
 $("p").load()
 $("p").resize()
 $("p").scroll()
 $("p").unload()
 ```
-###  On Event
+### On Event <a name="on-event"></a>
 ```javascript
 // multiple mouse handlers
 $("p").on({
@@ -124,8 +134,8 @@ $(document).ready(function(){
 	})
 });
 ```
-## Events
-### Hide, Show, Toggle
+## Effects
+### Hide, Show, Toggle <a name="hide-show-toggle"></a>
 ```javascript
 // speed and callback are optional
 // $(selector).hide(speed,callback);
