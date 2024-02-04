@@ -17,6 +17,7 @@
   - [Fade](#fade)
   - [Sliding](#sliding)
   - [Animations](#animations)
+  - [Stop](#stop)
 
 ## Include Library <a name="include-library"></a>
 ```html
@@ -150,6 +151,12 @@ $("button").click(function(){
 $("button").click(function(){
   $("p").toggle("fast");
 });
+// callback example, alert happens after hide is finished
+$("button").click(function(){
+  $("p").hide("slow", function(){
+    alert("You clicked the button!");
+  });
+});
 ```
 ### Fade
 ```javascript
@@ -181,6 +188,18 @@ $("#flip").click(function(){
 // {params} are the CSS properties to animate
 // speed is "fast", "slow", or milliseconds
 $("button").click(function(){
-  $("div").animate({left: '250px'});
+  $("div").animate({
+    left: '250px',
+    opacity: '0.5',
+    height: '150px',
+    width: '150px'
+  });
+}); 
+```
+### Stop
+```javascript
+// $(selector).stop(stopAll,goToEnd);
+$("#stop").click(function(){
+  $("#panel").stop();
 });
 ```
