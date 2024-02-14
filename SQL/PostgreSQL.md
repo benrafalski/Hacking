@@ -12,7 +12,7 @@
 -- list all tables
 \dt
 -- run an sql file
-\i "\\file\\path"
+\i '\\file\\path'
 -- quit
 \q
 ```
