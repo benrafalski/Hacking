@@ -21,7 +21,7 @@
 2. NTLMSSP_CHALLENGE: Host will send the challenge to the client
 3. NTLMSSP_AUTH: client will send username and challenge response
 
-![alt text](../Images\ntlm1.png "Title")
+![alt text](../Images/ntlm1.png "Title")
 
 ### Where to find NTLM info in SMB2 packets
 
