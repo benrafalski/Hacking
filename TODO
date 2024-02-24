@@ -12,10 +12,8 @@ sdk
 base64 encoding
 
 Kerberos
-responder
 John the ripper
 apache web servers
-gobuster
 ftp
 WinRM -> getting a shell (powershell)
 name-based virtual hosting
