@@ -1,6 +1,5 @@
 Web crawling
 cookies
-cross site scripting
 apache
 iss
 tomcat
@@ -12,7 +11,6 @@ jdk
 sdk
 base64 encoding
 
-NTLM
 Kerberos
 responder
 John the ripper
