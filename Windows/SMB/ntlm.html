@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+  <head> </head>
+  <body>
+    <h1>NTLM</h1>
+    <ul>
+      <li>NT Lan Manager</li>
+      <li>Only lets designated users access network resources</li>
+      <li>collection of Microsoft authentication protocols</li>
+      <li>
+        <u>mutual authentication:</u> both sides need to verify each other's
+        identity
+      </li>
+      <li>uses a <b>challenge response protocol</b></li>
+    </ul>
+    <h2>NTLM Protocol</h2>
+    <ol>
+      <li>client sends their username to the host</li>
+      <li>host responds with a nonce (random number, i.e. the challenge)</li>
+      <li>
+        user generates a hash with the concatenation of their password and nonce
+        and sends to the host
+      </li>
+      <li>
+        since the host already knows the user's password, they can compare to
+        the client's response
+      </li>
+    </ol>
+    <h2>Extract NTLM hash from Wireshark</h2>
+    <h3>use filter "ntlmssp"</h3>
+    <ol>
+      <li>
+        <u>NTLMSSP_NETGOTIATE:</u> Client will send request to authenticate
+      </li>
+      <li>
+        <u>NTLMSSP_CHALLENGE:</u> Host will send the challenge to the client
+      </li>
+      <li>
+        <u>NTLMSSP_AUTH:</u> client will send username and challenge response
+      </li>
+    </ol>
+    <img src="../../Images/ntlm1.png" />
+
+    <h3>Where to find NTLM info in SMB2 packets</h3>
+    <ol>
+      <li>SMB2</li>
+      <li>SMB2 Header</li>
+      <li>Session Setup Response (0x01)</li>
+      <li>Security Blob</li>
+      <li>GSS-API</li>
+      <li>Simple Protected Negotiation</li>
+      <li>negTokenTarg</li>
+      <li>NTLM Secure Service Provider</li>
+      <li>
+        NTLM Server Challenge (for NTLMSSP_CHALLENGE) / NTLM Response (for
+        NTLMSSP_AUTH)
+      </li>
+    </ol>
+
+    <h3>Information needed for hash cracking</h3>
+
+    <ol>
+      <li><u>User:</u> In NTLMSSP_AUTH</li>
+      <li><u>Domain:</u> In NTLMSSP_AUTH</li>
+      <li><u>Challenge:</u> In NTLMSSP_CHALLENGE</li>
+      <li>
+        <u>HMAC-MD5:</u> "NTProofStr" in the NTLMv2 Response in NTLMSSP_AUTH
+      </li>
+      <li><u>NTLMv2Response:</u> In NTLMSSP_AUTH</li>
+    </ol>
+
+    <h2>Cracking NTLM hash with hashcat</h2>
+    <h3>Hash file format</h3>
+    <p>Note: use 5600 for NTLMv2 on hashcat</p>
+    <code>~$ cat hashes.txt</code><br />
+    <code
+      >user::domain:challenge:HMAC-MD5:NTLMv2Response(with HMAC-MD5 removed from
+      first 32 chars)</code
+    >
+    <br />
+    <code
+      >~$ hashcat -a 0 -m 5600 hashes.txt
+      /usr/share/wordlists/kali-wordlists/rockyou.txt</code
+    >
+    <br />
+
+    <h2>SMB attacks using relaying and Responder</h2>
+    <h3>SMB Relaying</h3>
+    <p>NTLMv2 authentication</p>
+    <img src="../../Images/ntlm2.png" />
+
+    <h3>NTLM Responses</h3>
+    <p>Notes: Windows uses Kerberos today, NTLMv2 is still used today thoug</p>
+    <img src="../../Images/ntlm3.png" />
+
+    <h3>Obtain NTLMv2 Challenge/Response</h3>
+    <h4>Responder</h4>
+    <ul>
+      <li>
+        What needs to happen?
+        <ul>
+          <li>Need to get the username:domain, challenge, and response</li>
+          <li>Need to lure someone into authenticating to us</li>
+        </ul>
+      </li>
+      <li>
+        <u>NBT-NS:</u> sends multicast message when you try to connect to a
+        hostname (like \\windows03), kind of like ARP for a hostname resolution
+      </li>
+      <li><u>LLMNR:</u> modern updated version of NBT-NS</li>
+      <li>
+        If someone tried to authenticate to a hostname that is not there then
+        Responder sends a fake NBT-NS/LLMNR packet to that someone so they will
+        reply with a request to authenticate
+      </li>
+      <li>
+        Other ways: listen on port 80 and wait for webdoc request, embed remote
+        image in word doc and wait for user to click on it
+      </li>
+      <li>
+        <u>Bottom line:</u> broadcast/multicast is what makes Responder possibl
+      </li>
+    </ul>
+    <code>responder -I interface</code><br />
+    <code>responder -I eth0</code><br />
+
+    <h3>Responder Abusing WPAD</h3>
+    <ul>
+      <li>"autodetect proxy settings"</li>
+      <li>Creates an effective mitm attack</li>
+    </ul>
+
+    <h3>SMB relaying with responder</h3>
+    <p>Relay attack</p>
+    <img src="../../Images/ntlm4.png" />
+    <p>Relaying with Responder</p>
+    <img src="../../Images/ntlm5.png" />
+
+    <h3>HMAC</h3>
+    <ul>
+      <li>
+        <u>MAC:</u> guarantee message sent over network has not been changed
+      </li>
+      <li>
+        <u>Stream cipher encryption:</u> Encrypts one bit at a time. Malicious
+        actor can flip bits in ciphertext to change the plaintext. Opposed to
+        block cipher encryption where message is encrypted in blocks and any
+        change in the ciphertext will drastically change the plaintext when
+        decrypted.
+      </li>
+      <li>
+        <u>HMAC:</u> immune to length extension attack
+        <ul>
+          <li>Make a shared secret k</li>
+          <li>
+            Make k1 and k2 from k
+            <ul>
+              <li>k1 = k xor 0x36</li>
+              <li>k2 = k xor 0x5c</li>
+            </ul>
+          </li>
+          <li><u>Hash1:</u> message | k1</li>
+          <li><u>Hash2:</u> Hash1 | k2</li>
+        </ul>
+      </li>
+    </ul>
+    <img src="../../Images/ntlm6.png" />
+  </body>
+</html>
