@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            table, th, td {
+                border: 1px solid #bbb;
+                border-collapse: collapse;
+                text-align: center;
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Protocol</h1>
+        <h2>Defenition and Types</h2>
+        <ul>
+            <li>Series of steps, taken by 2+ parties, to accomplish a task</li>
+            <li><u>Arbitrated Protocols:</u> disintrested/trusted third-party acts as a mediator between Alice and Bob</li>
+            <li><u>Adjuducated Protocols:</u> disintrested/trusted third-party acts as a judge but only when Alice and Bob have a dispute, not on every transaction</li>
+            <li><u>Self-enforcing Protocols:</u> no third-party, the protocol itself ensures trust and fairness.</li>
+        </ul>
+        <img src="../../Images/crypto1.png"/>
+        <h2>Attacks</h2>
+        <ul>
+            <li><u>Passive attack:</u> Eavesdroping. Attacker only observes. Protocol aims to prevent not detect.</li>
+            <li><u>Active attack:</u> Attacker intervenes in the protocol.</li>
+        </ul>
+        <h2>One-way functions</h2>
+        <ul>
+            <li>Given <i>x</i> is it easy to compute <i>f(x)</i> but given <i>f(x)</i> it is hard to compute <i>x</i></li>
+            <li><u>One-way hash function:</u> Takes a variable-length input string (pre-image) and converts it to a fixed-length output string (hash value). Should be collision-free.</li>
+            <li><u>Message Authentication Codes (MAC):</u> one-way hash with a secret key. Function of both pre-image and key</li>
+        </ul>
+        <h2>Hybrid Protocols</h2>
+        <ul>
+            <li>Today, public-key protocols are used to distribute session keys to be used with symmetric algorithms</li>
+            <li>Public-key protocols are slow and vulnerable to chosen-plaintext attacks</li>
+        </ul>
+        <h2>Digital Signatures</h2>
+        <ul>
+            <li><u>Public Key Signing:</u> can use RSA for example
+                <ol>
+                    <li>Alice signs the document with her private key (encrypts the document with her public key)</li>
+                    <li>Alice sends the document to bob</li>
+                    <li>Bob verifies the document with Alice's public key (decrypts with her public key)</li>
+                </ol>
+            </li>
+            <li><u>Timestamps:</u> signatures often come with timestamps of when the document was signed so that the signature cannot be reused.</li>
+            <li><u>Signing and Hashes:</u> public key crypto is often inefficient so instead of signing the entire document it is faster to hash the document first, then sign the hash of the document. Alice sends the document and the hash together to Bob. </li>
+            <li><u>Multiple signatures:</u> if Alice and Bob both want to sign a document, hash signing should be used. This way Alice can sign a hash and Bob could sign another copy of the hash then Bob could send a copy of the document, Alice's hash, and Bob's hash to Carol.</li>
+            <li><u>Nonrepudiation:</u> Alice can sign a document than later claim she did not. All she has to do is say she lost her private key so someoen else has it. Timestamps can help but not fully solve the problem.</li>
+        </ul>
+    </body>
+</html>
