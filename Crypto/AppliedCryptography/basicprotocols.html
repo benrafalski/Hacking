@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <style>
+      table,
+      th,
+      td {
+        border: 1px solid #bbb;
+        border-collapse: collapse;
+        text-align: center;
+        padding: 10px;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Basic Protocols</h1>
+    <h2>Key Exchange</h2>
+    <ul>
+      <li>
+        <u>Session key:</u> Used to encrypt each individual conversation with a
+        separate key
+      </li>
+      <li>
+        <u>Man in the middle attack:</u> Alice and Bob have no way to verify
+        they are talking to each other.
+      </li>
+      <li>
+        <u>Interlock protocol:</u> Tried to prevent mitm attack. Alice and Bob
+        exchange half of their encrypted message, then exchagne the other half
+        after that. Mallory cannot decrypt the first half of the message, he
+        needs the whole message to decrypt it.
+      </li>
+      <li>
+        <u>Digital Signatures:</u> If Trent signs the public keys, Alice and Bob
+        can trust them.
+      </li>
+      <li>
+        <u>Key-Message transmission:</u> Alice generates a session key and
+        encrypts the message with it then encyrpts the session key with Bob's
+        public key then sends both of them to Bob
+      </li>
+    </ul>
+    <h2>Authentication</h2>
+    <ul>
+      <li><u>One-way function:</u> used to store passwords</li>
+      <li>
+        <u>Salt:</u> random string concated to end of password before putting it
+        through one-way function. Hash and salt are stored in the database
+        together. Aims to prevent dictionary attacks.
+      </li>
+      <li>
+        <u>SKEY:</u> Computer computes
+        <i>x<sub>1</sub>=f(R), x<sub>2</sub>=f(f(R))</i> and so on for like 100
+        times and Alice keeps the results, the computer keeps
+        <i>x<sub>101</sub></i
+        >. When Alice tries to login, she provides <i>x<sub>100</sub></i> and
+        the computer computes <i>f(x<sub>101</sub>)</i>, if it matches Alice is
+        authenticated. Next time, Alice uses <i>x<sub>99</sub></i
+        >, decreasing each time.
+      </li>
+      <li>
+        <u>Public-key authentication:</u>
+        <ol>
+          <li>
+            Alice performs computations on a random number and her private key
+            and sends to host
+          </li>
+          <li>Host sends back a new random number</li>
+          <li>
+            Alice does some computations on both random numbers and her private
+            key and sends back
+          </li>
+          <li>
+            Host does computation on all the numbers and Alice's public key to
+            verify Alice
+          </li>
+        </ol>
+      </li>
+      <li>
+        <u>Mutual authentication:</u> If Alice and Bob both have passwords each
+        other knows, they can exchange the passwords with public-key encryption
+        and the Interlock Protocol to prevent a mitm.
+      </li>
+      <li>
+        <u>SKID:</u> Use MAC and assume Alice and Bob share a secret key to
+        compute the MAC. Is not secure against a mitm
+        <ul>
+          <li>
+            <u>SKID2:</u> Alice and Bob both come up with random numbers and
+            Alice sends hers to Bob. Bob sends back a MAC of the two numbers and
+            his name and his random number. Alice computes the MAC herself and
+            compares it to what Bob sent to authenticate.
+          </li>
+          <li>
+            <u>SKID3:</u> Provides mutual authentication. Same as SKID2 but
+            Alice then sends back a MAC of Bob's random number and her name
+            which Bob can use to authenticate her.
+          </li>
+        </ul>
+      </li>
+    </ul>
+    <h2>Authentication with Key exchange</h2>
+    <li>
+      <u>Wide Mouth Frog:</u>
+      <ol>
+        <li>
+          Alice sends Trent her name and
+          <code>encrypt(timestamp|Bob's name|secret shared key)</code> to Trent.
+        </li>
+        <li>
+          Trent decrypts the message and sends to Bob
+          <code>encrypt(new timestamp|Alice's name|secret shared key)</code>
+        </li>
+      </ol>
+    </li>
+    <li>
+      <u>Yahalom:</u> uses symmetric encryption
+      <ol>
+        <li>Alice and Bob both generate a random number.</li>
+        <li>Alice sends (Alice's name|Alice's random string) to Bob</li>
+        <li>
+          Bob sends
+          <code
+            >encrypt(Alice's name|Alice's random number|Bob's random
+            number)</code
+          >
+          and Bob's name to Trent.
+        </li>
+        <li>
+          Trent sends to Alice:
+          <ul>
+            <li>
+              Using a secret key he has with Alice:
+              <code
+                >encrypt(Bob's name|random session key|Alice's random
+                number|Bob's random number)</code
+              >
+            </li>
+            <li>
+              Using a secret key he has with Bob:
+              <code>encrypt(Alice's name|random session key)</code>
+            </li>
+          </ul>
+        </li>
+        <li>
+          Alice decrypts the first message and verifies her random number and
+          sends to Bob:
+          <ul>
+            <li>Message 2 that Trent sent her from the previous step</li>
+            <li>
+              <code>encrypt(Bob's random number)</code> using the random session
+              key that Trent sent
+            </li>
+          </ul>
+        </li>
+        <li>
+          Bob can then decrypt the first message to get the session key and
+          verify his random number
+        </li>
+      </ol>
+    </li>
+    <li>
+      <u>Needham-Schroeder:</u> uses symmetric encryption. Problem is that
+      previous session keys can be used to mitm at step 4 and if Alice's key
+      with Trent is compromised the entire protocol falls apart.
+      <ol>
+        <li>Alice and Bob compute random numbers</li>
+        <li>
+          Alice sends her name, Bob's name, and her random number to Trent
+        </li>
+        <li>
+          Trent sends to Alice
+          <ul>
+            <li>
+              Encrypted with a shared secret key with Bob:
+              <code>e=encrypt(random session key|Alice's name)</code>
+            </li>
+            <li>
+              Encrypted with a shared secret key with Alice:
+              <code
+                >encrypt(Alice's random number|Bob's name|random session
+                key|e)</code
+              >
+            </li>
+          </ul>
+        </li>
+        <li>
+          Alice decrypts and verifies her random number then sends Bob
+          <code>e</code> from the previous step
+        </li>
+        <li>
+          Bob sends to Alice <code>encrypt(Bob's random number)</code> using the
+          random session key
+        </li>
+        <li>
+          Alice sends back to Bob
+          <code>encrypt(Bob's random number - 1)</code> using the random session
+          key. She sends Bob's random number - 1 to prevent a replay attack
+        </li>
+        <li>Bob verifies (Bob's random number - 1)</li>
+      </ol>
+    </li>
+    <li>
+      <u>Otway-Res:</u> uses symmetric encryption.
+      <ol>
+        <li>Alice and Bob both compute random numbers</li>
+        <li>
+          Alice sends to Bob an index number, her name, Bob's name, and
+          <code
+            >encrypt(Alice's random number|index number|Alice's name|Bob's
+            name)</code
+          >
+          encrypted with her symmetric key with Trent
+        </li>
+        <li>
+          Bob sends to Trent the index number, Alice's name, Bob's name, the
+          encrypted message Alice sent, and
+          <code
+            >encrypt(Bob's random number|the index number|Alice's name|Bob's
+            name)</code
+          >
+          encrypted with the symmetric key he has with Trent
+        </li>
+        <li>
+          Trent sends to Bob the index and:
+          <ul>
+            <li>
+              Using Alice's symmetric key:
+              <code>encrypt(Alice's random number|random session key)</code>
+            </li>
+            <li>
+              Using Bob's symmetric key:
+              <code>encrypt(Bob's random number|random session key)</code>
+            </li>
+          </ul>
+        </li>
+        <li>
+          Bob sends Alice the index number and the message from Trent encrypted
+          with her key from the previous step
+        </li>
+        <li>
+          Alice decrypts to verify her random number and the index from the
+          beginning
+        </li>
+      </ol>
+    </li>
+    <li>
+      <u>Kerberos:</u> uses symmetric encryption. Relies on everyone's clock being synchronized with Trent's clock.
+      <ol>
+        <li>Alice sends her name and Bob's name to Trent</li>
+        <li>
+          Trent sends to Alice:
+          <ul>
+            <li>
+              Encrypted with Alice's symmetric key:
+              <code
+                >encrypt(timestamp|lifetime|random session key|Bob's name)</code
+              >
+            </li>
+            <li>
+              Encrypted with Bob's symmetric key:
+              <code
+                >encrypt(timestamp|lifetime|random session key|Alice's
+                name)</code
+              >
+            </li>
+          </ul>
+        </li>
+        <li>
+          Alice sends to Bob:
+          <ul>
+            <li>
+              The message encrypted with Bob's symmetric from Trent in the
+              previous step
+            </li>
+            <li>
+              <code>encrypt(Alice's name|timestamp)</code> encrypted with the
+              random session key
+            </li>
+          </ul>
+        </li>
+        <li>Bob sends to Alice <code>encrypt(timestamp + 1)</code></li>
+      </ol>
+    </li>
+    <li><u>Neuman-Stubblebine:</u></li>
+    <li><u>DASS:</u></li>
+    <li><u>Denning-Sacco:</u></li>
+    <li><u>Woo-Lam:</u></li>
+    <li><u></u></li>
+
+  </body>
+</html>
