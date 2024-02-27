@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            table, th, td {
+                border: 1px solid #bbb;
+                border-collapse: collapse;
+                text-align: center;
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Intermediate Protocols</h1>
+        <h2>Timestamping</h2>
+        <ul>
+            <li><u>Arbitrated solution:</u> Alice sends a document to Trent and he timestamps it and keeps a copy before sending it back to Alice</li>
+            <li><u>Improved arbitrated solution:</u> Same as arbitrated solution but Alice hashes the document before sending it and Trent digitally signs the document instead of keeping it in a database</li>
+            <li><u>Linking solution:</u> Protects against Alice and Trent colluding with a fake timestamp. Alice's timestamp is linked to the previous (timestamp before her) and next (timestamp after her) so that her timestamp depends on the future, and cannot be faked.</li>
+            <li><u>Distributed solution:</u> If the timestamps before or after Alice get lost she is screwed. Instead, Alice could get her hash timestamped and signed by <i>n</i> random people. The only way she could cheat is by getting all <i>n</i> people to cheat.</li>
+        </ul>
+        <h2>Subliminal Channel</h2>
+        <ul>
+            <li><u>Subliminal Channel:</u> Covert communication channel in plain view of an eavesdropper even though the messages themselves contain to secret info</li>
+            <li>Protocol:
+                <ol>
+                    <li>Alice and Bob share a secret key</li>
+                    <li>Alice makes a random message</li>
+                    <li>Alice signs the message with the secret key so that a secret message is hidden in the signature</li>
+                    <li>Walter is able to read the message as he passes it to Bob</li>
+                    <li>Bob uses the secret key to reveal the subliminal message</li>
+                </ol>
+            </li>
+            <li>Requires that Alice and Bob trust each other since they share a private key</li>
+            <li><u>Subliminal-free signature schemes:</u> Digital signature schemes that cannot be modified to contain subliminal channels</li>
+        </ul>
+        <h2>Undeniable digital signatures</h2>
+        <ul>
+            <li><u>Problem:</u> Normal digital signatures can be copied exactly. This means if the signer signs something personal, anyone with their public key can verify they signed it.</li>
+            <li><u>Undebiable signatures:</u> Like a normal digital signature but cannot be verified without the signer's consent.</li>
+            <li>Protocol:
+                <ol>
+                    <li>Alice sends Bob a signature</li>
+                    <li>Bob sends back to Alice a random number</li>
+                    <li>Alice does a computation with her private key and the random number and sends it to Bob</li>
+                    <li>Bob verifies the random number</li>
+                </ol>
+            </li>
+            <li><u>Entrusted undeniable signature:</u> Undeniable signature but only Trent can prove who the signature really belongs to</li>
+        </ul>
+        <h2>Designated confirmer signatures</h2>
+        <ul>
+            <li>Alice can sign a document so that Bob believes the signature is valid but he cannot convice a third-party and Alice can designate Carol as the confirmer of her signature using Carol's public key.</li>
+            <li></li>
+        </ul>
+        <h2>Other digital signatures</h2>
+        <ul>
+            <li><u>Proxy signatures:</u> Alice gives Bob such that: the proxy is distinguishable from a normal signature, unforgable, always detected as a proxy, verifiable, identifiable (for Alice), undeniable.</li>
+            <li><u>Group signatures:</u> Only members of a group can sign messages, the receiver of the signature can verify it is a valid one from the group, the receiver cannot identify who from the group is the signer, and if there is a dispute then Trent can reveal the signature to identify the signer</li>
+            <li><u>Fail-stop signatures:</u> Allows Alice to prove that forges signatures are forgeries if her private key is brute forced. This is done by having multiple private keys for a single public key so that the attacker would need to brute force all the private keys.</li>
+        </ul>
+    </body>
+</html>
