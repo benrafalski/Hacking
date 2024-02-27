@@ -282,11 +282,130 @@
         <li>Bob sends to Alice <code>encrypt(timestamp + 1)</code></li>
       </ol>
     </li>
-    <li><u>Neuman-Stubblebine:</u></li>
-    <li><u>DASS:</u></li>
-    <li><u>Denning-Sacco:</u></li>
-    <li><u>Woo-Lam:</u></li>
-    <li><u></u></li>
-
+    <li><u>Neuman-Stubblebine:</u> if clocks are unsynced then attacker can use a suppress-replay attack, this counters that attack.
+      <ol>
+        <li>Alice and Bob choose a random number</li>
+        <li>Alice sends Bob her name and her random number</li>
+        <li>Bob sends to Trent his name, his random number, and <code>encrypt(Alice's name|Alice's random number|Bob's timestamp) with his symmetric key with Trent</code></li>
+        <li>Trent then sends to Alice
+          <ul>
+            <li>Encrypted with Alice's symmetric key: <code>encrypt(Bob's name|Alice's random number|random session key|Bob's timestamp)</code></li>
+            <li>Encrypted with Bob's symmetric key: <code>encrypt(Alice's name|random session key|Bob's timestamp)</code></li> 
+            <li>Bob's random number</li>
+          </ul>
+        </li>
+        <li>Alice sends to Bob the message from Trent encrypted with Bob's symmetric key and <code>encrypt(Bob's random number)</code> encrypted with the random session key</li>
+        <li>Bob then verifies his timestamp and random number have not changed</li>
+      </ol>
+      <p>They can also reathenticate without Trent as follows:</p>
+      <ol>
+        <li>Alice and Bob choose new random numbers</li>
+        <li>Alice sends Bob <code>encrypt(Alice's name|random session key|Bob's timestamp)</code> from step 4 above and her new random number</li>
+        <li>Bob sends Alice his new random number and <code>encrypt(Alice's new random number)</code> with the random session key</li>
+        <li>Alice sends Bob <code>encrypt(Bob's new random number)</code> with the random session key</li>
+      </ol>
+    </li>
+    <li><u>DASS:</u> uses symmetric and public-key crypto. Trent has a signed copy of both their public keys
+      <ol>
+        <li>Alice sends Bob's name to Trent</li>
+        <li>Trent sends to Alice <code>sign(Bob's name|Bob's public key)</code> with Trent's private key</li>
+        <li>Alice then sends to Bob
+          <ul>
+            <li><code>encrypt(Alice's timestamp)</code> with a random session key</li>
+            <li><code>sign(key lifetime|Alice's name|random public-private key pair)</code> with her private key</li>
+            <li><code>sign(encrypt(random session key))</code> encrypted with Bob's public key and signed with the private key from the random public-private key pair</li>
+          </ul>
+        </li>
+        <li>Bob then sends Trent Alice's name</li>
+        <li>Trent replies to Bob with <code>sign(Alice's name|Alice's public key)</code> with Trent's private key</li>
+        <li>Bob then verifies Alice's timestamp is current</li>
+        <li>Bob then sends Alice <code>encrypt(Bob's timestamp)</code> with the random session key</li>
+        <li>Alice then verifies Bob's timestamp is current </li>
+      </ol>
+    </li>
+    <li><u>Denning-Sacco:</u> uses public-key crypto. Allows for Bob to masquerade as Alice until the timestamp expires after the protocol finished because he has her public key signed by Trent. This can be fixed by sending <code>encrypt(sign(Alice's name|Bob's name|random session key|Alice's timestamp))</code> in step 3 instead of <code>encrypt(sign(random session key|Alice's timestamp))</code>
+      <ol>
+        <li>Alice sends Trent her name and Bob's name</li>
+        <li>Trent sends Alice two messages he signs with his private key:
+          <ul>
+            <li><code>sign(Bob's name|Bob's public key)</code></li>
+            <li><code>sign(Alice's name|Alice's public key)</code></li>
+          </ul>
+        </li>
+        <li>Alice then sends Bob the two signed messages from Trent along with <code>encrypt(sign(random session key|Alice's timestamp))</code> signed by Alice and encrypted with Bob's public key</li>
+        <li>Bob then verifies the timestamp is still valid</li>
+      </ol>
+    </li>
+    <li><u>Woo-Lam:</u> uses public-key crypto
+      <ol>
+        <li>Alice and Bob generate random numbers</li>
+        <li>Alice sends Trent her name and Bob's name</li>
+        <li>Trent sends Alice <code>sign(Bob's public key)</code> signed with Trent's private key</li>
+        <li>Alice sends Bob <code>encrypt(Alice's name|Alice's random number)</code> with Bob's public key</li>
+        <li>Bob sends Trent his name, Alice's name, and <code>encrypt(Alice's random number)</code> encrypted with Trent's public key</li>
+        <li>Trent sends Bob:
+          <ul>
+            <li>Signed with Trents private key: <code>sign(Alice's public key)</code></li>
+            <li>Encrypted with Bob's public key: <code>encrypt(sign(Alice's random number|random session key|Alice's name|Bob's name))</code> signed with Trent's private key</li>
+          </ul>
+        </li>
+        <li>Bob then sends Alice <code>encrypt(sign(Alice's random number|random session key|Alice's name|Bob's name)|Bob's random number)</code> signed by Trent and encrypted by Alice's public key</li>
+        <li>Alice verifies her random number and sends Bob <code>encrypt(Bob's random number)</code> with the random session key</li>
+        <li>Bob verifies his random number is unchanged</li>
+      </ol>
+    </li>
+    <h3>Analysis of authentication with key exchange</h3>
+    <ul>
+      <li><u>BAN logic:</u> formal logic model for analysis of authentication and key exchange protocols</li>
+    </ul>
+    <h2>Multiple key public-key encryption</h2>
+    <ul>
+      <li>Used when communicating with many parties</li>
+      <li>
+        <table>
+          <tr>
+            <th>Encrypted with Keys</th>
+            <th>Must be decryped with keys</th>
+          </tr>
+          <tr>
+            <td>K<sub>A</sub></td>
+            <td>K<sub>B</sub> and K<sub>C</sub></td>
+          </tr>
+          <tr>
+            <td>K<sub>B</sub></td>
+            <td>K<sub>A</sub> and K<sub>C</sub></td>
+          </tr>
+          <tr>
+            <td>K<sub>C</sub></td>
+            <td>K<sub>A</sub> and K<sub>B</sub></td>
+          </tr>
+          <tr>
+            <td>K<sub>A</sub> and K<sub>B</sub></td>
+            <td>K<sub>C</sub></td>
+          </tr>
+          <tr>
+            <td>K<sub>A</sub> and K<sub>C</sub></td>
+            <td>K<sub>B</sub></td>
+          </tr>
+          <tr>
+            <td>K<sub>B</sub> and K<sub>C</sub></td>
+            <td>K<sub>A</sub></td>
+          </tr>
+        </table>
+      </li>
+    </ul>
+    <h2>Secret splitting and secret sharing</h2>
+    <ul>
+      <li><u>Secret splitting:</u> Split a message so it cannot be seen unless constructed by all parties. Is absolutely secure</li>
+      <li>Secret Splitting Protocol:
+        <ol>
+          <li>Trent generates a random string (R) the same length as the message (M)</li>
+          <li>Trent XORs them (R &oplus; M = S)</li>
+          <li>Trent gives the R to Alice and S to Bob </li>
+          <li><u>Note:</u> Can have more than two people too with more random strings to XOR with</li>
+        </ol>
+      </li>
+      <li><u>Secret sharing:</u> uses <i>(m,n)</i>-threshold scheme. Divide message into <i>n</i> pieces (shadows/shares) so that any <i>m</i> of them can be used to reconstruct the message</li>
+    </ul>
   </body>
 </html>
