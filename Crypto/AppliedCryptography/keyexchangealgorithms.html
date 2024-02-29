@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            table, th, td {
+                border: 1px solid #bbb;
+                border-collapse: collapse;
+                text-align: center;
+                padding: 10px;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Key Exchange Algorithms</h1>
+        <h2>Diffie-Hellman</h2>
+        <p>Note: <i>g</i> is primitive mod <i>n</i> if for every integer <i>a</i> coprime to <i>n</i> there is some integer <i>k</i> for which <i>g<sup>k</sup> &equiv; a (mod n)</i>. Two numbers are coprime if they have no common factors other than 1. <i>n</i> should be large and <i>(n - 1)/2</i> should be prime</p>
+        <ol>
+            <li>Alice and Bob agree on a large prime, <i>n</i> and <i>g</i> such that <i>g</i> is primitive mod <i>n</i></li>
+            <li>Alice chooses a random large number <i>a</i> and sends Bob <i>A = g<sup>a</sup> mod n</i></li>
+            <li>Bob chooses a random large number <i>b</i> and sends Alice <i>B = g<sup>b</sup> mod n</i></li>
+            <li>Alice computes <i>k = B<sup>a</sup> mod n</i></li>
+            <li>Bob computes <i>k = A<sup>b</sup> mod n</i></li>
+            <li>They now have a shared key <i>k</i></li>
+        </ol>
+    </body>
+</html>
