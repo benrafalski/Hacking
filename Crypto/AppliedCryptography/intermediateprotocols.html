@@ -59,5 +59,58 @@
             <li><u>Group signatures:</u> Only members of a group can sign messages, the receiver of the signature can verify it is a valid one from the group, the receiver cannot identify who from the group is the signer, and if there is a dispute then Trent can reveal the signature to identify the signer</li>
             <li><u>Fail-stop signatures:</u> Allows Alice to prove that forges signatures are forgeries if her private key is brute forced. This is done by having multiple private keys for a single public key so that the attacker would need to brute force all the private keys.</li>
         </ul>
+        <h2>Bit Commitment</h2>
+        <ul>
+            <li>Used when one side wants to make a secret prediction and the other side doesn't want this prediction to be able to change.</li>
+            <li>Symmetric Protocol:
+                <ol>
+                    <li>Bob generates a random bit string and sends it to Alice</li>
+                    <li>Alice chooses the bit she want to commit to and sends back <code>encrypt(Bob's random bit string|Alice's commited bit)</code> with a random key</li>
+                    <li>When Alice is ready to reveal her bit, she sends Bob the key</li>
+                    <li>Bob can now verify his random number and reveal the committed bit</li>
+                </ol>
+            </li>
+            <li>Hashing Protocol:
+                <ol>
+                    <li>Alice chooses two random bit strings and the bit she wants to commit and hashes them <code>hash(random string 1|random string 2|committed bit)</code></li>
+                    <li>Alice then sends the hash and one of the random strings to Bob</li>
+                    <li>When Alice wants to reveal her bit commitment, Alice sends Bob both the random strings and the committed bit</li>
+                    <li>Bob can then verify the random numbers and committed bit</li>
+                </ol>
+            </li>
+            <li>Pseudo-Random Sequence Genrerator Protocol:
+                <ol>
+                    <li>Bob sends a random bit string to Alice</li>
+                    <li>Alice then generates a random bit sequence using a random seed and sends Bob
+                        <ul>
+                            <li>the generated bit if Bob's bit is 0</li>
+                            <li>XOR of the gerentated bit and Alice's committed bit if Bob's bit is 1</li>
+                        </ul>
+                    </li>
+                    <li>When Alice wants to reveal her bit commitment, she sends Bob the random seed</li>
+                    <li>Bob can then verify her committed bit</li>
+                </ol>
+            </li> 
+            <li><u>Fair-coin flipping:</u> Alice chooses a random bit and commits it using a protocol above and if Bob guesses the bit correctly he wins. Fair coin flipping can be used for session key generation.</li>
+        </ul>
+        <h2>Mental Poker</h2>
+        <ul>
+            <li><u>Mental poker:</u> Alice encrypts 52 cards with her public key, Bob chooses 5 at random and encypts them with his public key (i.e. <code>enrypt_bob(encrypt_alice(card))</code>). Alice can then decrypt them (doesn't reveal them though) and send them to Bob who can decrypt then to reveal them. They can then repeat this for Alice and for the rest of the game. This can also be extended to more than 2 players.</li>
+            <li><u>Anonymous key distribution:</u>
+                <ol>
+                    <li>Alice makes a public/private key pair (but keeps both secret)</li>
+                    <li>Trent begins generating a continuous stream of symmetric keys encrypted with his public key</li>
+                    <li>Alice choses one random key and encrypts it with her public key (now show be <code>encrypt_alice(encrypt_trent(private key))</code>)</li>
+                    <li>Trent decrypts the secret key (now should be <code>encrypt_alice(private key)</code>)</li>
+                    <li>Alice decrypts the secret key to reveal it</li>
+                </ol>
+            </li>
+        </ul>
+        <h2>Other protocols:</h2>
+        <ul>
+            <li><u>One way Accululation:</u> If there is a membership database, to verify membership, a member could concat all the names in the database except theirs and hash the accumulation. If they want to verify another member, they just concat that member's name to their list and compare hashes. </li>
+            <li><u>All or nothing disclosure:</u> If Alice has some secrets and Bob wants to know one of them, but Bob does not want to let Alice know what secret he wants to know. This can be solved by only disclosing one of the secrets. </li>
+            <li><u>Key Escrow:</u> Need protocol to protect individual privacy while also allowing for court authorized wiretaps. To do this, <b>fair cryposystems</b> can be used. These break up the private key into pieces like secret sharing but the keys can also be individually verified to be correct. If a wiretap is ordered then all entrustees of the keys are sent warrants.</li>
+        </ul>
     </body>
 </html>
