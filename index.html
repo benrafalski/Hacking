@@ -1,23 +1,58 @@
 <!DOCTYPE html>
 <html>
-  <head></head>
+  <head>
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      $(document).ready(function () {
+
+        $("p.dropdown").toggle()
+
+        $('li a').hover(
+          function () {
+            $(this).next('p.dropdown').toggle(); // or .show() to explicitly show
+          },
+          function () {
+            $(this).next('p.dropdown').toggle(); // or .hide() to explicitly hide
+          }
+        );
+      });
+    </script>
+  </head>
   <body>
     <h1>Hacking Notes</h1>
     <h2>Crypto</h2>
     <h3>Applied Cryptography</h3>
     <ul>
-        <li><a href="Crypto\AppliedCryptography\terminology.html">Terminology</a></li>
-        <li><a href="Crypto\AppliedCryptography\protocols.html">Protocols</a></li>
-        <li><a href="Crypto\AppliedCryptography\basicprotocols.html">Basic Protocols</a></li>
-        <li><a href="Crypto\AppliedCryptography\intermediateprotocols.html">Intermediate Protocols</a></li>
+      <li>
+        <a href="Crypto\AppliedCryptography\terminology.html">Terminology</a>
+      </li>
+      <li><a href="Crypto\AppliedCryptography\protocols.html">Protocols</a></li>
+      <li>
+        <a href="Crypto\AppliedCryptography\basicprotocols.html"
+          >Basic Protocols</a
+        >
+      </li>
+      <li>
+        <a href="Crypto\AppliedCryptography\intermediateprotocols.html"
+          >Intermediate Protocols</a
+        >
+      </li>
 
-
-        <li><a href="Crypto\AppliedCryptography\keyexchangealgorithms.html">Key Exchange Algorithms</a></li>
+      <li>
+        <a href="Crypto\AppliedCryptography\keyexchangealgorithms.html"
+          >Key Exchange Algorithms</a
+        >
+        <p class="dropdown">Diffie-Hellman</p>
+      </li>
     </ul>
     <h2>Windows</h2>
     <h3>SMB</h3>
     <ul>
-        <li><a href="Windows\SMB\ntlm.html">NTLM</a></li>
+      <li><a href="Windows\SMB\ntlm.html">NTLM</a></li>
     </ul>
   </body>
 </html>
