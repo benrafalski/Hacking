@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>jQuery</title>
+        <link rel="icon" type="image/x-icon" href="../../Images/hacker.jpg">
+        <link rel="stylesheet" href="../../styles/tokyo-night-dark.min.css">
+        <link rel="stylesheet" href="../../styles/styles.css">
+        <script src="../../styles/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+
+    </head>
+    <body>
+        <h1>jQuery</h1>
+        <ul>
+            <li>JS library to "write less, do more" and make JS easier</li>
+            <li>HTML/DOM manipultion, CSS manipution, HTML event methods, effects/animations, AJAX</li>
+        </ul>
+        <h1>Table of Contests</h1>
+        <ul>
+            <li><a href="#include-libary">Include Library</a></li>
+            <li><a href="#syntax">Syntax</a></li>
+            <li>Events</li>
+            <ul>
+                <li><a href="#ready-event">Ready Event</a></li>
+                <li><a href="#mouse-event">Mouse Event</a></li>
+                <li><a href="#keyboard-event">Keyboard Event</a></li>
+                <li><a href="#form-event">Form Event</a></li>
+                <li><a href="#doc-window-event">Document Event</a></li>
+                <li><a href="#on-event">On Event</a></li>
+            </ul>
+            <li>Effects</li>
+            <ul>
+                <li><a href="#hide-show-toggle">Hide, Show, Toggle</a></li>
+                <li><a href="#fade">Fade</a></li>
+                <li><a href="#sliding">Sliding</a></li>
+                <li><a href="#animations">Animations</a></li>
+                <li><a href="#stop">Stop</a></li>
+            </ul>
+        </ul>   
+        
+        <h2 id="include-libary">Include Library</h2>
+        <pre><code class="language-html">&lthead&gt
+&ltscript src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"&gt&lt/script&gt
+&lt/head&gt</code></pre>
+
+        <h2 id="syntax">Syntax</h2>
+        <ul>
+            <li><code>$(selector).action()</code></li>
+            <li>selector refers to an HTML element</li>
+            <li>action is the method (event) to perform in the html element</li>
+        </ul>
+        <pre><code class="language-javascript">// Examples
+$(this).hide()      // hides the current element.
+$("p").hide()       // hides all &ltp&gt elements.
+$(".test").hide()   // hides all elements with class="test".
+$("#test").hide()   // hides the element with id="test".
+// full list of selectors are here: https://www.w3schools.com/jquery/jquery_ref_selectors.asp</code></pre>
+
+        <h2>Events</h2>
+
+        <h3 id="ready-event">Ready Event</h3>
+        <pre><code class="language-javascript">// make sure the document has loaded before executing script
+$(document).ready(function(){
+    // jQuery methods go here...
+});
+// OR 
+$(function(){
+    // jQuery methods go here...
+});</code></pre>
+        <h3 id="mouse-event">Mouse Events</h3>
+        <pre><code class="language-javascript">// click
+$("p").click(function(){
+    $(this).hide(); // hides a &ltp&gt element when it is clicked
+})
+// dblclick
+$("p").dblclick(function(){
+    $(this).hide(); // hides a &ltp&gt element when it is double-clicked
+})
+// mouseenter
+$("p").mouseenter(function(){
+    $(this).hide(); // hides a &ltp&gt element when the mouse is over it
+})
+// mouseleave
+$("p").mouseleave(function(){
+    $(this).show(); // shows a &ltp&gt element when the mouse is not over it
+})
+// mousedown
+$("p").mousedown(function(){
+    $(this).hide(); // hides a &ltp&gt element when any mouse button is pressed
+})
+// mouseup
+$("p").mouseup(function(){
+    $(this).hide(); // hides a &ltp&gt element when any mouse button is released
+})
+// hover
+$("p").hover(function(){
+    $(this).hide(); // hides the &ltp&gt element on mouseenter()
+},
+function(){
+    $(this).show(); // shows the &ltp&gt element on mouseleave()
+})</code></pre>
+        <h3 id="keyboard-event">Keyboard Events</h3>
+        <pre><code class="language-javascript">$("p").keypress()
+$("p").keydown()
+$("p").keyup()</code></pre>
+        <h3 id="form-event">Form Events</h3>
+        <pre><code class="language-javascript">$("p").submit()
+$("p").change()
+// focus
+$("input").focus(function(){
+    $(this).css("background-color", "yellow"); // when you select the input field it will turn yellow
+});
+// blur
+$("input").blur(function(){
+    $(this).css("background-color", "green"); // when you unselect the input field it will turn green
+});</code></pre>
+        <h3 id="doc-window-event">Document/Window Events</h3>
+        <pre><code class="language-javascript">$("p").load()
+$("p").resize()
+$("p").scroll()
+$("p").unload()</code></pre>
+        <h3 id="on-event">On Event</h3>
+        <pre><code class="language-javascript">// multiple mouse handlers
+$("p").on({
+    mouseenter: function(){
+        $(this).css("background-color", "lightgray");
+    },
+    mouseleave: function(){
+        $(this).css("background-color", "lightblue");
+    },
+    click: function(){
+        $(this).css("background-color", "yellow");
+    }
+});
+// multiple form handlers
+$(document).ready(function(){
+        $("input").on({
+        focus: function() {
+            $(this).css("background-color", "yellow");
+        }, 
+        blur: function() {
+            $(this).css("background-color", "green");
+        } 
+    })
+});</code></pre>
+
+        <h2>Effects</h2>
+        <h3 id="hide-show-toggle">Hide, Show, Toggle</h3>
+        <pre><code class="language-javascript">// speed and callback are optional
+// $(selector).hide(speed,callback);
+$("button").click(function(){
+    $("p").hide("slow");  // can use "slow" or "fast"
+});
+// $(selector).show(speed,callback);
+$("button").click(function(){
+    $("p").hide(1000);  // can use miliseconds
+});
+// $(selector).toggle(speed,callback);
+$("button").click(function(){
+    $("p").toggle("fast");
+});
+// callback example, alert happens after hide is finished
+$("button").click(function(){
+    $("p").hide("slow", function(){
+    alert("You clicked the button!");
+    });
+});</code></pre>
+        <h3 id="fade">Fade</h3>
+        <pre><code class="language-javascript">// $(selector).fadeX(speed,callback);
+// speed is "fast", "slow", or milliseconds
+$("button").click(function(){
+    $("#div1").fadeIn();
+    $("#div2").fadeOut("slow");
+    $("#div3").fadeToggle(3000);
+});
+// $(selector).fadeTo(speed,opacity,callback);
+$("button").click(function(){
+    $("#div1").fadeTo("slow", 0.15);  // fades to 15% opacity
+});</code></pre>
+        <h3 id="sliding">Sliding</h3>
+        <pre><code class="language-javascript">// $(selector).slideX(speed,callback);
+// speed is "fast", "slow", or milliseconds
+$("#flip").click(function(){
+    $("#panel1").slideDown();
+    $("#panel2").slideUp();
+    $("#panel3").slideToggle();
+});</code></pre>
+        <h3 id="animations">Animations</h3>
+        <pre><code class="language-javascript">// $(selector).animate({params},speed,callback);
+// {params} are the CSS properties to animate
+// speed is "fast", "slow", or milliseconds
+$("button").click(function(){
+    $("div").animate({
+        left: '250px',
+        opacity: '0.5',
+        height: '150px',
+        width: '150px'
+    });
+});</code></pre>
+        <h3 id="stop">Stop</h3>
+        <pre><code class="language-javascript">// $(selector).stop(stopAll,goToEnd);
+$("#stop").click(function(){
+    $("#panel").stop();
+});</code></pre>
+
+    </body>
+</html>

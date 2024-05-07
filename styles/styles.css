@@ -1,0 +1,22 @@
+* {
+    box-sizing: border-box;
+}
+body{
+    background-color: #282A36;
+    color: white;
+    font-family: 'Segoe UI';
+}
+table, th, td {
+    border: 1px solid #fff;
+    border-collapse: collapse;
+    text-align: left;
+    padding: 10px;
+}
+a {
+    color: gray;  
+    text-decoration:none;
+}
+
+a:hover {
+    color: rgb(84, 73, 202);
+}

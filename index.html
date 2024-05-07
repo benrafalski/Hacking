@@ -3,6 +3,7 @@
   <head>
 
     <link rel="icon" type="image/x-icon" href="Images/hacker.jpg">
+    <link rel="stylesheet" href="./styles/styles.css">
     <title>Security Notes</title>
 
     <script
@@ -13,14 +14,14 @@
     <script>
       $(document).ready(function () {
 
-        $("p.dropdown").hide()
+        $(".dropdown").hide()
 
-        $('li a').hover(
+        $('.hoverlink').hover(
           function () {
-            $(this).next('p.dropdown').toggle(); // or .show() to explicitly show
+            $(this).next('.dropdown').toggle(); // or .show() to explicitly show
           },
           function () {
-            $(this).next('p.dropdown').toggle(); // or .hide() to explicitly hide
+            $(this).next('.dropdown').toggle(); // or .hide() to explicitly hide
           }
         );
       });
@@ -32,38 +33,44 @@
     <h3>Applied Cryptography</h3>
     <ul>
       <li>
-        <a href="Crypto\AppliedCryptography\terminology.html">Terminology</a>
-      </li>
-      <li><a href="Crypto\AppliedCryptography\protocols.html">Protocols</a></li>
-      <li>
-        <a href="Crypto\AppliedCryptography\basicprotocols.html"
-          >Basic Protocols</a
-        >
+        <a class="hoverlink" href="Crypto\AppliedCryptography\terminology.html">Terminology</a>
+        <span class="dropdown">Keys, Symmetric crypto, Public key crypto, Cryptoanalysis, steganography, ciphers, one-time pad</span>
       </li>
       <li>
-        <a href="Crypto\AppliedCryptography\intermediateprotocols.html"
-          >Intermediate Protocols</a
-        >
+        <a class="hoverlink" href="Crypto\AppliedCryptography\protocols.html">Protocols</a>
+        <span class="dropdown">Types, Attacks, One-way functions, Hybrid protocols, digital signatures, pseudo-random sequence</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Crypto\AppliedCryptography\basicprotocols.html">Basic Protocols</a>
+        <span class="dropdown">key-exchange, authentication (salt, SKEY, PK auth, mutual auth, SKID), authentication with key-exchange (wide mouth frog, yahalom, needham-schroeder, otway-res, kerberos, neuman-stubblebine, DASS, denning-sacco, woo-lam), multiple key public-key encryption, secret splitting/sharing</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Crypto\AppliedCryptography\intermediateprotocols.html">Intermediate Protocols</a>
+        <span class="dropdown">Timestamping, Subliminal Channel, Undeniable digital signatures, Designated Confirmer Signatures, Other Digital Signatures, Bit Commitment, Mental Poker, Other Protocols</span>
       </li>
 
       <li>
-        <a href="Crypto\AppliedCryptography\keyexchangealgorithms.html"
-          >Key Exchange Algorithms</a
-        >
-        <p class="dropdown">Diffie-Hellman</p>
+        <a class="hoverlink" href="Crypto\AppliedCryptography\keyexchangealgorithms.html">Key Exchange Algorithms</a>
+        <span class="dropdown">Diffie-Hellman</span>
       </li>
     </ul>
 
-    <h3>Web</h3>
-    <h3>Frameworks and Protocols</h3>
+    <h2>Web</h2>
+    <h3>Cheatsheets</h3>
     <ul>
-      <li><a href="Web\FrameworksProtocols\jquery.html"></a></li>
+      <li>
+        <a class="hoverlink" href="Web\Cheatsheets\jquery.html">jQuery</a>
+        <span class="dropdown">Syntax, Events, Effects</span>
+      </li>
     </ul>
 
     <h2>Windows</h2>
     <h3>SMB</h3>
     <ul>
-      <li><a href="Windows\SMB\ntlm.html">NTLM</a></li>
+      <li>
+        <a class="hoverlink" href="Windows\SMB\ntlm.html">NTLM</a>
+        <span class="dropdown">NTLM hash in Wireshark, crack NTLM hash, Responder, HMAC</span>
+      </li>
     </ul>
   </body>
 </html>

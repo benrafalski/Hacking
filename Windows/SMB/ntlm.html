@@ -1,6 +1,13 @@
 <!DOCTYPE html>
 <html>
-  <head> </head>
+  <head> 
+    <title>NTLM</title>
+    <link rel="icon" type="image/x-icon" href="../../Images/hacker.jpg">
+    <link rel="stylesheet" href="../../styles/tokyo-night-dark.min.css">
+    <link rel="stylesheet" href="../../styles/styles.css">
+    <script src="../../styles/highlight.min.js"></script>
+    <script>hljs.highlightAll();</script>
+  </head>
   <body>
     <h1>NTLM</h1>
     <ul>
@@ -72,17 +79,12 @@
     <h2>Cracking NTLM hash with hashcat</h2>
     <h3>Hash file format</h3>
     <p>Note: use 5600 for NTLMv2 on hashcat</p>
-    <code>~$ cat hashes.txt</code><br />
-    <code
-      >user::domain:challenge:HMAC-MD5:NTLMv2Response(with HMAC-MD5 removed from
-      first 32 chars)</code
-    >
-    <br />
-    <code
-      >~$ hashcat -a 0 -m 5600 hashes.txt
-      /usr/share/wordlists/kali-wordlists/rockyou.txt</code
-    >
-    <br />
+
+    <pre><code class="language-bash">cat hashes.txt
+user::domain:challenge:HMAC-MD5:NTLMv2Response(with HMAC-MD5 removed from first 32 chars)</code></pre>
+
+  <pre><code class="language-bash">hashcat -a 0 -m 5600 hashes.txt /usr/share/wordlists/kali-wordlists/rockyou.txt</code></pre>
+
 
     <h2>SMB attacks using relaying and Responder</h2>
     <h3>SMB Relaying</h3>
@@ -121,8 +123,10 @@
         <u>Bottom line:</u> broadcast/multicast is what makes Responder possibl
       </li>
     </ul>
-    <code>responder -I interface</code><br />
-    <code>responder -I eth0</code><br />
+
+
+    <pre><code class="language-bash"># responder -I interface
+responder -I eth0</code></pre>
 
     <h3>Responder Abusing WPAD</h3>
     <ul>
