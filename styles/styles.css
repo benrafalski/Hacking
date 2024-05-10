@@ -20,3 +20,9 @@ a {
 a:hover {
     color: rgb(84, 73, 202);
 }
+
+img {
+    width: 50%;
+    /* margin-left: auto;
+    margin-right: auto; */
+}
