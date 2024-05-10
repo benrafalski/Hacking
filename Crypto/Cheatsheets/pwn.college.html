@@ -11,8 +11,8 @@
     </head>
     <body>
         <h1>Cryptography</h1>
-
-        <h1>Table of Contests</h1>
+        <hr>
+        <h2>Table of Contents</h2>
         <ul>
             <li><a href="#intro">Intro</li>
                 <li><a href="#symmetric-crypto">Symmetric Encryption</a>
@@ -56,12 +56,16 @@
             </li>
         </ul>
 
+        <hr>
         <h2 id="intro">Intro</h2>
+        
+        
         <ul>
             <li>guarantees confidentiality, integrity, and authenticity vs on-path attacks</li>
         </ul>
-
+        <hr>
         <h2 id="symmetric-crypto">Symmetric Encryption</h2>
+        
         <ul>
             <li>Encryption: <code>encryption_function(plaintext, key)</code> → CIPHERTEXT</li>
             <li>Decryption: <code>decryption_function(ciphertext, key)</code> → PLAINTEXT</li>
@@ -131,8 +135,9 @@
             <li>CTR (counter mode): solves ECB problem and can also run in parallel unlike CBC</li>
             <img src="../../Images/ctr.png"/>
         </ul>
-
+        <hr>
         <h2 id="key-exchange">Key Exchange</h2>
+        
         <h3 id="number-theory">Number Theory</h3>
         <ul>
             <li>Discrete Log problem: 7<sup><i>N</i></sup> % 13 = <i>X</i>, turns out it is very hard to find N when given <i>X</i> when <i>N</i> is very large.</li>
@@ -146,7 +151,7 @@
             <li>Bob computes <i>s = A<sup>b</sup></i> % <i>p</i></li>
             <li>They now share a secret <i>s</i></li>
         </ol>
-
+        <hr>
         <h2 id="asymetric-crypto">Asymmetric Encryption</h2>
         <h3 id="fermats-little-theorem">Fermat's Little Theorem</h3>
         <ul>
@@ -185,7 +190,7 @@
             <li>Signing: <i>s</i> ≡ <i>m<sup>d</sup></i> (mod <i>n</i>), where <i>s</i> is the SIGNATURE and <i>m</i> is the PLAINTEXT</li>
             <li>Verfiication: <i>m</i> ≡ <i>s<sup>e</sup></i> (mod <i>n</i>), where <i>s</i> is the SIGNATURE and <i>m</i> is the PLAINTEXT</li>
         </ul>
-
+        <hr>
         <h2 id="hashing">Hashing</h2>
         <ul>
             <li>Avalanche Effect: small change in input has large change in hash</li>
@@ -211,7 +216,7 @@
             <li>Challenge: random string</li>
             <li>Response: append random response to end of challenge and hash them, repeat with new response until you find the correct hash</li>
         </ul>
-
+        <hr>
         <h2 id="trust_1">Trust</h2>
         <h3 id="mitm">Man in the middle</h3>
         <ul>
