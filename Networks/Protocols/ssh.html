@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SSH</title>
+        <link rel="icon" type="image/x-icon" href="../../Images/hacker.jpg">
+        <link rel="stylesheet" href="../../styles/tokyo-night-dark.min.css">
+        <link rel="stylesheet" href="../../styles/styles.css">
+        <script src="../../styles/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+
+    </head>
+    <body>
+        <h1>Secure Shell</h1>
+        <hr>
+        <h2>Table of Contents</h2>
+        <ul>
+            
+        </ul>   
+        <hr>
+        <h2>Overview</h2>
+        <ul>
+            <li>Send commands to a computer over an unsecured network</li>
+            <li>Uses crypto to authenticate and encrypt a connection</li>
+            <li>Also allows for tunneling/port forwarding (packets are able to cross networks they would not normally be able to cross)</li>
+            <li>Tunneling (port forwarding): wrap packets with additional information (headers), to change their destination</li>
+        </ul>
+        <hr>
+        <h2>Implementation</h2>
+        <h3>TCP/IP</h3>
+        <ul>
+            <li>Only uses TCP, no UDP</li>
+            <li>TCP Port Number: 22</li>
+            <li>Packet format: <br>
+                <img src="../../Images/SSH2-Binary-Packet-Protocol.png">
+            </li>
+        </ul>
+        <h3>Public Key Cryptography</h3>
+        <ul>
+            <li>Use public key cryptography to negotiate identical shared symmetric keys that are used for the rest of the encryption over channel</li>
+            <li>Mutual authentication: both sides authenticate each other using each other's public/private key pair</li>
+        </ul>
+        <h3>Authentication</h3>
+        <ul>
+            <li>Mutual authentication is provided by SSH but usually a username/password is still required</li>
+        </ul>
+        <h3>Tunneling</h3>
+        <ul>
+            <li>Implemented using port forwarding</li>
+        </ul>
+        <hr>
+        <h2>Security</h2>
+        <ul>
+            <li>Stealing SSH keys is a popular attack</li>
+        </ul>
+        
+        
+
+    </body>
+</html>
