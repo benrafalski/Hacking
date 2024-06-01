@@ -19,6 +19,7 @@
         <hr>
         <h2>Overview</h2>
         <ul>
+            <li>OSI Layer: Application layer (layer 7)</li>
             <li>Send commands to a computer over an unsecured network</li>
             <li>Uses crypto to authenticate and encrypt a connection</li>
             <li>Also allows for tunneling/port forwarding (packets are able to cross networks they would not normally be able to cross)</li>
@@ -46,12 +47,21 @@
         <h3>Tunneling</h3>
         <ul>
             <li>Implemented using port forwarding</li>
+            <li>Multiplexing: allows for multiple SSH connections to the same endpoint</li>
         </ul>
         <hr>
         <h2>Security</h2>
         <ul>
             <li>Stealing SSH keys is a popular attack</li>
         </ul>
+
+
+        <!-- https://www.rfc-editor.org/rfc/rfc4253#section-7.1 -->
+        <!-- https://datatracker.ietf.org/doc/html/rfc4253 -->
+        <!-- https://www.youtube.com/watch?v=0Sffl7YO0aY -->
+        <!-- https://www.geeksforgeeks.org/introduction-to-sshsecure-shell-keys/ -->
+        <!-- https://en.wikipedia.org/wiki/Secure_Shell -->
+        <!-- https://www.digitalocean.com/community/tutorials/understanding-the-ssh-encryption-and-connection-process -->
         
         
 
