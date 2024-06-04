@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sockets</title>
+        <link rel="icon" type="image/x-icon" href="../../Images/hacker.jpg">
+        <link rel="stylesheet" href="../../styles/tokyo-night-dark.min.css">
+        <link rel="stylesheet" href="../../styles/styles.css">
+        <script src="../../styles/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+<!-- <pre><code class="language-html"></code></pre> -->
+    </head>
+    <body>
+        <h1>Sockets</h1>
+        <hr>
+        <h2>Table of Contents</h2>
+        <ul>
+            
+        </ul>   
+        <hr>
+        
+        <h2>Linux network files</h2>
+        <h3>/etc/services</h3>
+        <pre><code class="language-bash"># contains info about the TCP/UDP services running on a machine
+cat /etc/services
+...
+ftp             21/tcp
+ssh             22/tcp                          # SSH Remote Login Protocol
+telnet          23/tcp
+...</code></pre>
+        <h3>/etc/hosts</h3>
+        <pre><code class="language-bash"># contains info about the IP addresses and their hostnames
+cat /etc/hosts
+...
+127.0.0.1       localhost
+127.0.1.1       mypc.user.com           mypc
+10.0.0.144      somelocalpc.user.com
+...</code></pre>
+        <h2>TCP Client</h2>
+        <h3>Steps</h3>
+        <ol>
+            <li><code class="code-line">getaddrinfo()</code></li>
+            <li><code class="code-line">socket()</code></li>
+            <li><code class="code-line">connect()</code></li>
+            <li><code class="code-line">send() and recv()</code></li>
+            <li><code class="code-line">close()</code></li>
+        </ol>
+        <h3>Code</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netdb.h&gt;
+
+int main()
+{
+    struct addrinfo hints, *server;
+    int r, sockfd;
+    struct sockaddr;
+    const int buffer_size = 1024;
+    char buffer[buffer_size];
+    const char *data = "Hi from the client!\n";
+
+    /* configure the server to use the localhost, port 1337, TCP */
+    printf("Configuring server...");
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_INET;              /* IPv4 connection */
+    hints.ai_socktype = SOCK_STREAM;        /* TCP, streaming */
+    r = getaddrinfo(0,                      /* address of the server, 0 is localhost */ 
+                    "1337",                 /* TCP port the server uses */
+                    &hints,                 /* address info struct */
+                    &server);               /* server configuration content stored here */
+    if(r != 0)
+    {
+        perror("failed");
+        exit(1);
+    }
+    puts("done");
+
+    /* create the socket to use for communications */
+    printf("Assign a socket...");
+    sockfd = socket(server->ai_family,      /* domain, TCP/UDP */
+                    server->ai_socktype,    /* type, stream or datagram */
+                    server->ai_protocol);   /* protocol */
+    if(sockfd == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+    puts("done");
+
+    /* connect - connect to the socket */
+    printf("Connecting socket...");
+    r = connect(sockfd,                     /* File descriptor for the socket */
+                server->ai_addr,            /* Server address (struct sockaddr *) */
+                server->ai_addrlen);        /* Server address length */
+    if(r == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+    puts("done");
+
+    /* client is now connected */
+    r = recv(sockfd, buffer, buffer_size, 0);
+    if(r > 0)
+    {
+        printf("Received %d bytes:\n---\n", r);
+        for(int x = 0; x &lt; r; x++)
+            putchar(buffer[x]);
+    }
+
+    /* send the response */
+    r = send(sockfd, data, strlen(data), 0);
+    if(r &lt; 1)
+    {
+        perror("Send failed");
+        exit(1);
+    }
+    printf("Sent %d bytes\n", r);
+
+
+    /* free allocated memory */
+    freeaddrinfo(server);
+    /* close the socket */
+    close(sockfd);
+    puts("Socket closed, done");
+    return(0);
+}</code></pre>
+
+        <h2>TCP Server</h2>
+        <h3>Steps</h3>
+        <ol>
+            <li><code class="code-line">getaddrinfo()</code></li>
+            <li><code class="code-line">socket()</code></li>
+            <li><code class="code-line">bind()</code></li>
+            <li><code class="code-line">listen()</code></li>
+            <li><code class="code-line">accept()</code></li>
+            <li><code class="code-line">send() and recv()</code></li>
+            <li><code class="code-line">close()</code></li>
+        </ol>
+        <h3>Code</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;sys/socket.h&gt;
+#include &lt;netdb.h&gt;
+
+int main()
+{
+    struct addrinfo hints,*server;
+    int r,sockfd,clientfd;
+    struct sockaddr client_address;
+    socklen_t client_len;
+    const int buffer_size = 1024;
+    char buffer[buffer_size];
+    const char *data = "Hi from the server!\n";
+
+    /* configure the server to use the localhost, port 1337, TCP */
+    printf("Configuring server...");
+    memset(&hints, 0, sizeof(struct addrinfo));
+    hints.ai_family = AF_INET;              /* IPv4 connection */
+    hints.ai_socktype = SOCK_STREAM;        /* TCP, streaming */
+    r = getaddrinfo(0,                      /* address of the server, 0 is localhost */ 
+                    "1337",                 /* TCP port the server uses */
+                    &hints,                 /* address info struct */
+                    &server);               /* server configuration content stored here */
+    if(r != 0)
+    {
+        perror("failed");
+        exit(1);
+    }
+    puts("done");
+
+    /* create the socket to use for communications */
+    printf("Assign a socket...");
+    sockfd = socket(server->ai_family,      /* domain, TCP/UDP */
+                    server->ai_socktype,    /* type, stream or datagram */
+                    server->ai_protocol);   /* protocol */
+    if(sockfd == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+    puts("done");
+
+    /* bind the server to a socket */
+    printf("Binding socket...");
+    r = bind(sockfd,                        /* File descriptor for the socket */
+            server->ai_addr,                /* Server address (struct sockaddr *) */
+            server->ai_addrlen);            /* Server address length */
+            
+    if(r == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+    puts("done");
+
+    /* listen for incoming connections */
+    printf("Listening...");
+    r = listen(sockfd, 1);
+    if(r == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+    puts("done");
+
+    /* accept a new connection */
+    printf("Accepting new connection ");
+    client_len = sizeof(client_address);
+    clientfd = accept(sockfd, &client_address, &client_len);
+    if(clientfd == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+    printf("on file descriptor %d\n", clientfd);
+
+    /* send a message */
+    r = send(clientfd, data ,strlen(data), 0);
+    if(r &lt; 1)
+    {
+        perror("Send failed");
+        exit(1);
+    }
+    printf("Sent %d bytes\n", r);
+
+    /* client will respond */
+    r = recv(clientfd, buffer, buffer_size, 0);
+    if(r > 0)
+    {
+        printf("Received %d bytes:\n---\n", r);
+        for(int x = 0; x &lt; r; x++)
+            putchar(buffer[x]);
+    }
+
+    /* close the client socket */
+    close(clientfd);
+
+    /* free allocated memory */
+    freeaddrinfo(server);
+    /* close the socket */
+    close(sockfd);
+    puts("Socket closed, done");
+    return(0);
+}</code></pre>
+
+
+        <h2>UDP Client</h2>
+        <h3>Steps</h3>
+        <ol>
+            <li><code class="code-line">getaddrinfo()</code></li>
+            <li><code class="code-line">socket()</code></li>
+            <li><code class="code-line">sendto() and recvfrom()</code></li>
+            <li><code class="code-line">close()</code></li>
+        </ol>
+
+
+        <h2>UDP Server</h2>
+        <h3>Steps</h3>
+        <ol>
+            <li><code class="code-line">getaddrinfo()</code></li>
+            <li><code class="code-line">socket()</code></li>
+            <li><code class="code-line">bind()</code></li>
+            <li><code class="code-line">sendto() and recvfrom()</code></li>
+            <li><code class="code-line">close()</code></li>
+        </ol>
+        
+        
+
+    </body>
+</html>

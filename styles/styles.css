@@ -29,6 +29,7 @@ img {
 
 
 /* style="background-color: rgb(61, 60, 60);" */
-code {
-    background-color: rgb(61, 60, 60);
+.code-line {
+    background: rgb(61, 60, 60);
+    border-radius: 10%;
 }

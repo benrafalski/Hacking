@@ -67,8 +67,8 @@
         <h2 id="symmetric-crypto">Symmetric Encryption</h2>
         
         <ul>
-            <li>Encryption: <code>encryption_function(plaintext, key)</code> → CIPHERTEXT</li>
-            <li>Decryption: <code>decryption_function(ciphertext, key)</code> → PLAINTEXT</li>
+            <li>Encryption: <code class="code-line">encryption_function(plaintext, key)</code> → CIPHERTEXT</li>
+            <li>Decryption: <code class="code-line">decryption_function(ciphertext, key)</code> → PLAINTEXT</li>
         </ul>
         <h3 id="otp">One Time Pad</h3>
         <ul>
@@ -167,8 +167,8 @@
         <h3 id="rsa">Rivest-Shamir-Adleman (RSA)</h3>
         <ul>
             <li>(<i>m<sup>e</sup></i>)<sup><i>d</i></sup> ≡ <i>m</i> (mod <i>n</i>), where <i>n</i> = <i>pq</i>, <i>p</i> and <i>q</i> are prime, <i>ed</i> ≡ 1 (mod (<i>p</i>-1)(<i>q</i>-1))</li>
-            <li>Public key: <code>&lt;e, n&gt;</code></li>
-            <li>Private key: <code>&lt;d, n&gt;</code></li>
+            <li>Public key: <code class="code-line">&lt;e, n&gt;</code></li>
+            <li>Private key: <code class="code-line">&lt;d, n&gt;</code></li>
             <li>Plaintext: <i>m</i></li>
             <li>Ciphertext: <i>m<sup>e</sup></i></li>
             <li>Prime factorization: (EASY) multiply <i>p</i> and <i>q</i> to make <i>n</i>, (HARD) find <i>p</i> and <i>q</i> when given <i>n</i>, at least for large numbers</li>
