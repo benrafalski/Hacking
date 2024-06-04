@@ -15,10 +15,10 @@
         <h2>Table of Contents</h2>
         <ul>
             
-        </ul>   
-        <hr>
+        </ul> 
         
-        <h2>Linux network files</h2>
+        <hr>
+        <h2>Linux networking files</h2>
         <h3>/etc/services</h3>
         <pre><code class="language-bash"># contains info about the TCP/UDP services running on a machine
 cat /etc/services
@@ -35,6 +35,8 @@ cat /etc/hosts
 127.0.1.1       mypc.user.com           mypc
 10.0.0.144      somelocalpc.user.com
 ...</code></pre>
+
+        <hr>
         <h2>TCP Client</h2>
         <h3>Steps</h3>
         <ol>
@@ -127,7 +129,10 @@ int main()
     puts("Socket closed, done");
     return(0);
 }</code></pre>
+        
 
+
+        <hr>
         <h2>TCP Server</h2>
         <h3>Steps</h3>
         <ol>
@@ -248,7 +253,7 @@ int main()
     return(0);
 }</code></pre>
 
-
+        <hr>
         <h2>UDP Client</h2>
         <h3>Steps</h3>
         <ol>
@@ -258,7 +263,74 @@ int main()
             <li><code class="code-line">close()</code></li>
         </ol>
 
+        <h3>Code</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;netdb.h&gt;
+#include &lt;sys/socket.h&gt;
 
+int main()
+{
+    struct addrinfo hints, *host;
+    int r, sockfd;
+    const int size = 1024;
+    char buffer[size];
+    const char *data = "Hi from the UDP client!\n";
+
+    /* configure the remote address */
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;             /* IPv4 */
+    hints.ai_socktype = SOCK_DGRAM;        /* UDP connection */
+    r = getaddrinfo(0,                     /* address of the server, 0 is localhost */ 
+                    "1337",                /* UDP port the server uses */
+                    &hints,                /* address info struct */
+                    &host);                /* server configuration content stored here */
+    if(r != 0)
+    {
+        perror("failed");
+        exit(1);
+    }
+
+    /* create the socket */
+    sockfd = socket(host->ai_family,	   /* domain, UDP */
+                    host->ai_socktype,     /* type, datagram */
+                    host->ai_protocol);	   /* protocol */
+    if(sockfd == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+
+    /* a UDP server requires something to be sent before a 
+        response can be generated */
+    r = sendto(sockfd,                     /* server socket file descriptor */ 
+                data,                      /* data to send to the server */ 
+                strlen(data),              /* size of data */ 
+                0,                         /* flags==0 */ 
+                host->ai_addr,             /* stores the server address so we can recv data back */ 
+                host->ai_addrlen);         /* length of the server address */ 
+
+    r = recvfrom(sockfd,                   /* server socket file descriptor */
+                    buffer,                /* data to recv from the server */
+                    size,                  /* size of data */
+                    0,                     /* flags==0 */ 
+                    host->ai_addr,         /* server address to recv from */ 
+                    &host->ai_addrlen);    /* length of server address */
+    buffer[r] = '\0';
+    printf("Server says: %s", buffer);
+
+    /* all done, clean-up */
+    freeaddrinfo(host);
+    close(sockfd);
+
+    return(0);
+}</code></pre>
+
+
+
+        <hr>
         <h2>UDP Server</h2>
         <h3>Steps</h3>
         <ol>
@@ -268,8 +340,102 @@ int main()
             <li><code class="code-line">sendto() and recvfrom()</code></li>
             <li><code class="code-line">close()</code></li>
         </ol>
+        <h3>Code</h3>
+        <pre><code class="language-c">#include &lt;stdio.h&gt;
+#include &lt;stdlib.h&gt;
+#include &lt;string.h&gt;
+#include &lt;unistd.h&gt;
+#include &lt;netdb.h&gt;
+#include &lt;sys/socket.h&gt;
+
+int main()
+{
+    struct addrinfo hints,*server;
+    struct sockaddr client;
+    socklen_t client_size;
+    int r,sockfd;
+    const char *buffer = "Hi from the UDP server!\n";
+    const int size = 1024;
+    char input[size];
+
+    /* configure the server */
+    memset(&hints, 0, sizeof(hints));
+    hints.ai_family = AF_INET;              /* IPv4 connection */
+    hints.ai_socktype = SOCK_DGRAM;         /* UDP, datagram */
+    hints.ai_flags = AI_PASSIVE;            /* accept any connection */
+    r = getaddrinfo(0,                      /* address of the server, 0 is localhost */ 
+                    "1337",                 /* UDP port the server uses */
+                    &hints,                 /* address info struct */
+                    &server);               /* server configuration content stored here */
+    if(r != 0)
+    {
+        perror("failed");
+        exit(1);
+    }
+
+    /* create the socket */
+    sockfd = socket(server->ai_family,      /* domain, UDP */
+                    server->ai_socktype,    /* type, datagram */
+                    server->ai_protocol);   /* protocol */
+    if(sockfd == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+
+    /* bind the server to a socket */
+    r = bind(sockfd,                        /* File descriptor for the socket */
+            server->ai_addr,                /* Server address (struct sockaddr *) */
+            server->ai_addrlen);            /* Server address length */
+    if(r == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+    puts("UDP server is listening...");
+
+    /* no need to call listen() or accept() for a UDP server */
+    client_size = sizeof(struct sockaddr);
+    r = recvfrom(sockfd,                    /* server socket file descriptor */
+                    input,                  /* input to recv from a client */
+                    size,                   /* size of input */
+                    0,                      /* flags==0 */
+                    &client,                /* stores the client address so we can send data back */ 
+                    &client_size);          /* length of the client address */ 
+    if(r == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+    input[r] = '\0';
+    printf("Client says: %s", input);
+
+    r = sendto(sockfd,                      /* server socket file descriptor */
+                buffer,                     /* data to send to the client */
+                strlen(buffer),             /* size of data */
+                0,                          /* flags==0 */
+                &client,                    /* client address to sendto */
+                client_size);               /* length of the client address */
+    if(r == -1)
+    {
+        perror("failed");
+        exit(1);
+    }
+
+    /* clean-up */
+    freeaddrinfo(server);
+    close(sockfd);
+
+    return(0);
+}</code></pre>
+
+
         
-        
+        <hr>
+        <h2>Dual Stack Server</h2>
+
+        <hr>
+        <h2>Accept Multiple Connections</h2>
 
     </body>
 </html>
