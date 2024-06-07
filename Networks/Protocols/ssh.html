@@ -20,6 +20,7 @@
         <h2>Overview</h2>
         <ul>
             <li>OSI Layer: Application layer (layer 7)</li>
+            <li>Port number: 22/TCP</li>
             <li>Send commands to a computer over an unsecured network</li>
             <li>Uses crypto to authenticate and encrypt a connection</li>
             <li>Also allows for tunneling/port forwarding (packets are able to cross networks they would not normally be able to cross)</li>
@@ -39,6 +40,16 @@
         <ul>
             <li>Use public key cryptography to negotiate identical shared symmetric keys that are used for the rest of the encryption over channel</li>
             <li>Mutual authentication: both sides authenticate each other using each other's public/private key pair</li>
+            <li>Procedure:
+                <ol>
+                    <li>Public key from local machine is passed to server machine</li>
+                    <li>Server verifies that the key is registered</li>
+                    <li>If the key is registered, the server generates a secret code, encrypts it with the local public key, and sends it back to the local machine</li>
+                    <li>The local machine decrypts the code and sends it back to the server</li>
+                    <li>The server machine then verifies if the local machine using the code</li>
+                    <li>The server machine and local machine now have a shared key</li>
+                </ol>
+            </li>
         </ul>
         <h3>Authentication</h3>
         <ul>
@@ -49,6 +60,48 @@
             <li>Implemented using port forwarding</li>
             <li>Multiplexing: allows for multiple SSH connections to the same endpoint</li>
         </ul>
+
+        
+
+        <hr>
+        <h2>Usage</h2>
+        <h3>Keys</h3>
+        <pre><code class="language-sh"># generate new public-private key pair
+bugati@bugati> ssh-keygen
+
+Generating public/private rsa key pair.
+Enter file in which to save the key (/home/bugati/.ssh/id_rsa): [Enter]
+Enter passphrase (empty for no passphrase): [Enter]
+Enter same passphrase again: [Enter]
+Your identification has been saved in /home/bugati/.ssh/id_rsa
+Your public key has been saved in /home/bugati/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:6McWgu/PyP8c25ezGiRz2YdCg/mDVa3trDQSYc2L7d8 bugati@bugati
+The key's randomart image is:
++---[RSA 3072]----+
+|             o.. |
+|           oo.o .|
+|          o.++ + |
+|     . .   =o++..|
+|    . o S + Booo.|
+|     o o . =.o+.o|
+|      o + . .o =.|
+|     o = . + .= E|
+|      +o+.+ oo.o |
++----[SHA256]-----+</code></pre>
+        <pre><code class="language-python">"""
+Function to convert RSA public key to SHA256 key fingerprint from above
+RSA key is located in ~/.ssh/id_rsa.pub file
+""" 
+def ssh_keygen_fingerprint(key):
+    # base64 decode the key
+    decoded_key = base64.b64decode(key)
+    # generate SHA256 hash from the RSA public key
+    digest = hashlib.sha256(decoded_key).digest()
+    # return the SHA256 hash base64 encoded
+    return base64.b64encode(digest).rstrip(b'=')</code></pre>
+
+
         <hr>
         <h2>Security</h2>
         <ul>
