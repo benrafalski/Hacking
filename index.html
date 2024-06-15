@@ -18,17 +18,33 @@
 
         $('.hoverlink').hover(
           function () {
-            $(this).next('.dropdown').toggle(); // or .show() to explicitly show
+            $(this).next('.dropdown').show(); // or .show() to explicitly show
           },
           function () {
-            $(this).next('.dropdown').toggle(); // or .hide() to explicitly hide
+            var checkbox = $("#dropdown-checkbox");
+            if(!checkbox.prop('checked')){
+              $(this).next('.dropdown').hide();
+            }
+            
           }
         );
+
+
+        $("#dropdown-checkbox").change(function() {
+            if(this.checked) {
+                $(".dropdown").show()
+            }else{
+                $(".dropdown").hide()
+            }
+        });
+
       });
     </script>
   </head>
   <body>
     <h1>Hacking Notes</h1>
+    <label for="dropdown-checkbox">Show descriptions</label>
+    <input type="checkbox" id="dropdown-checkbox">
 
     <hr>
     <h2>Crypto</h2>
