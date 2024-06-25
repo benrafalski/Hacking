@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Linux Firewalls</title>
+        <link rel="icon" type="image/x-icon" href="../../Images/hacker.jpg">
+        <link rel="stylesheet" href="../../styles/tokyo-night-dark.min.css">
+        <link rel="stylesheet" href="../../styles/styles.css">
+        <script src="../../styles/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+
+    </head>
+    <body>
+        <h1>Simple Message Transfer Protocol</h1>
+        <hr>
+        <h2>Table of Contents</h2>
+        <ul>
+            
+        </ul>   
+        <hr>
+        <h2>Overview</h2>
+        <ul>
+            <li>Block access to different IPs, specific subnets/ports/services</li>
+            <li>Firewalld: daemon that is used to maintain firewall policies</li>
+            <li>Popular firewalls: IPCop, iptables, Shorewall, UFW</li>
+            <li>iptables: default linux tool for IPv4 packet filtering, NAT, manipulation functions (ip6tables for IPv6)</li>
+        </ul>
+
+        <hr>
+        <h2>firewalld</h2>
+        <h3>Check if firewalld is running</h3>
+        <pre><code class="language-sh">sudo systemctl status firewalld</code></pre>
+        <h3>Firewall rules</h3>
+        <pre><code class='language-sh'># allow incoming ssh traffic
+sudo firewall-cmd --zone=public --add-services=ssh --permanent
+sudo firewall-cmd --reload</code></pre>
+
+        <pre><code class='language-sh'># allow incoming traffic on port 8080/tcp
+sudo firewall-cmd --zone=public --add-port=8080/tcp --permanent
+sudo firewall-cmd --reload</code></pre>
+
+        <pre><code class='language-sh'># block incoming traffic from IP 192.168.52.1
+sudo firewall-cmd --zone=public --add-rich='rule family="ipv4" source address="192.168.52.1" reject'
+sudo firewall-cmd --reload</code></pre>
+
+        
+
+
+        <hr><h2>iptables</h2>
+        <h3>Table Types</h3>
+        <p>Table is a name for a set of chains</p>
+        <table>
+            <tr>
+                <td>Security</td>
+                <td>
+                    <ul>
+                        <li>Usage: Used with SELinux, mandatory access control (MAC) rules. </li>
+                        <li>Chains (Rules): OUTPUT, FORWARD, INPUT, SECMARK</li>
+                    </ul> 
+                </td>
+            </tr>
+            <tr>
+                <td>Mangle</td>
+                <td>
+                    <ul>
+                        <li>Usage: modify packet's ToS/DSCP field, header field, packet marks</li>
+                        <li>Chains (Rules): POSTROUTING, FORWARD, OUTPUT, PREROUTING, INPUT</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>NAT</td>
+                <td>
+                    <ul>
+                        <li>Usage: used for NAT rules</li>
+                        <li>Chains (Rules): PREROUTING and POSTROUTING</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Raw</td>
+                <td>
+                    <ul>
+                        <li>Usage: configuring low-level processing</li>
+                        <li>Chains (Rules): n/a</li>
+                    </ul>
+                </td>
+            </tr>
+            <tr>
+                <td>Filter</td>
+                <td>
+                    <ul>
+                        <li>Usage: packet filtering based on IP/port/protocol type</li>
+                        <li>Chains (Rules): INPUT, OUTPUT, and FORWARD</li>
+                    </ul>
+                </td>
+            </tr>
+        </table>
+
+        <h3>Chain Types</h3>
+        <p>Chain is a collection of rules</p>
+        <table>
+            <tr>
+                <td>INPUT</td>
+                <td>filter incoming traffic to this local machine</td>
+            </tr>
+            <tr>
+                <td>OUTPUT</td>
+                <td>filter outgoing traffic from this local machine</td>
+            </tr>
+            <tr>
+                <td>FORWARD</td>
+                <td>filter packets forwarded from one system to another going through this local machine</td>
+            </tr>
+            <tr>
+                <td>PREROUTING</td>
+                <td>modify incoming traffic to this local machine</td>
+            </tr>
+            <tr>
+                <td>POSTROUTING</td>
+                <td>modify outgoing traffic from this local machine</td>
+            </tr>
+        </table>
+
+
+        <h3>Usage</h3>
+        <h4>Basic Syntax</h4>
+        <pre><code class='language-sh'>sudo iptables [option] CHAIN-rule [-j target]</code></pre>
+        <pre><code class='language-sh'># syntax for policies
+sudo iptables -I/-A name_chain -s source_ip -p protocol_name --dport port_number -j action_to_do</code></pre>
+        <h4>Common Options</h4>
+        <table>
+            <tr>
+                <td>-C</td>
+                <td>Check and find rule that matches requirement string</td>
+            </tr>
+            <tr>
+                <td>-D</td>
+                <td>Delete a rule</td>
+            </tr>
+            <tr>
+                <td>-A</td>
+                <td>Add a rule</td>
+            </tr>
+            <tr>
+                <td>-I</td>
+                <td>Insert rule into a position in a string</td>
+            </tr>
+            <tr>
+                <td>-L</td>
+                <td>List all rules</td>
+            </tr>
+            <tr>
+                <td>-v</td>
+                <td>Verbose</td>
+            </tr>
+            <tr>
+                <td>-X</td>
+                <td>Delete an entire chain</td>
+            </tr>
+            <tr>
+                <td>-p</td>
+                <td>define protocol name</td>
+            </tr>
+            <tr>
+                <td>-N</td>
+                <td>Create new chain</td>
+            </tr>
+            <tr>
+                <td>-j</td>
+                <td>define what operation has to be done with a packet</td>
+            </tr>
+            <tr>
+                <td>-F</td>
+                <td>Delete all rules</td>
+            </tr>
+            <tr>
+                <td>-s</td>
+                <td>specify source of a packet</td>
+            </tr>
+        </table>
+        <h4>Basic Operations</h4>
+        <table>
+            <tr>
+                <td>DROP</td>
+                <td>Used to block traffic</td>
+            </tr>
+            <tr>
+                <td>ACCEPT</td>
+                <td>Used to allow traffic</td>
+            </tr>
+            <tr>
+                <td>REJECT</td>
+                <td>Same as DROP but also notifies sender</td>
+            </tr>
+        </table>
+        <h4>Rules</h4>
+        <pre><code class='language-sh'># allow incoming ICMP traffic
+sudo iptables -t filter -A INPUT -p icmp -j ACCEPT</code></pre>
+
+
+        <pre><code class='language-sh'># block incoming traffic from 192.168.160.51
+sudo iptables -t filter -A INPUT -d 192.168.160.51 -j DROP</code></pre>
+
+        <pre><code class='language-sh'># allow incoming traffic from 192.168.160.51:22/tcp
+sudo iptables -t filter -A INPUT -s 192.168.160.51 -p tcp --dport 22 -j ACCEPT</code></pre>
+
+        <pre><code class='language-sh'># remove the rule from above
+sudo iptables -t filter -A INPUT -s 192.168.160.51 -j DROP</code></pre>
+
+        <pre><code class='language-sh'># delete a rule by number
+sudo iptables -t filter --delete INPUT 2</code></pre>
+
+        <pre><code class='language-sh'># check if incoming traffic from 192.168.1.123 is blocked
+# 0 if no, 1 if yes
+sudo iptables -t filter --check INPUT -s 192.168.1.123 -j DROP</code></pre>
+
+        <pre><code class='language-sh'># block incoming traffic on wlan0
+sudo iptables -t filter -A INPUT -i wlan0 -j DROP</code></pre>
+
+        <pre><code class='language-sh'># block outgoing traffic on wlan0
+sudo iptables -t filter -A OUTPUT -o wlan0 -j DROP</code></pre>
+
+
+
+
+
+
+    </body>
+</html>
