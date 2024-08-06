@@ -22,7 +22,8 @@ a:hover {
 }
 
 img {
-    width: 50%;
+    /* width: 50%; */
+    width: fit-content;
     /* margin-left: auto;
     margin-right: auto; */
 }
@@ -32,4 +33,50 @@ img {
 .code-line {
     background: rgb(61, 60, 60);
     border-radius: 10%;
+}
+
+
+.sidenav {
+    width: 130px;
+    position: fixed;
+    z-index: 1;
+    top: 20px;
+    left: 10px;
+    background: #1a1a22;
+    overflow-x: hidden;
+    padding: 8px 0;
+    height: 96%;
+}
+
+.sidenav-sublist {
+    margin-left: 15px;
+}
+
+
+
+.sidenav a {
+    padding: 6px 8px 6px 16px;
+    text-decoration: none;
+    font-size: 15px;
+    color: #bec1c4;
+    display: block;
+}
+
+.sidenav-sublist a {
+    font-size: 13px;
+}
+
+.sidenav a:hover {
+    color: #4b6981;
+}
+
+.main {
+    margin-left: 140px; /* Same width as the sidebar + left position in px */
+    padding: 0px 10px;
+}
+
+@media screen and (max-height: 450px) {
+    .sidenav {padding-top: 15px;}
+    .sidenav a {font-size: 12px;}
+    .sidenav-sublist {font-size: 10px;}
 }

@@ -9,128 +9,149 @@
         <script src="../../styles/highlight.min.js"></script>
         <script>hljs.highlightAll();</script>
 
-
-        <style>
-            table, th, td {
-                border: 1px solid #bbb;
-                border-collapse: collapse;
-                text-align: center;
-                padding: 10px;
-            }
-        </style>
     </head>
     <body>
-        <h1>Terminology</h1>
-        <h2>Foundations</h2>
-        <ul>
-            <li><u>Authentication:</u> intruder can't pretent to be someone else</li>
-            <li><u>Integrity:</u> intruder can't change message contents</li>
-            <li><u>Nonrepudiation:</u> sender cannot deny they sent a message later</li>
-        </ul>
-        <h2>Keys</h2>
-        <ul>
-            <li><u>Keyspace:</u> all possible values of the key</li>
-        </ul>
-        <h2>Symmetric Algorithms</h2>
-        <ul>
-            <li><u>Stream ciphers:</u> operate on one bit or one byte at a time</li>
-            <li><u>Block ciphers:</u> operate on groups of bits or blocks (usually 64-128 bits)</li>
 
-        </ul>
-        <h2>Public Key Algorithms</h2>
-        <ul>
-            <li><u>Public key:</u> for encryption</li>
-            <li><u>Private key:</u> for decryption</li>
-            <li><u>Digital signatures:</u> encrypt with private key, decrypt with public key</li>
-        </ul>
-        <h2>Cryptoanalysis</h2>
-        <ul>
-            <li><u>Ciphertext-only attack:</u> attacker given some ciphertexts from same algo, wants key or a plaintext</li>
-            <li><u>Known-plaintext attack:</u> attacker knows ciphertext and plaintext, wants the key</li>
-            <li><u>Chosen-plaintext attack:</u> attacker knows ciphertext and can chose the plaintext, helps get info about the key</li>
-            <li><u>Adaptive-chosen-plaintext attack:</u> same as chosen-plaintext but attacker choses the plaintext on the go</li>
-            <li><u>Chosen-ciphertext attack:</u> attacker choses ciphertext and has the plaintexts, wants the key</li>
-            <li><u>Chosen-key attack:</u> attacker has knowledge of the relationship between keys</li>
-            <li><u>Rubber-hose cryptanalysis:</u> Using threats or blackmails to get a key from someone</li>
-        </ul>
-        <h2>Security</h2>
-        <h3>Breaking Algorithms</h3>
-        <ul>
-            <li><u>Total break:</u> attacker finds key</li>
-            <li><u>Global deduction:</u> attacker finds alternative equivalent algorithm but not the key</li>
-            <li><u>Instance (local) deduction:</u> attacker finds the plaintext for a ciphertext</li>
-            <li><u>Information deduction:</u> attacker gets info about the key or plaintext, like a few bits of the key</li>
-        </ul>
-        <h3>Secureness</h3>
-        <ul>
-            <li><u>Unconditionally secure:</u> no matter how many ciphertexts the attacker has, they can't get the plaintext</li>
-            <li><u>Computationally secure:</u> cannot be broken with available current or future resources</li>
-        </ul>
-        <h3>Complexity</h3>
-        <ul>
-            <li><u>Data complexity:</u> amount of data needed to perform the attack</li>
-            <li><u>Processing complexity:</u> amount of time needed to do the attack</li>
-            <li><u>Storage requirements: amount of memory needed to do the attack</u></li>
-        </ul>
-        <h1>Steganography</h1>
-        <ul>
-            <li>Hide secret messages in other messages</li>
-            <li><u>Example:</u> hiding a secret message in an image</li>
-        </ul>
-        <h1>Substitution and Transposition Ciphers</h1>
-        <h2>Substitution Ciphers</h2>
-        <ul>
-            <li>Each character in the plaintext is substituted for another character in the ciphertext</li>
-            <li><u>Example:</u> Caesar cipher, each character is replaced by the character three to the right modulo 26 (e.g "A" becomes "D" and "X" becomes "A"). ROT13 is another example with a rotation of 13 characters.</li>
-            <li>More commonly used than transposition in modern algorithms</li>
-        </ul>
-        <h2>Transposition Ciphers</h2>
-        <ul>
-            <li>Plaintext stays the same but the order of characters is shuffled</li>
-            <li>Less common today due to using lots of memory storage</li>
-        </ul>
-        <h1>Simple XOR</h1>
-        <table>
-            <tr>
-                <th>x<sub>1</sub></th>
-                <th>x<sub>2</sub></th>
-                <th>x<sub>1</sub> &oplus; x<sub>2</sub></th>
-            </tr>
-            <tr>
-                <td>0</td>
-                <td>0</td>
-                <td>0</td>
-            </tr>
-            <tr>
-                <td>0</td>
-                <td>1</td>
-                <td>1</td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td>1</td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>1</td>
-                <td>0</td>
-            </tr>
-        </table>
+        <div class="sidenav">
+            <a href="#foundations">Foundations</a>
+            <a href="#keys">Keys</a>
+            <a href="#symmetric-algorithms">Symmetric Algorithms</a>
+            <a href="#public-key-algorithms">Public Key Algorithms</a>
+            <a href="#cryptoanalysis">Cryptoanalysis</a>
+            <a href="#crypto-security">Security</a>
+            <div class="sidenav-sublist">
+                <a href="#breaking-algorithms">Breaking Algorithms</a>
+                <a href="#secureness">Secureness</a>
+                <a href="#complexity">Complexity</a>
+            </div>
+            <a href="#steganography">Steganography</a>
+            <a href="#sub-trans-ciphers">Substitution and Transposition Ciphers</a>
+            <div class="sidenav-sublist">
+                <a href="#sub-ciphers">Substitution Ciphers</a>
+                <a href="#trans-ciphers">Transposition Ciphers</a>
+            </div>
+            <a href="#simple-xor">Simple XOR</a>
+            <div class="sidenav-sublist">
+                <a href="#xor-properties">Properties</a>
+            </div>
+            <a href="#otp">One-time Pads</a>
+
+
+        </div>
         
-        <h2>Properties</h2>
-        <ul>
-            <li>a &oplus; a = 0</li>
-            <li>a &oplus; b &oplus; b = a</li>
-            <li>Easy to break</li>
-        </ul>
-        <h1>One-time Pads</h1>
-        <ul>
-            <li>Perfect encryption scheme</li>
-            <li><u>Key:</u> Large repeating set of <i>truly</i> random bits, only used once. XOR with plaintext to get ciphertext</li>
-            <li>All plaintexts are equally likely so the attacker cannot determine which one is the real plaintext using brute force of the key</li>
-            <li><u>Rules:</u> key must be truly random and key can only be used once</li>
-            <li><u>Problem:</u> how to distribute the key?</li>
-        </ul>
+        <div class="main">
+            <h1 id="terminology">Terminology</h1>
+            <h2 id="foundations">Foundations</h2>
+            <ul>
+                <li><u>Authentication:</u> intruder can't pretent to be someone else</li>
+                <li><u>Integrity:</u> intruder can't change message contents</li>
+                <li><u>Nonrepudiation:</u> sender cannot deny they sent a message later</li>
+            </ul>
+            <h2 id="keys">Keys</h2>
+            <ul>
+                <li><u>Keyspace:</u> all possible values of the key</li>
+            </ul>
+            <h2 id="symmetric-algorithms">Symmetric Algorithms</h2>
+            <ul>
+                <li><u>Stream ciphers:</u> operate on one bit or one byte at a time</li>
+                <li><u>Block ciphers:</u> operate on groups of bits or blocks (usually 64-128 bits)</li>
+
+            </ul>
+            <h2 id="public-key-algorithms">Public Key Algorithms</h2>
+            <ul>
+                <li><u>Public key:</u> for encryption</li>
+                <li><u>Private key:</u> for decryption</li>
+                <li><u>Digital signatures:</u> encrypt with private key, decrypt with public key</li>
+            </ul>
+            <h2 id="cryptoanalysis">Cryptoanalysis</h2>
+            <ul>
+                <li><u>Ciphertext-only attack:</u> attacker given some ciphertexts from same algo, wants key or a plaintext</li>
+                <li><u>Known-plaintext attack:</u> attacker knows ciphertext and plaintext, wants the key</li>
+                <li><u>Chosen-plaintext attack:</u> attacker knows ciphertext and can chose the plaintext, helps get info about the key</li>
+                <li><u>Adaptive-chosen-plaintext attack:</u> same as chosen-plaintext but attacker choses the plaintext on the go</li>
+                <li><u>Chosen-ciphertext attack:</u> attacker choses ciphertext and has the plaintexts, wants the key</li>
+                <li><u>Chosen-key attack:</u> attacker has knowledge of the relationship between keys</li>
+                <li><u>Rubber-hose cryptanalysis:</u> Using threats or blackmails to get a key from someone</li>
+            </ul>
+            <h2 id="crypto-security">Security</h2>
+            <h3 id="breaking-algorithms">Breaking Algorithms</h3>
+            <ul>
+                <li><u>Total break:</u> attacker finds key</li>
+                <li><u>Global deduction:</u> attacker finds alternative equivalent algorithm but not the key</li>
+                <li><u>Instance (local) deduction:</u> attacker finds the plaintext for a ciphertext</li>
+                <li><u>Information deduction:</u> attacker gets info about the key or plaintext, like a few bits of the key</li>
+            </ul>
+            <h3 id="secureness">Secureness</h3>
+            <ul>
+                <li><u>Unconditionally secure:</u> no matter how many ciphertexts the attacker has, they can't get the plaintext</li>
+                <li><u>Computationally secure:</u> cannot be broken with available current or future resources</li>
+            </ul>
+            <h3 id="complexity">Complexity</h3>
+            <ul>
+                <li><u>Data complexity:</u> amount of data needed to perform the attack</li>
+                <li><u>Processing complexity:</u> amount of time needed to do the attack</li>
+                <li><u>Storage requirements: amount of memory needed to do the attack</u></li>
+            </ul>
+            <h2 id="steganography">Steganography</h2>
+            <ul>
+                <li>Hide secret messages in other messages</li>
+                <li><u>Example:</u> hiding a secret message in an image</li>
+            </ul>
+            <h2 id="sub-trans-ciphers">Substitution and Transposition Ciphers</h2>
+            <h3 id="sub-ciphers">Substitution Ciphers</h3>
+            <ul>
+                <li>Each character in the plaintext is substituted for another character in the ciphertext</li>
+                <li><u>Example:</u> Caesar cipher, each character is replaced by the character three to the right modulo 26 (e.g "A" becomes "D" and "X" becomes "A"). ROT13 is another example with a rotation of 13 characters.</li>
+                <li>More commonly used than transposition in modern algorithms</li>
+            </ul>
+            <h3 id="trans-ciphers">Transposition Ciphers</h3>
+            <ul>
+                <li>Plaintext stays the same but the order of characters is shuffled</li>
+                <li>Less common today due to using lots of memory storage</li>
+            </ul>
+            <h2 id="simple-xor">Simple XOR</h2>
+            <table>
+                <tr>
+                    <th>x<sub>1</sub></th>
+                    <th>x<sub>2</sub></th>
+                    <th>x<sub>1</sub> &oplus; x<sub>2</sub></th>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>0</td>
+                    <td>0</td>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>1</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>0</td>
+                    <td>1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>1</td>
+                    <td>0</td>
+                </tr>
+            </table>
+            
+            <h3 id="xor-properties">Properties</h3>
+            <ul>
+                <li>a &oplus; a = 0</li>
+                <li>a &oplus; b &oplus; b = a</li>
+                <li>Easy to break</li>
+            </ul>
+            <h2 id="otp">One-time Pads</h2>
+            <ul>
+                <li>Perfect encryption scheme</li>
+                <li><u>Key:</u> Large repeating set of <i>truly</i> random bits, only used once. XOR with plaintext to get ciphertext</li>
+                <li>All plaintexts are equally likely so the attacker cannot determine which one is the real plaintext using brute force of the key</li>
+                <li><u>Rules:</u> key must be truly random and key can only be used once</li>
+                <li><u>Problem:</u> how to distribute the key?</li>
+            </ul>
+        </div> 
     </body>
 </html>

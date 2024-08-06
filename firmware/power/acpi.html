@@ -1,4 +1,3 @@
-<!DOCTYPE html>
 <html>
     <head>
         <title>ACPI</title>
@@ -10,38 +9,65 @@
 
     </head>
     <body>
-        <h1>Advanced Configuration and Power Interface (ACPI)</h1>
-        <hr>
-        <h2>Table of Contents</h2>
-        <ul>
-            
-        </ul>   
 
-        <!-- 
-            spec: https://uefi.org/sites/default/files/resources/ACPI_6_3_final_Jan30.pdf
-            https://forum.osdev.org/viewtopic.php?t=16990
-            https://wiki.osdev.org/ACPICA
-        -->
-        <hr>
-        <h2>Overview</h2>
-        <ul>
-            <li>Developed by Intel, Microsoft, Toshiba to save power on laptops</li>
-            <li>Power management configuration standard for the PC</li>
-            <li>Allows the OS to control the power given to each device (like powering off certain devices not in use)</li>
-            <li>Used to control and check thermal zones (temperature sensors or fans), battery levels, PCI IRQ routing, CPUs, NUMA domains, etc.</li>
-            <li>Info about ACPI is stored in the BIOS's memory</li>
-            <li>There are two parts: tables and runtime environment</li>
-        </ul>
 
-        <hr>
-        <h2>RSDP</h2>
-        <ul>
-            <li>Root system description pointer: data structure used by ACPI</li>
-            <li>To begin using ACPI, the OS looks for the RSDP</li>
-            <li>The RSDP contains a pointer to the RSDT (table)</li>
-        </ul>
-        <h3>Structure</h3>
-        <pre><code class="language-c">// ACPI Version 1.0
+        <div class="sidenav">
+            <a href="#overview">Overview</a>
+            <a href="#rsdp">RSDP</a>
+            <div class="sidenav-sublist">
+                <a href="#rsdp-structure">Structure</a>
+                <a href="#rsdp-detecting">Detecting</a>
+                <a href="#rsdp-validating">Validating</a>
+            </div>
+            <a href="#tables">Tables</a>
+            <div class="sidenav-sublist">
+                <a href="#rsdt-table">RSDT</a>
+                <a href="#xsdt-table">XSDT</a>
+                <a href="#fadt-table">FADT</a>
+                <a href="#madt-table">MADT</a>
+                <a href="#bgrt-table">BGRT</a>
+                <a href="#srat-table">SRAT</a>
+                <a href="#dsdt-table">DSDT</a>
+                <a href="#ssdt-table">SSDT</a>
+            </div>
+            <a href="#runtime-env">Runtime Environment</a>
+            <div class="sidenav-sublist">
+                <a href="#aml">AML</a>
+            </div>
+            <a href="#acpi-states">ACPI States</a>
+            <a href="#switching-acpi-mode">Switching to ACPI Mode</a>
+            <div class="sidenav-sublist">
+                <a href="#enable-manually">Enabling ACPI Manually</a>
+            </div>
+        </div>
+        
+        <div class="main">
+            <h1>Advanced Configuration and Power Interface (ACPI)</h1>
+            <!-- 
+                spec: https://uefi.org/sites/default/files/resources/ACPI_6_3_final_Jan30.pdf
+                https://forum.osdev.org/viewtopic.php?t=16990
+                https://wiki.osdev.org/ACPICA
+            -->
+            <hr>
+            <h2 id="overview">Overview</h2>
+            <ul>
+                <li>Developed by Intel, Microsoft, Toshiba to save power on laptops</li>
+                <li>Power management configuration standard for the PC</li>
+                <li>Allows the OS to control the power given to each device (like powering off certain devices not in use)</li>
+                <li>Used to control and check thermal zones (temperature sensors or fans), battery levels, PCI IRQ routing, CPUs, NUMA domains, etc.</li>
+                <li>Info about ACPI is stored in the BIOS's memory</li>
+                <li>There are two parts: tables and runtime environment</li>
+            </ul>
+
+            <hr>
+            <h2 id="rsdp">RSDP</h2>
+            <ul>
+                <li>Root system description pointer: data structure used by ACPI</li>
+                <li>To begin using ACPI, the OS looks for the RSDP</li>
+                <li>The RSDP contains a pointer to the RSDT (table)</li>
+            </ul>
+            <h3 id="rsdp-structure">Structure</h3>
+            <pre><code class="language-c">// ACPI Version 1.0
 struct RSDP_t {
     char Signature[8];          // "RSD PTR "
     uint8_t Checksum;           // 0 when added to all other bytes
@@ -57,191 +83,185 @@ struct XSDP_t {
     char OEMID[6];
     uint8_t Revision;
     uint32_t RsdtAddress;       // deprecated since version 2.0
-   
+
     uint32_t Length;            // size of entire table
     uint64_t XsdtAddress;       // 64-bit physical address of the XSDT
     uint8_t ExtendedChecksum;   // calculates checksum of entire table
     uint8_t reserved[3];
 } __attribute__ ((packed));</code></pre>
-        <h3>Detecting the RSDP</h3>
-        <ul>
-            <li>Either located within the first 1KB of the EBDA (Extended BIOS Data Area) or the memory region from 0x000E0000 to 0x000FFFFF (main BIOS area below 1 MB)</li>
-            <li>The OS finds the pointer using the "RSD PTR " signature (the signature in always on a 16 byte boundary)</li>
-            <li>For UEFI systems, the RSDP is somewhere in the EFI_SYSTEM_TABLE</li>
-        </ul>
-        <h3>Validating the RSDP</h3>
-        <ul>
-            <li>After the RSDP is found its checksum must be validated</li>
-            <li>ACPI version: the Revision field in the RSDP; 0 = ver1.0, 2 = ver2.0-6.1</li>
-            <li>Validating checksum: 
-                <ol>
-                    <li>ACPI 1.0: add up all bytes in structure and make sure lowest byte of the result is 0</li>
-                    <li>ACPI 2.0: same as 1.0 but with all the new fields too</li>
-                </ol>
-            </li>
-        </ul>
+            <h3 id="rsdp-detecting">Detecting the RSDP</h3>
+            <ul>
+                <li>Either located within the first 1KB of the EBDA (Extended BIOS Data Area) or the memory region from 0x000E0000 to 0x000FFFFF (main BIOS area below 1 MB)</li>
+                <li>The OS finds the pointer using the "RSD PTR " signature (the signature in always on a 16 byte boundary)</li>
+                <li>For UEFI systems, the RSDP is somewhere in the EFI_SYSTEM_TABLE</li>
+            </ul>
+            <h3 id="rsdp-validating">Validating the RSDP</h3>
+            <ul>
+                <li>After the RSDP is found its checksum must be validated</li>
+                <li>ACPI version: the Revision field in the RSDP; 0 = ver1.0, 2 = ver2.0-6.1</li>
+                <li>Validating checksum: 
+                    <ol>
+                        <li>ACPI 1.0: add up all bytes in structure and make sure lowest byte of the result is 0</li>
+                        <li>ACPI 2.0: same as 1.0 but with all the new fields too</li>
+                    </ol>
+                </li>
+            </ul>
 
-        <hr>
-        <h2>Tables</h2>
-        <ul>
-            <li>Tables are used by the OS for configuration during boot</li>
-            <li>Include things like how many CPUs, APIC details, NUMA memory ranges</li>
-            <li>Fixed tables: RSDT/XSDT, FADT, MADT, BGRT, SRAT</li>
-            <li>Differentiated tables: DSDT, SSDT</li>
-        </ul>
-        <h3>RSDT</h3>
-        <!-- https://wiki.osdev.org/RSDT -->
-        <h3>XSDT</h3>
-        <!-- https://wiki.osdev.org/XSDT -->
-        <h3>FADT</h3>
-        <!-- https://wiki.osdev.org/FADT -->
-        <h3>MADT</h3>
-        <!-- https://wiki.osdev.org/MADT -->
-        <h3>BGRT</h3>
-        <!-- https://wiki.osdev.org/BGRT -->
-        <h3>SRAT</h3>
-        <!-- https://wiki.osdev.org/SRAT -->
-        <h3>DSDT</h3>
-        <!-- https://wiki.osdev.org/DSDT -->
-        <h3>SSDT</h3>
-        <!-- https://wiki.osdev.org/SSDT -->
+            <hr>
+            <h2 id="tables">Tables</h2>
+            <ul>
+                <li>Tables are used by the OS for configuration during boot</li>
+                <li>Include things like how many CPUs, APIC details, NUMA memory ranges</li>
+                <li>Fixed tables: RSDT/XSDT, FADT, MADT, BGRT, SRAT</li>
+                <li>Differentiated tables: DSDT, SSDT</li>
+            </ul>
+            <h3 id="rsdt-table">RSDT</h3>
+            <!-- https://wiki.osdev.org/RSDT -->
+            <h3 id="xsdt-table">XSDT</h3>
+            <!-- https://wiki.osdev.org/XSDT -->
+            <h3 id="fadt-table">FADT</h3>
+            <!-- https://wiki.osdev.org/FADT -->
+            <h3 id="madt-table">MADT</h3>
+            <!-- https://wiki.osdev.org/MADT -->
+            <h3 id="bgrt-table">BGRT</h3>
+            <!-- https://wiki.osdev.org/BGRT -->
+            <h3 id="srat-table">SRAT</h3>
+            <!-- https://wiki.osdev.org/SRAT -->
+            <h3 id="dsdt-table">DSDT</h3>
+            <!-- https://wiki.osdev.org/DSDT -->
+            <h3 id="ssdt-table">SSDT</h3>
+            <!-- https://wiki.osdev.org/SSDT -->
 
-        <hr>
-        <h2>Runtime Environment</h2>
-        <ul>
-            <li>Consists of AML code and the ACPI SMM code</li>
-            <li>AML code: platform independent OOP language that comes from the BIOS and devices</li>
-            <li>ACPI SMM code: ACPI code run in system management mode</li>
-        </ul>
-        <h3>AML</h3>
-        <!-- https://wiki.osdev.org/AML -->
+            <hr>
+            <h2 id="runtime-env">Runtime Environment</h2>
+            <ul>
+                <li>Consists of AML code and the ACPI SMM code</li>
+                <li>AML code: platform independent OOP language that comes from the BIOS and devices</li>
+                <li>ACPI SMM code: ACPI code run in system management mode</li>
+            </ul>
+            <h3 id="aml">AML</h3>
+            <!-- https://wiki.osdev.org/AML -->
 
 
-        <hr>
-        <h2>ACPI States</h2>
-        <!-- https://youtu.be/vJdLf9vQLi8?si=0h9wY-t2d7pv7TpQ -->
-        <ul>
-            <li>G states: global</li>
-            <li>S states: system</li>
-            <li>C states: processor power
-                <ul>
-                    <li>Can either be package C-states or core C-states</li>
-                </ul>
-            </li>
-            <li>P states: performance</li>
-            <li>0 is more on, larger numbers are more off</li>
-        </ul>
-        <table>
-            <tr>
-                <th>Global (G) State</th>
-                <th>Sleep (S) State</th>
-                <th>Processor Package (C) State</th>
-                <th>Processor State</th>
-                <th>System Clocks</th>
-                <th>Description</th>
-            </tr>
-            <tr>
-                <td>G0</td>
-                <td>S0</td>
-                <td>C0</td>
-                <td>Full on</td>
-                <td>On</td>
-                <td>Full on</td>
-            </tr>
-            <tr>
-                <td>G0</td>
-                <td>S0</td>
-                <td>C1/C1E</td>
-                <td>Auto-Halt</td>
-                <td>On</td>
-                <td>Auto-Halt</td>
-            </tr>
-            <tr>
-                <td>G0</td>
-                <td>S0</td>
-                <td>C3</td>
-                <td>Deep Sleep</td>
-                <td>On</td>
-                <td>Deep Sleep</td>
-            </tr>
-            <tr>
-                <td>G0</td>
-                <td>S0</td>
-                <td>C6/C7</td>
-                <td>Deep Power Down</td>
-                <td>On</td>
-                <td>Deep Power Down</td>
-            </tr>
-            <tr>
-                <td>G0</td>
-                <td>S0</td>
-                <td>C8</td>
-                <td>Off</td>
-                <td>On</td>
-                <td>Deeper Power Down</td>
-            </tr>
-            <tr>
-                <td>G1</td>
-                <td>S3</td>
-                <td>Power Off</td>
-                <td>Off</td>
-                <td>Off, except RTC</td>
-                <td>Suspend to RAM (STR - Sleep). Context saved to memory (S3-Hot is not supported by the processor)</td>
-            </tr>
-            <tr>
-                <td>G1</td>
-                <td>S4</td>
-                <td>Power Off</td>
-                <td>Off</td>
-                <td>Off, except RTC</td>
-                <td>Suspend to Disk (STD - Hibernate). All power lost (except wake-up on PCH)</td>
-            </tr>
-            <tr>
-                <td>G2</td>
-                <td>S5</td>
-                <td>Power Off</td>
-                <td>Off</td>
-                <td>Off, except RTC</td>
-                <td>Soft Off. All power lost (except wake-up on PCH). Total reboot.</td>
-            </tr>
-            <tr>
-                <td>G3</td>
-                <td>N/A</td>
-                <td>Power Off</td>
-                <td>Off</td>
-                <td>Power Off</td>
-                <td>Hard Off. All power removed from system.</td>
-            </tr>
-        </table>
-        <br>
-        <img src="../../Images/processor-power-states-figure-4-1.png" style="width: fit-content;"><br>
+            <hr>
+            <h2 id="acpi-states">ACPI States</h2>
+            <!-- https://youtu.be/vJdLf9vQLi8?si=0h9wY-t2d7pv7TpQ -->
+            <ul>
+                <li>G states: global</li>
+                <li>S states: system</li>
+                <li>C states: processor power
+                    <ul>
+                        <li>Can either be package C-states or core C-states</li>
+                    </ul>
+                </li>
+                <li>P states: performance</li>
+                <li>0 is more on, larger numbers are more off</li>
+            </ul>
+            <table>
+                <tr>
+                    <th>Global (G) State</th>
+                    <th>Sleep (S) State</th>
+                    <th>Processor Package (C) State</th>
+                    <th>Processor State</th>
+                    <th>System Clocks</th>
+                    <th>Description</th>
+                </tr>
+                <tr>
+                    <td>G0</td>
+                    <td>S0</td>
+                    <td>C0</td>
+                    <td>Full on</td>
+                    <td>On</td>
+                    <td>Full on</td>
+                </tr>
+                <tr>
+                    <td>G0</td>
+                    <td>S0</td>
+                    <td>C1/C1E</td>
+                    <td>Auto-Halt</td>
+                    <td>On</td>
+                    <td>Auto-Halt</td>
+                </tr>
+                <tr>
+                    <td>G0</td>
+                    <td>S0</td>
+                    <td>C3</td>
+                    <td>Deep Sleep</td>
+                    <td>On</td>
+                    <td>Deep Sleep</td>
+                </tr>
+                <tr>
+                    <td>G0</td>
+                    <td>S0</td>
+                    <td>C6/C7</td>
+                    <td>Deep Power Down</td>
+                    <td>On</td>
+                    <td>Deep Power Down</td>
+                </tr>
+                <tr>
+                    <td>G0</td>
+                    <td>S0</td>
+                    <td>C8</td>
+                    <td>Off</td>
+                    <td>On</td>
+                    <td>Deeper Power Down</td>
+                </tr>
+                <tr>
+                    <td>G1</td>
+                    <td>S3</td>
+                    <td>Power Off</td>
+                    <td>Off</td>
+                    <td>Off, except RTC</td>
+                    <td>Suspend to RAM (STR - Sleep). Context saved to memory (S3-Hot is not supported by the processor)</td>
+                </tr>
+                <tr>
+                    <td>G1</td>
+                    <td>S4</td>
+                    <td>Power Off</td>
+                    <td>Off</td>
+                    <td>Off, except RTC</td>
+                    <td>Suspend to Disk (STD - Hibernate). All power lost (except wake-up on PCH)</td>
+                </tr>
+                <tr>
+                    <td>G2</td>
+                    <td>S5</td>
+                    <td>Power Off</td>
+                    <td>Off</td>
+                    <td>Off, except RTC</td>
+                    <td>Soft Off. All power lost (except wake-up on PCH). Total reboot.</td>
+                </tr>
+                <tr>
+                    <td>G3</td>
+                    <td>N/A</td>
+                    <td>Power Off</td>
+                    <td>Off</td>
+                    <td>Power Off</td>
+                    <td>Hard Off. All power removed from system.</td>
+                </tr>
+            </table>
+            <br>
+            <img src="../../Images/processor-power-states-figure-4-1.png" style="width: fit-content;"><br>
 
-        <hr>
-        <h2>Switching to ACPI Mode</h2>
-        <h3>Checking if in ACPI Mode</h3>
-        <ul>
-            <li>ACPI is already enabled if:
-                <ol>
-                    <li>the SMI command field in the FADT is 0</li>
-                    <li>the ACPI enable and ACPI disable fields in the FADT are both 0</li>
-                    <li>bit 0 (value 1) of the PM1a control block I/O port is set</li>
-                </ol>
-            </li>
-        </ul>
-        <h3>Enabling ACPI Manually</h3>
-        <pre><code class="language-c">// write the value of the ACPI enable field 
+            <hr>
+            <h2 id="switching-acpi-mode">Switching to ACPI Mode</h2>
+            <h3>Checking if in ACPI Mode</h3>
+            <ul>
+                <li>ACPI is already enabled if:
+                    <ol>
+                        <li>the SMI command field in the FADT is 0</li>
+                        <li>the ACPI enable and ACPI disable fields in the FADT are both 0</li>
+                        <li>bit 0 (value 1) of the PM1a control block I/O port is set</li>
+                    </ol>
+                </li>
+            </ul>
+            <h3 id="enable-manually">Enabling ACPI Manually</h3>
+            <pre><code class="language-c">// write the value of the ACPI enable field 
 outb(fadt->smi_command,fadt->acpi_enable);
 // poll until PM1a control block bit 0 (value 1) is set
 while (inw(fadt->pm1a_control_block) & 1 == 0);
 // Note: when this bit is set, power management events will generate SCIs and not SMIs
 // this means the OS had to handle the event instead of SMBIOS
 // the SCI is an IRQ in the FADT</code></pre>
-        
-
-        
-        
-
-
-
+        </div>
     </body>
 </html>

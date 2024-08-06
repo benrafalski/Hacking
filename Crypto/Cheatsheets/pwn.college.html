@@ -10,241 +10,234 @@
 
     </head>
     <body>
-        <h1>Cryptography</h1>
-        <hr>
-        <h2>Table of Contents</h2>
-        <ul>
-            <li><a href="#intro">Intro</li>
-                <li><a href="#symmetric-crypto">Symmetric Encryption</a>
-                <ul>
-                    <li><a href="#otp">One Time Pad</li>
-                    <li><a href="#encryption-props">Encryption properties</a></li>
-                    <li><a href="#aes">Advanded Encryption Standard (AES)</a></li>
-                    <li><a href="#block-sizes">Block Sizes</a></li>
-                </ul>
-            </li>
-            <li><a href="#key-exchange">Key Exchange</a>
-                <ul>
-                    <li><a href="#number-theory">Number Theory</a></li>
-                    <li><a href="#diffie-hellman">Diffie-Hellman Key Exchange</a></li>
-                </ul>
-            </li>
-            <li><a href="#asymetric-crypto">Asymmetric Encryption</a>
-                <ul>
-                    <li><a href="#fermats-little-theorem">Fermat's Little Theorem</a></li>
-                    <li><a href="#eulers-theorem">Euler's Theorem</a></li>
-                    <li><a href="#rsa">Rivest-Shamir-Adleman (RSA)</a></li>
-                    <li><a href="#key-gen">RSA Key Generation</a></li>
-                    <li><a href="#encrypt-decrypt">RSA Encryption and Decryption</a></li>
-                    <li><a href="#signing">RSA Signing</a></li>
-                </ul>
-            </li>
-            <li><a href="#hashing">Hashing</a>
-                <ul>
-                    <li><a href="#resistance">Resistance Properties</a></li>
-                    <li><a href="#sha256">SHA256</a></li>
-                    <li><a href="#passwords">Passwords</a></li>
-                    <li><a href="#pow">Proof of Work</a></li>
-                </ul>
-            </li>
-            <li><a href="#trust_1">Trust</a>
-                <ul>
-                    <li><a href="#mitm">Man in the middle</a></li>
-                    <li><a href="#trust_2">Trust</a></li>
-                    <li><a href="#certificates">Certificates</a></li>
-                </ul>
-            </li>
-        </ul>
 
-        <hr>
-        <h2 id="intro">Intro</h2>
+        <div class="sidenav">
+            <a href="#intro">Intro</a>
+            <a href="#symmetric-crypto">Symmetric Encryption</a>
+            <div class="sidenav-sublist">
+                <a href="#otp">One Time Pad</a>
+                <a href="#encryption-props">Encryption properties</a>
+                <a href="#aes">Advanded Encryption Standard (AES)</a>
+                <a href="#block-sizes">Block Sizes</a>
+            </div>   
+            <a href="#key-exchange">Key Exchange</a>
+            <div class="sidenav-sublist">
+                <a href="#number-theory">Number Theory</a>
+                <a href="#diffie-hellman">Diffie-Hellman Key Exchange</a>
+            </div>
+            <a href="#asymetric-crypto">Asymmetric Encryption</a>
+            <div class="sidenav-sublist">
+                <a href="#fermats-little-theorem">Fermat's Little Theorem</a>
+                <a href="#eulers-theorem">Euler's Theorem</a>
+                <a href="#rsa">Rivest-Shamir-Adleman (RSA)</a>
+                <a href="#key-gen">RSA Key Generation</a>
+                <a href="#encrypt-decrypt">RSA Encryption and Decryption</a>
+                <a href="#signing">RSA Signing</a>
+            </div>
+            <a href="#hashing">Hashing</a>
+            <div class="sidenav-sublist">
+                <a href="#resistance">Resistance Properties</a>
+                <a href="#sha256">SHA256</a>
+                <a href="#passwords">Passwords</a>
+                <a href="#pow">Proof of Work</a>
+            </div>
+            <a href="#trust_1">Trust</a>
+            <div class="sidenav-sublist">
+                <a href="#mitm">Man in the middle</a>
+                <a href="#trust_2">Trust</a>
+                <a href="#certificates">Certificates</a>
+            </div>
+        </div>
         
-        
-        <ul>
-            <li>guarantees confidentiality, integrity, and authenticity vs on-path attacks</li>
-        </ul>
-        <hr>
-        <h2 id="symmetric-crypto">Symmetric Encryption</h2>
-        
-        <ul>
-            <li>Encryption: <code class="code-line">encryption_function(plaintext, key)</code> → CIPHERTEXT</li>
-            <li>Decryption: <code class="code-line">decryption_function(ciphertext, key)</code> → PLAINTEXT</li>
-        </ul>
-        <h3 id="otp">One Time Pad</h3>
-        <ul>
-            <li>Encryption:
-                <ol>
-                    <li>Key is random string of bits (0 or 1)</li>
-                    <li>XOR each bit of the PLAINTEXT with the key</li>
-                </ol>
-            </li>
-            <li>Decryption:
-                <ol>
-                    <li>XOR each bit of the CIPHERTEXT with the key</li>
-                </ol>
-            </li>
-            <li>XOR truth table</li>
-        </ul>
-        <table>
-            <tr>
-                <th>x<sub>1</sub></th>
-                <th>x<sub>2</sub></th>
-                <th>x<sub>1</sub> &oplus; x<sub>2</sub></th>
-            </tr>
-            <tr>
-                <td>0</td>
-                <td>0</td>
-                <td style="text-align: center;">0</td>
-            </tr>
-            <tr>
-                <td>0</td>
-                <td>1</td>
-                <td style="text-align: center;">1</td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>0</td>
-                <td style="text-align: center;">1</td>
-            </tr>
-            <tr>
-                <td>1</td>
-                <td>1</td>
-                <td style="text-align: center;">0</td>
-            </tr>
-        </table>
-        <h3 id="encryption-props">Encryption properties</h3>
-        <ul>
-            <li>Confusion: each bit of the ciphertext depends on several parts of the key so small changes in the key result in dramatic changes in the ciphertext</li>
-            <li>Diffusion: a change in a single bit of plaintext produces a change in about half the bits of the ciphertext so a slight change in the plaintext results in a dramatic change in the ciphertext.</li>
-        </ul>
-        <h3 id="aes">Advanded Encryption Standard (AES)</h3>
-        <ul>
-            <li>Black box mathematical blender that really mangles the plaintext into an undecipherable ciphertext</li>
-            <li>Substitution-Permutation network</li>
-            <li>Key size: 128/192/256 bits</li>
-            <li>Block size: 128 bits</li>
-        </ul>
-        <h3 id="block-sizes">Block Sizes</h3>
-        <ul>
-            <li>if blocksize is 16 then plaintext can be encrypted in blocks of 16 bits</li>
-            <li>Padding: if a plaintext is less than 16 is must be padded, use padding PKC#7 (0x03)</li>
-            <li>ECB (electronic codebook mode): if a plaintext is over 16 it can be divided into 16 bit blocks, this has issues</li>
-            <img src="../../Images/linux_crypto.jpg"/>
-            <li>CBC (cipher block chaining mode): fixes the penguin issue, tradeoff is slower performance beacause it needs to be done sequentially</li>
-            <img src="../../Images/cbc.png"/>
-            <li>CTR (counter mode): solves ECB problem and can also run in parallel unlike CBC</li>
-            <img src="../../Images/ctr.png"/>
-        </ul>
-        <hr>
-        <h2 id="key-exchange">Key Exchange</h2>
-        
-        <h3 id="number-theory">Number Theory</h3>
-        <ul>
-            <li>Discrete Log problem: 7<sup><i>N</i></sup> % 13 = <i>X</i>, turns out it is very hard to find N when given <i>X</i> when <i>N</i> is very large.</li>
-        </ul>
-        <h3 id="diffie-hellman">Diffie-Hellman Key Exchange</h3>
-        <ol>
-            <li>Alice and Bob agree on a modulus <i>p</i> (13 from above) and base g (7 from above), <i>g</i> is prime and <i>p</i> is a primitive root modulo <i>p</i></li>
-            <li>Alice chooses a secret <i>a</i> and sends Bob <i>A = g<sup>a</sup></i> % <i>p</i></li>
-            <li>Bob chooses a secret <i>b</i> and sends Alice <i>B = g<sup>b</sup></i> % <i>p</i></li>
-            <li>Alice computes <i>s = B<sup>a</sup></i> % <i>p</i></li>
-            <li>Bob computes <i>s = A<sup>b</sup></i> % <i>p</i></li>
-            <li>They now share a secret <i>s</i></li>
-        </ol>
-        <hr>
-        <h2 id="asymetric-crypto">Asymmetric Encryption</h2>
-        <h3 id="fermats-little-theorem">Fermat's Little Theorem</h3>
-        <ul>
-            <li><i>a<sup>p</sup></i> ≡ <i>a</i> (mod <i>p</i>), if <i>p</i> is prime</li>
-            <li><i>a</i><sup><i>p</i>-1</sup> ≡ 1 (mod <i>p</i>), if <i>p</i> is prime and <i>p</i> is not a factor of <i>a</i></li>
-        </ul>
-        <h3 id="eulers-theorem">Euler's Theorem</h3>
-        <ul>
-            <li><i>a</i><sup>(<i>p</i>-1)(<i>q</i>-1)</sup> ≡ 1 (mod <i>pq</i>), if <i>p</i> and <i>q</i> are prime</li>
-            <li><i>a</i><sup>(<i>p</i>-1)(<i>q</i>-1)+1</sup> ≡ <i>a</i> (mod <i>pq</i>), if <i>p</i> and <i>q</i> are prime</li>
-            <li><i>a</i><sup>1 (mod(<i>p</i>-1)(<i>q</i>-1))</sup> ≡ <i>a</i> (mod <i>pq</i>), if <i>p</i> and <i>q</i> are prime</li>
-        </ul>
-        <h3 id="rsa">Rivest-Shamir-Adleman (RSA)</h3>
-        <ul>
-            <li>(<i>m<sup>e</sup></i>)<sup><i>d</i></sup> ≡ <i>m</i> (mod <i>n</i>), where <i>n</i> = <i>pq</i>, <i>p</i> and <i>q</i> are prime, <i>ed</i> ≡ 1 (mod (<i>p</i>-1)(<i>q</i>-1))</li>
-            <li>Public key: <code class="code-line">&lt;e, n&gt;</code></li>
-            <li>Private key: <code class="code-line">&lt;d, n&gt;</code></li>
-            <li>Plaintext: <i>m</i></li>
-            <li>Ciphertext: <i>m<sup>e</sup></i></li>
-            <li>Prime factorization: (EASY) multiply <i>p</i> and <i>q</i> to make <i>n</i>, (HARD) find <i>p</i> and <i>q</i> when given <i>n</i>, at least for large numbers</li>
-        </ul>
-        <h3 id="key-gen">RSA Key Generation</h3>
-        <ul>
-            <li>Compute <i>n</i> = <i>pq</i> and ɸ(<i>n</i>) = (<i>p</i>-1)(<i>q</i>-1) where <i>p</i> and <i>q</i> are large primes</li>
-            <li>Choose <i>e</i> where gcd(<i>e</i>, ɸ(<i>n</i>)) = 1, commonly set to 65537 (0x10001)</li>
-            <li>Compute <i>d</i> ≡ <i>e</i><sup>-1</sup> (mod ɸ(<i>n</i>)), do efficiently using extended Euclidean algorithm</li>
-        </ul>
-        <h3 id="encrypt-decrypt">RSA Encryption and Decryption</h3>
-        <ul>
-            <li>Encryption: <i>c</i> ≡ <i>m<sup>e</sup></i> (mod <i>n</i>), where <i>c</i> is the CIPHERTEXT and <i>m</i> is the PLAINTEXT</li>
-            <li>Decryption: <i>m</i> ≡ <i>c<sup>d</sup></i> (mod <i>n</i>), where <i>c</i> is the CIPHERTEXT and <i>m</i> is the PLAINTEXT</li>
-        </ul>
-        <h3 id="signing">RSA Signing</h3>
-        <ul>
-            <li>Digital signature: verify authenticity of messages being sent</li>
-            <li>Signing: <i>s</i> ≡ <i>m<sup>d</sup></i> (mod <i>n</i>), where <i>s</i> is the SIGNATURE and <i>m</i> is the PLAINTEXT</li>
-            <li>Verfiication: <i>m</i> ≡ <i>s<sup>e</sup></i> (mod <i>n</i>), where <i>s</i> is the SIGNATURE and <i>m</i> is the PLAINTEXT</li>
-        </ul>
-        <hr>
-        <h2 id="hashing">Hashing</h2>
-        <ul>
-            <li>Avalanche Effect: small change in input has large change in hash</li>
-            <li>One-way: cannot decrypt</li>
-        </ul>
-        <h3 id="resistance">Resistance Properties</h3>
-        <ul>
-            <li>Pre-image resistance: given a hash it should be hard to find out what the original message was</li>
-            <li>Second pre-image resistance: given a message, it should be difficult to find another message where the two messages have equal hashes</li>
-            <li>Collision resistance: should be difficult for two different messages to produce the same hash</li>
-        </ul>
-        <h3 id="sha256">SHA256</h3>
-        <ul>
-            <li>Math blander, cryptographers have given it the stamp of approval</li>
-        </ul>
-        <h3 id="passwords">Passwords</h3>
-        <ul>
-            <li>Hash passwords for storage</li>
-            <li>Protect against dictionary attacks: hash the password with a salt (random string appended to the end), store the hash and the salt together</li>
-        </ul>
-        <h3 id="pow">Proof of Work</h3>
-        <ul>
-            <li>Challenge: random string</li>
-            <li>Response: append random response to end of challenge and hash them, repeat with new response until you find the correct hash</li>
-        </ul>
-        <hr>
-        <h2 id="trust_1">Trust</h2>
-        <h3 id="mitm">Man in the middle</h3>
-        <ul>
-            <li>Ruins RSA: attacker just decrypts and encrypts in the middle with their keys</li>
-            <li>Ruins Diffie-Hellman: attacker just does key exchange with both and decrypts and encrypts in the middle with their keys</li>
-        </ul>
-        <h3 id="trust_2">Trust</h3>
-        <ul>
-            <li>OS Trust: trusts the keys of digicert, google, letsencrypt</li>
-            <li>Digicert: trusts the keys of twitter, facebook, etc.</li>
-            <li>Letsencrypt: trusts the keys of smaller web applications</li>
-        </ul>
-        <h3 id="certificates">Certificates</h3>
-        <ul>
-            <li>hash your certificate data</li>
-            <li>root trusted authority RSA signs the hash, this gives us a certificate</li>
-            <li>if I send my certificate data and RSA signed certificate to someone, they can verify it is really me by hashing and RSA verifying it using the trusted root authority's public key</li>
-            <li>Example of certificate data:
-                <pre><code class="language-json">{
-    "name": "Ben",
-    "key": {
-        "e": "public key",
-        "n": "modulus"
-    },
-    "signer": "root"
+        <div class="main">
+            <h1>Cryptography</h1>
+            <hr>
+            <h2 id="intro">Intro</h2>
+            <ul>
+                <li>guarantees confidentiality, integrity, and authenticity vs on-path attacks</li>
+            </ul>
+            <hr>
+            <h2 id="symmetric-crypto">Symmetric Encryption</h2>
+            
+            <ul>
+                <li>Encryption: <code class="code-line">encryption_function(plaintext, key)</code> → CIPHERTEXT</li>
+                <li>Decryption: <code class="code-line">decryption_function(ciphertext, key)</code> → PLAINTEXT</li>
+            </ul>
+            <h3 id="otp">One Time Pad</h3>
+            <ul>
+                <li>Encryption:
+                    <ol>
+                        <li>Key is random string of bits (0 or 1)</li>
+                        <li>XOR each bit of the PLAINTEXT with the key</li>
+                    </ol>
+                </li>
+                <li>Decryption:
+                    <ol>
+                        <li>XOR each bit of the CIPHERTEXT with the key</li>
+                    </ol>
+                </li>
+                <li>XOR truth table</li>
+            </ul>
+            <table>
+                <tr>
+                    <th>x<sub>1</sub></th>
+                    <th>x<sub>2</sub></th>
+                    <th>x<sub>1</sub> &oplus; x<sub>2</sub></th>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>0</td>
+                    <td style="text-align: center;">0</td>
+                </tr>
+                <tr>
+                    <td>0</td>
+                    <td>1</td>
+                    <td style="text-align: center;">1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>0</td>
+                    <td style="text-align: center;">1</td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td>1</td>
+                    <td style="text-align: center;">0</td>
+                </tr>
+            </table>
+            <h3 id="encryption-props">Encryption properties</h3>
+            <ul>
+                <li>Confusion: each bit of the ciphertext depends on several parts of the key so small changes in the key result in dramatic changes in the ciphertext</li>
+                <li>Diffusion: a change in a single bit of plaintext produces a change in about half the bits of the ciphertext so a slight change in the plaintext results in a dramatic change in the ciphertext.</li>
+            </ul>
+            <h3 id="aes">Advanded Encryption Standard (AES)</h3>
+            <ul>
+                <li>Black box mathematical blender that really mangles the plaintext into an undecipherable ciphertext</li>
+                <li>Substitution-Permutation network</li>
+                <li>Key size: 128/192/256 bits</li>
+                <li>Block size: 128 bits</li>
+            </ul>
+            <h3 id="block-sizes">Block Sizes</h3>
+            <ul>
+                <li>if blocksize is 16 then plaintext can be encrypted in blocks of 16 bits</li>
+                <li>Padding: if a plaintext is less than 16 is must be padded, use padding PKC#7 (0x03)</li>
+                <li>ECB (electronic codebook mode): if a plaintext is over 16 it can be divided into 16 bit blocks, this has issues</li>
+                <img src="../../Images/linux_crypto.jpg"/>
+                <li>CBC (cipher block chaining mode): fixes the penguin issue, tradeoff is slower performance beacause it needs to be done sequentially</li>
+                <img src="../../Images/cbc.png"/>
+                <li>CTR (counter mode): solves ECB problem and can also run in parallel unlike CBC</li>
+                <img src="../../Images/ctr.png"/>
+            </ul>
+            <hr>
+            <h2 id="key-exchange">Key Exchange</h2>
+            
+            <h3 id="number-theory">Number Theory</h3>
+            <ul>
+                <li>Discrete Log problem: 7<sup><i>N</i></sup> % 13 = <i>X</i>, turns out it is very hard to find N when given <i>X</i> when <i>N</i> is very large.</li>
+            </ul>
+            <h3 id="diffie-hellman">Diffie-Hellman Key Exchange</h3>
+            <ol>
+                <li>Alice and Bob agree on a modulus <i>p</i> (13 from above) and base g (7 from above), <i>g</i> is prime and <i>p</i> is a primitive root modulo <i>p</i></li>
+                <li>Alice chooses a secret <i>a</i> and sends Bob <i>A = g<sup>a</sup></i> % <i>p</i></li>
+                <li>Bob chooses a secret <i>b</i> and sends Alice <i>B = g<sup>b</sup></i> % <i>p</i></li>
+                <li>Alice computes <i>s = B<sup>a</sup></i> % <i>p</i></li>
+                <li>Bob computes <i>s = A<sup>b</sup></i> % <i>p</i></li>
+                <li>They now share a secret <i>s</i></li>
+            </ol>
+            <hr>
+            <h2 id="asymetric-crypto">Asymmetric Encryption</h2>
+            <h3 id="fermats-little-theorem">Fermat's Little Theorem</h3>
+            <ul>
+                <li><i>a<sup>p</sup></i> ≡ <i>a</i> (mod <i>p</i>), if <i>p</i> is prime</li>
+                <li><i>a</i><sup><i>p</i>-1</sup> ≡ 1 (mod <i>p</i>), if <i>p</i> is prime and <i>p</i> is not a factor of <i>a</i></li>
+            </ul>
+            <h3 id="eulers-theorem">Euler's Theorem</h3>
+            <ul>
+                <li><i>a</i><sup>(<i>p</i>-1)(<i>q</i>-1)</sup> ≡ 1 (mod <i>pq</i>), if <i>p</i> and <i>q</i> are prime</li>
+                <li><i>a</i><sup>(<i>p</i>-1)(<i>q</i>-1)+1</sup> ≡ <i>a</i> (mod <i>pq</i>), if <i>p</i> and <i>q</i> are prime</li>
+                <li><i>a</i><sup>1 (mod(<i>p</i>-1)(<i>q</i>-1))</sup> ≡ <i>a</i> (mod <i>pq</i>), if <i>p</i> and <i>q</i> are prime</li>
+            </ul>
+            <h3 id="rsa">Rivest-Shamir-Adleman (RSA)</h3>
+            <ul>
+                <li>(<i>m<sup>e</sup></i>)<sup><i>d</i></sup> ≡ <i>m</i> (mod <i>n</i>), where <i>n</i> = <i>pq</i>, <i>p</i> and <i>q</i> are prime, <i>ed</i> ≡ 1 (mod (<i>p</i>-1)(<i>q</i>-1))</li>
+                <li>Public key: <code class="code-line">&lt;e, n&gt;</code></li>
+                <li>Private key: <code class="code-line">&lt;d, n&gt;</code></li>
+                <li>Plaintext: <i>m</i></li>
+                <li>Ciphertext: <i>m<sup>e</sup></i></li>
+                <li>Prime factorization: (EASY) multiply <i>p</i> and <i>q</i> to make <i>n</i>, (HARD) find <i>p</i> and <i>q</i> when given <i>n</i>, at least for large numbers</li>
+            </ul>
+            <h3 id="key-gen">RSA Key Generation</h3>
+            <ul>
+                <li>Compute <i>n</i> = <i>pq</i> and ɸ(<i>n</i>) = (<i>p</i>-1)(<i>q</i>-1) where <i>p</i> and <i>q</i> are large primes</li>
+                <li>Choose <i>e</i> where gcd(<i>e</i>, ɸ(<i>n</i>)) = 1, commonly set to 65537 (0x10001)</li>
+                <li>Compute <i>d</i> ≡ <i>e</i><sup>-1</sup> (mod ɸ(<i>n</i>)), do efficiently using extended Euclidean algorithm</li>
+            </ul>
+            <h3 id="encrypt-decrypt">RSA Encryption and Decryption</h3>
+            <ul>
+                <li>Encryption: <i>c</i> ≡ <i>m<sup>e</sup></i> (mod <i>n</i>), where <i>c</i> is the CIPHERTEXT and <i>m</i> is the PLAINTEXT</li>
+                <li>Decryption: <i>m</i> ≡ <i>c<sup>d</sup></i> (mod <i>n</i>), where <i>c</i> is the CIPHERTEXT and <i>m</i> is the PLAINTEXT</li>
+            </ul>
+            <h3 id="signing">RSA Signing</h3>
+            <ul>
+                <li>Digital signature: verify authenticity of messages being sent</li>
+                <li>Signing: <i>s</i> ≡ <i>m<sup>d</sup></i> (mod <i>n</i>), where <i>s</i> is the SIGNATURE and <i>m</i> is the PLAINTEXT</li>
+                <li>Verfiication: <i>m</i> ≡ <i>s<sup>e</sup></i> (mod <i>n</i>), where <i>s</i> is the SIGNATURE and <i>m</i> is the PLAINTEXT</li>
+            </ul>
+            <hr>
+            <h2 id="hashing">Hashing</h2>
+            <ul>
+                <li>Avalanche Effect: small change in input has large change in hash</li>
+                <li>One-way: cannot decrypt</li>
+            </ul>
+            <h3 id="resistance">Resistance Properties</h3>
+            <ul>
+                <li>Pre-image resistance: given a hash it should be hard to find out what the original message was</li>
+                <li>Second pre-image resistance: given a message, it should be difficult to find another message where the two messages have equal hashes</li>
+                <li>Collision resistance: should be difficult for two different messages to produce the same hash</li>
+            </ul>
+            <h3 id="sha256">SHA256</h3>
+            <ul>
+                <li>Math blander, cryptographers have given it the stamp of approval</li>
+            </ul>
+            <h3 id="passwords">Passwords</h3>
+            <ul>
+                <li>Hash passwords for storage</li>
+                <li>Protect against dictionary attacks: hash the password with a salt (random string appended to the end), store the hash and the salt together</li>
+            </ul>
+            <h3 id="pow">Proof of Work</h3>
+            <ul>
+                <li>Challenge: random string</li>
+                <li>Response: append random response to end of challenge and hash them, repeat with new response until you find the correct hash</li>
+            </ul>
+            <hr>
+            <h2 id="trust_1">Trust</h2>
+            <h3 id="mitm">Man in the middle</h3>
+            <ul>
+                <li>Ruins RSA: attacker just decrypts and encrypts in the middle with their keys</li>
+                <li>Ruins Diffie-Hellman: attacker just does key exchange with both and decrypts and encrypts in the middle with their keys</li>
+            </ul>
+            <h3 id="trust_2">Trust</h3>
+            <ul>
+                <li>OS Trust: trusts the keys of digicert, google, letsencrypt</li>
+                <li>Digicert: trusts the keys of twitter, facebook, etc.</li>
+                <li>Letsencrypt: trusts the keys of smaller web applications</li>
+            </ul>
+            <h3 id="certificates">Certificates</h3>
+            <ul>
+                <li>hash your certificate data</li>
+                <li>root trusted authority RSA signs the hash, this gives us a certificate</li>
+                <li>if I send my certificate data and RSA signed certificate to someone, they can verify it is really me by hashing and RSA verifying it using the trusted root authority's public key</li>
+                <li>Example of certificate data:
+                    <pre><code class="language-json">{
+"name": "Ben",
+"key": {
+    "e": "public key",
+    "n": "modulus"
+},
+"signer": "root"
 }</code></pre>
-            </li>
-        </ul>
-
+                </li>
+            </ul>
+        </div>
     </body>
 </html>
