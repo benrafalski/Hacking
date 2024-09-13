@@ -1,0 +1,111 @@
+<html>
+    <head>
+        <title>PowerShell</title>
+        <link rel="icon" type="image/x-icon" href="../../Images/hacker.jpg">
+        <link rel="stylesheet" href="../../styles/tokyo-night-dark.min.css">
+        <link rel="stylesheet" href="../../styles/styles.css">
+        <script src="../../styles/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+
+    </head>
+    <body>
+
+
+        <div class="sidenav">
+            <a href="#overview">Overview</a>
+            <div class="sidenav-sublist">
+                <a href="#banner-grabbing">Get PS Version</a>
+                <a href="#ps-history">History</a>
+                <a href="#tab-complete">Tab Complete</a>
+                <a href="#aliases">Aliases</a>
+                <a href="#pipelining">Pipelining</a>
+                <a href="#help-pages">Help Pages</a>
+            </div>
+            <a href="#ps-syntax">Syntax</a>
+            <div class="sidenav-sublist">
+                <a href="#ps-functions">Functions</a>
+                <a href="#ps-classes">Classes</a>
+                <a href="#ps-scripts">Scripts</a>
+                <a href="#ps-modules">Modules</a>
+                <a href="#ps-formatting">Output Formatting</a>
+                <a href="#ps-types">Types</a>
+                <a href="#ps-csv-json-xml">CSV, JSON, XML</a>
+            </div>
+            <a href="#desired-state-configuration">DSC</a>
+            <div class="sidenav-sublist">
+                <!-- <a href="#">-</a> -->
+            </div>
+            <a href="#">1</a>
+            <div class="sidenav-sublist">
+                <a href="#">-</a>
+                <a href="#">-</a>
+                <a href="#">-</a>
+            </div>
+        </div>
+        
+        <div class="main">
+            <h1>PowerShell</h1>
+            
+            <hr>
+            <h2 id="overview">Overview</h2>
+            <ul>
+                <li><a href="https://learn.microsoft.com/en-us/powershell/scripting/how-to-use-docs?view=powershell-7.4" target="_blank">Documentation</a></li>
+                <li>Command-line shell, a scripting language, and configuration management framework (automation)</li>
+                <li>Returns .NET objects instead of text like other shells</li>
+                <li>Supports functions, classes, scripts, and modules</li>
+                <li>PowerShell: built on new versions of .NET instead of .NET Framework and can run on Windows, Linux, and macOS</li>
+                <li>Windows PowerShell: different from PowerShell alone, ships with Windows products and uses full .NET Framework, latest version is v5.1 and is no longer being updated</li>
+                <li>cmdlet: 
+                    <ul>
+                        <li>PowerShell commands are called cmdlets</li>
+                        <li>Are collected into modules to be loaded on demand</li>
+                        <li>Are not stand-alone executables</li>
+                        <li>Can be written in any compiled .NET language or in PowerShell itself</li>
+                        <li>Syntax: <code class="code-line">Verb-Noun</code></li>
+                    </ul>
+                </li>
+
+            </ul>
+            <h3 id="banner-grabbing">Get PS Version</h3>
+            <pre><code class="language-powershell">$PSVersionTable.PSVersion</code></pre>
+            <h3 id="ps-history">History</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_history?view=powershell-7.4 -->
+            <h3 id="tab-complete">Tab Complete</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/psreadline/about/about_psreadline?view=powershell-7.4 -->
+            <h3 id="aliases">Aliases</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_aliases?view=powershell-7.4 -->
+            <h3 id="pipelining">Pipelining</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_pipelines?view=powershell-7.4 -->
+            <h3 id="help-pages">Help Pages</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/get-help?view=powershell-7.4 -->
+
+            <hr>
+            <h2 id="ps-syntax">Syntax</h2>
+            <h3 id="ps-functions">Functions</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_functions_advanced?view=powershell-7.4 -->
+            <h3 id="ps-classes">Classes</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_classes?view=powershell-7.4 -->
+            <h3 id="ps-scripts">Scripts</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_scripts?view=powershell-7.4 -->
+            <h3 id="ps-modules">Modules</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_modules?view=powershell-7.4 -->
+            <h3 id="ps-formatting">Output Formatting</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_format.ps1xml?view=powershell-7.4 -->
+            <h3 id="ps-types">Types</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_types.ps1xml?view=powershell-7.4 -->
+            <h3 id="ps-csv-json-xml">CSV, JSON, XML</h3>
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertfrom-csv?view=powershell-7.4 -->
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertfrom-json?view=powershell-7.4 -->
+            <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertto-xml?view=powershell-7.4 -->
+
+
+            <hr>
+            <h2 id="desired-state-configuration">DSC</h2>
+            <!-- https://learn.microsoft.com/en-us/powershell/dsc/overview/dscforengineers?view=dsc-1.1 -->
+            <ul>
+                <li>Desired State Configuration: PowerShell management framework for managing enterprise infrastructure using configuration as code</li>
+            </ul>
+            
+        </div>
+    </body>
+</html>
