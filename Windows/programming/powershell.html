@@ -50,6 +50,7 @@
             <h2 id="overview">Overview</h2>
             <ul>
                 <li><a href="https://learn.microsoft.com/en-us/powershell/scripting/how-to-use-docs?view=powershell-7.4" target="_blank">Documentation</a></li>
+                <li><a href="https://learn.microsoft.com/en-us/powershell/scripting/install/installing-powershell?view=powershell-7.4">Install</a></li>
                 <li>Command-line shell, a scripting language, and configuration management framework (automation)</li>
                 <li>Returns .NET objects instead of text like other shells</li>
                 <li>Supports functions, classes, scripts, and modules</li>
@@ -64,7 +65,6 @@
                         <li>Syntax: <code class="code-line">Verb-Noun</code></li>
                     </ul>
                 </li>
-
             </ul>
             <h3 id="banner-grabbing">Get PS Version</h3>
             <pre><code class="language-powershell">$PSVersionTable.PSVersion</code></pre>
@@ -78,6 +78,28 @@
             <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/about/about_pipelines?view=powershell-7.4 -->
             <h3 id="help-pages">Help Pages</h3>
             <!-- https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.core/get-help?view=powershell-7.4 -->
+            <pre><code class="language-powershell"># returns a standardized list of verbs that PS commands adhere to
+Get-Verb
+
+# gets a list of commands that are installed
+Get-Command
+# examples
+Get-Command -Name *-Process
+Get-Command -Verb 'Get'
+Get-Command -Noun Proc*
+Get-Command | Select-Object -First 5 -Property Name, Source
+Get-Process | Where-Object {$_.ProcessName -like "p*"}
+Get-Command -ParameterType Process # useful with Get-Member for output-types
+
+# operates on objects to find the object, properties, or methods available for a command
+Get-Member
+# examples
+Get-Process | Get-Member
+Get-Process | Get-Member -MemberType Method
+Get-Process | Get-Member | Select-Object Name, Definition
+
+# displays the help page for a command
+Get-Help</code></pre>
 
             <hr>
             <h2 id="ps-syntax">Syntax</h2>
