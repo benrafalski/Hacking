@@ -1,0 +1,184 @@
+<html>
+    <head>
+        <title>Kerberos</title>
+        <link rel="icon" type="image/x-icon" href="../../Images/hacker.jpg">
+        <link rel="stylesheet" href="../../styles/tokyo-night-dark.min.css">
+        <link rel="stylesheet" href="../../styles/styles.css">
+        <script src="../../styles/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+
+    </head>
+    <body>
+
+
+        <div class="sidenav">
+            <a href="#overview">Overview</a>
+            <a href="#kerberos-model">Kerberos Model</a>
+            <a href="#kerberos-protocol">Protocol</a>
+            <div class="sidenav-sublist">
+                <a href="#kerberos-credentials">Credentials</a>
+                <a href="#kerberos-version-5">Kerberos v5</a>
+            </div>
+            <a href="#kerberos-security">Kerberos Security</a>
+            <div class="sidenav-sublist">
+                <a href="#replay-authenticators">Replay Authenticators</a>
+                <a href="#clock-attacks">Clock Attacks</a>
+                <a href="#password-attacks">Password Attacks</a>
+                <a href="#malicious-software">Malicious Software</a>
+            </div>
+        </div>
+
+        <!-- todo -->
+         <!-- https://gost.isi.edu/publications/kerberos-neuman-tso.html -->
+        
+        <div class="main">
+            <h1>Kerberos</h1>
+            <hr>
+            <h2 id="overview">Overview</h2>
+            <ul>
+                <li>Trusted third-party <u>authentication</u> protocol designed for TCP/IP networks</li>
+                <li>Uses <u>symmetric cryptography</u>, usually AES</li>
+                <li>Currently <u>Kerberos v5</u> is in use, v4 is not secure since it only supports DES</li>
+                <li>Widely used as the basis for <u>single-sign on (SSO)</u></li>
+                <li>Is the default authentication package for <u>Microsoft Windows</u> (replaced NTLM)</li>
+            </ul>
+            <h4>Advantages</h4>
+            <ul>
+                <li>Passwords are never sent accross the network</li>
+                <li>Encryption keys are never directly exchanged</li>
+            </ul>
+
+            <hr>
+            <h2 id="kerberos-model">Kerberos Model</h2>
+            <ul>
+                <li>Client and server are entities on the network</li>
+                <li>Key Distribution Center (KDC): consists of a Kerberos Authentication Server and a Ticket Granting Server (TGS)</li>
+                <li>Kerberos keeps a database of clients and their secret keys</li>
+                <li>For human users, the secret key is an encrypted password</li>
+                <li>Client needs to get a separate ticket from the TGS for each service they wish to use</li>
+            </ul>
+            <hr>
+            <h2 id="kerberos-protocol">Protocol</h2>
+            <h4>Abbreviations</h4>
+            <ul>
+                <li><i>c</i>     = client</li>
+                <li><i>s</i>     = server</li>
+                <li><i>v</i>     = beginning and ending validity time for a ticket</li>
+                <li><i>t</i>     = timestamp</li>
+                <li><i>K<sub>x</sub></i> = <i>x</i>'s secret key</li>
+                <li><i>K<sub>x, y</sub></i>  = session key for <i>x</i> and <i>y</i></li>
+                <li>{<i>m</i>}<i>K<sub>x</sub></i>  = <i>m</i> encrypted in <i>x</i>'s secret key</li>
+                <li><i>T<sub>x, y</sub></i>   = <i>x</i>'s ticket to use <i>y</i></li>
+                <li><i>A<sub>x, y</sub></i>   = authenticator from <i>x</i> to <i>y</i></li>
+            </ul>
+            <h3 id="kerberos-credentials">Credentials</h3>
+            <ul>
+                <li>Two types of credentials (messages): tickets and authenticators</li>
+                <li><u><b>Tickets</b></u>:
+                    <ul>
+                        <li>Used to pass the identity of the client for whom the ticket was issued securely to the server</li>
+                        <li>A ticket is good for a single server and a single client until it expires</li>
+                        <li>No one on the network can read or modify the ticket as it passes through the network</li>
+                        <li><u>Form</u>: <i>T<sub>c, s</sub></i> = <i>s</i>, {<i>c, a, v, K<sub>c, s</sub></i>}<i>K<sub>s</sub></i></li>
+                        <li>Note: <i>a</i> is the client's network address</li>
+                    </ul>
+                </li>
+                <li><u><b>Authenticators</b></u>:
+                    <ul>
+                        <li>Additional authenticator, presented within the ticket</li>
+                        <li>Purpose: proves that the authenticator knows the session key and prevents replay attacks with a timestamp</li>
+                        <li>The timestamp threshold for Kerberos is usually within 2 minutes</li>
+                        <li>Unlike the ticket, it can only be used once</li>
+                        <li>Client generates it every time they want to use a service on the server</li>
+                        <li><u>Form</u>: <i>A<sub>c, s</sub></i> = {<i>c, t, key</i>}<i>K<sub>c, s</sub></i></li>
+                        <li>Note: <i>t</i> is a timestamp and <i>key</i> is an optional additional session key</li>
+                    </ul>
+                </li>
+            </ul>
+            <h3 id="kerberos-version-5">Kerberos Version 5</h3>
+            <img src="../../Images/kerberos1.png" style="width: fit-content;"/>
+            <br>
+            <br>
+            <table>
+                <tr>
+                    <td>1. Client to Kerberos:</td>
+                    <td><i>c, tgs</i></td>
+                </tr>
+                <tr>
+                    <td>2. Kerberos to client:</td>
+                    <td>{<i>K<sub>c, tgs</sub></i>}<i>K<sub>c</sub></i>, {<i>T<sub>c, tgs</sub></i>}<i>K<sub>tgs</sub></i></td>
+                </tr>
+                <tr>
+                    <td>3. Client to TGS:</td>
+                    <td>{<i>A<sub>c, tgs</sub></i>}<i>K<sub>c, tgs</sub></i>, {<i>T<sub>c, tgs</sub></i>}<i>K<sub>tgs</sub></i></td>
+                </tr>
+                <tr>
+                    <td>4. TGS to client:</td>
+                    <td>{<i>K<sub>c, s</sub></i>}<i>K<sub>c, tgs</sub></i>, {<i>T<sub>c, s</sub></i>}<i>K<sub>s</sub></i></td>
+                </tr>
+                <tr>
+                    <td>5. Client to server:</td>
+                    <td>{<i>A<sub>c, s</sub></i>}<i>K<sub>c, s</sub></i>, {<i>T<sub>c, s</sub></i>}<i>K<sub>s</sub></i></td>
+                </tr>
+            </table>
+            <span>**Note: <i>tgs</i> is the name of the TGS server</span>
+            <h4>Getting an Initial Ticket</h4>
+            <ol>
+                <li>Client performs (1)</li>
+                <li>Kerberos server finds the client in the database</li>
+                <li>Kerberos server creates a new session key for the client and TGS (<i>K<sub>c, tgs</sub></i>)</li>
+                <li>Kerberos server creates a <b>Ticket Granting Ticket - TGT</b> with the client's information and the session key it created</li>
+                <li>Kerberos server performs (2)</li>
+                <li>*Note: the Kerberos server has the both the client's (<i>K<sub>c</sub></i>) and TGS's (<i>K<sub>tgs</sub></i>) secret keys</li>
+                <li>**Note: the client's secret key (<i>K<sub>c</sub></i>) is just a one-way hash of their password</li>
+            </ol>
+            <h4>Getting Server Tickets</h4>
+            <ol>
+                <li>Client performs (3)</li>
+                <li>TGS then gets the session key (<i>K<sub>c, tgs</sub></i>) from the client's TGT (<i>T<sub>c, tgs</sub></i>)</li>
+                <li>TGS then confirms the timestamp in the client's authenticator (<i>A<sub>c, tgs</sub></i>)</li>
+                <li>TGS then creates a new session key (<i>K<sub>c, s</sub></i>) and a new <b>Service Ticket - ST</b> (<i>T<sub>c, s</sub></i>) for the client and server</li>
+                <li>TGS performs (4)</li>
+                <li>*Note: The TGS has the service server's secret key (<i>K<sub>s</sub></i>)</li>
+                <li>**Note: The TGS <i>normally</i> also has a cache with recently recieved authenticators that is checks with the client's authenticator to prevent replay attacks</li>
+            </ol>
+            <h4>Requesting a Service</h4>
+            <ol>
+                <li>Client performs (5)</li>
+                <li>The server gets the session key (<i>K<sub>c, s</sub></i>) from the client's ST (<i>T<sub>c, s</sub></i>)</li>
+                <li>The server confirms the timestamp in the client's authenticator (<i>A<sub>c, s</sub></i>)</li>
+                <li>If mutual authentication is required then the server will send a message with a timestamp encrypted with the session key back to the client</li>
+                <li>For further communication, the client and server can use their shared session key</li>
+                <li>*Note: The server <i>normally</i> also has a cache with recently recieved authenticators that is checks with the client's authenticator to prevent replay attacks</li>
+            </ol>
+
+            <hr>
+            <h2 id="kerberos-security">Kerberos Security</h2>
+            <h3 id="replay-authenticators">Replay Authenticators</h3>
+            <ul>
+                <li>Timestamps are supposed to prevent this</li>
+                <li>However, replays can be done during the lifetime of the ticket, which is <b>normally 8 hours</b></li>
+                <li>This attack will only work if the server fails to store all of the previous valid tickets</li>
+            </ul>
+            <h3 id="clock-attacks">Clock Attacks</h3>
+            <ul>
+                <li>Authenticators rely on all of the clocks in the network to be synchronized</li>
+                <li>However, most network time protocols are insecure</li>
+                <li>This makes Kerberos easily vulnerable to replay attacks</li>
+            </ul>
+            <h3 id="password-attacks">Password Attacks</h3>
+            <ul>
+                <li>A network adversary can collect tickets sent over the network and try to decrypt them</li>
+                <li>If the client is using a weak password then it should be trivial for the adversary to crack</li>
+            </ul>
+            <h3 id="malicious-software">Malicious Software</h3>
+            <ul>
+                <li>Kerberos relies on the fact that the Kerberos software is trustworthy</li>
+                <li>However, the client's Kerberos software can be replaced by a fake Kerberos software my a malicious adversary</li>
+                <li>The malicious software can do the same thing as the original Kerberos software but in addition also record client passwords</li>
+            </ul>
+
+        </div> 
+
+    </body>
+</html>
