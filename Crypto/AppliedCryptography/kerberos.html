@@ -26,6 +26,16 @@
                 <a href="#password-attacks">Password Attacks</a>
                 <a href="#malicious-software">Malicious Software</a>
             </div>
+            
+            <a href="#attacking-kerberos">Attacking Kerberos</a>
+            <div class="sidenav-sublist">
+                <a href="#kerberos-wireshark">Kerberos Wireshark</a>
+                <a href="#golden-ticket">Golden Ticket</a>
+                <a href="#"></a>
+                <a href="#"></a>
+                <a href="#"></a>
+                <a href="#"></a>
+            </div>
         </div>
 
         <!-- todo -->
@@ -40,7 +50,9 @@
                 <li>Uses <u>symmetric cryptography</u>, usually AES</li>
                 <li>Currently <u>Kerberos v5</u> is in use, v4 is not secure since it only supports DES</li>
                 <li>Widely used as the basis for <u>single-sign on (SSO)</u></li>
-                <li>Is the default authentication package for <u>Microsoft Windows</u> (replaced NTLM)</li>
+                <li>Is the default authentication package for <u>Microsoft Windows</u> (replaced and better than NTLM)</li>
+                <li>Usually NTLM is used with IP addresses, Kerberos is used with hostnames</li>
+                <li><a href="https://datatracker.ietf.org/doc/html/rfc4120" target="_blank">Spec</a></li>
             </ul>
             <h4>Advantages</h4>
             <ul>
@@ -53,6 +65,7 @@
             <ul>
                 <li>Client and server are entities on the network</li>
                 <li>Key Distribution Center (KDC): consists of a Kerberos Authentication Server and a Ticket Granting Server (TGS)</li>
+                <li>In Windows Active Directory, the KDC is the <u>Domain Controller</u> and TGS is listed under the <i>krbtgt</i> user account</li>
                 <li>Kerberos keeps a database of clients and their secret keys</li>
                 <li>For human users, the secret key is an encrypted password</li>
                 <li>Client needs to get a separate ticket from the TGS for each service they wish to use</li>
@@ -101,24 +114,29 @@
             <br>
             <table>
                 <tr>
-                    <td>1. Client to Kerberos:</td>
+                    <td>1 (AS-REQ). Client to Kerberos:</td>
                     <td><i>c, tgs</i></td>
+                    <td><img src="../../Images/as-req.png" style="width: fit-content;"/></td>
                 </tr>
                 <tr>
-                    <td>2. Kerberos to client:</td>
+                    <td>2 (AS-REP). Kerberos to client:</td>
                     <td>{<i>K<sub>c, tgs</sub></i>}<i>K<sub>c</sub></i>, {<i>T<sub>c, tgs</sub></i>}<i>K<sub>tgs</sub></i></td>
+                    <td><img src="../../Images/as-rep.png" style="width: fit-content;"/></td>
                 </tr>
                 <tr>
-                    <td>3. Client to TGS:</td>
+                    <td>3 (TGS-REQ). Client to TGS:</td>
                     <td>{<i>A<sub>c, tgs</sub></i>}<i>K<sub>c, tgs</sub></i>, {<i>T<sub>c, tgs</sub></i>}<i>K<sub>tgs</sub></i></td>
+                    <td><img src="../../Images/tgs-req.png" style="width: fit-content;"/></td>
                 </tr>
                 <tr>
-                    <td>4. TGS to client:</td>
+                    <td>4 (TGS-REP). TGS to client:</td>
                     <td>{<i>K<sub>c, s</sub></i>}<i>K<sub>c, tgs</sub></i>, {<i>T<sub>c, s</sub></i>}<i>K<sub>s</sub></i></td>
+                    <td><img src="../../Images/tgs-rep.png" style="width: fit-content;"/></td>
                 </tr>
                 <tr>
-                    <td>5. Client to server:</td>
+                    <td>5 (AP-REQ). Client to server:</td>
                     <td>{<i>A<sub>c, s</sub></i>}<i>K<sub>c, s</sub></i>, {<i>T<sub>c, s</sub></i>}<i>K<sub>s</sub></i></td>
+                    <td><img src="../../Images/ap-req.png" style="width: fit-content;"/></td>
                 </tr>
             </table>
             <span>**Note: <i>tgs</i> is the name of the TGS server</span>
@@ -178,6 +196,29 @@
                 <li>The malicious software can do the same thing as the original Kerberos software but in addition also record client passwords</li>
             </ul>
 
+            <hr>
+            <h2 id="attacking-kerberos">Attacking Kerberos</h2>
+            <h3 id="kerberos-wireshark">Kerberos Wireshark</h3>
+            <img src="../../Images/kerberos-wireshark1.png" style="width:750px"/>
+            <h3 id="golden-ticket">Golden Ticket</h3>
+            <ul>
+                <li>More of as persistence attack that comes after the system is already compromised</li>
+                <li><u>Attack</u>: steal <i>krbtgt</i> NTLM hash and use that to make a TGT "golden ticket" that lasts forever</li>
+                <li><u>Why it works</u>: in the <b>2. AS-REP</b> the TGT ticket is encrypted with the <i>kbrtgt</i> secret key, this secret key is just the <i>kbrtgt</i> NTLM hash</li>
+                <li><u>Golden ticket</u>: once we get the NTLM hash for <i>kbrtgt</i> we will be able to skip both AS-REQ and AS-REP in all future Kerberos authentications</li>
+                <li>This results in us being able to forge any TGT ticket we want and impersonate any user we want (like admin) since we can encrypt the ticket correctly using the <i>krbtgt</i> NTLM hash</li>
+                <li><u><b>Steps</b></u>:
+                    <ol>
+                        <li>Get the NTLM hash for the <i>krbtgt</i> user account</li>
+                        <li>Use <a href="https://github.com/ParrotSec/mimikatz" target="_blank">mimikatz</a> with the <i>krbtgt</i> NTLM hash to create your cached golden ticket that lasts for 10 years</li>
+                        <li>Result: now you don't need to authenticate using Kerberos for anything because you have a golden TGT ticket that lasts for 10 years</li>
+                    </ol>
+                </li>
+                <li>Mimikatz example:
+                    <pre><code class="language-bash"># this will create a golden ticket to impersonate administrator@company.local
+mimikatz# kerberos::golden /domain:company.local /sid:&lt;SID&gt; /krbtgt:&lt;KRBTGT-NTLM-HASH&gt; /user:administrator /ppt</code></pre>
+                </li>
+            </ul>
         </div> 
 
     </body>
