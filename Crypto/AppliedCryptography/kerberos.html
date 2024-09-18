@@ -30,11 +30,10 @@
             <a href="#attacking-kerberos">Attacking Kerberos</a>
             <div class="sidenav-sublist">
                 <a href="#kerberos-wireshark">Kerberos Wireshark</a>
+                <a href="#kerberoasting">Kerberoasting</a>
+                <a href="#impacket-getnpusers">Impacket GetNPUsers</a>
                 <a href="#golden-ticket">Golden Ticket</a>
-                <a href="#"></a>
-                <a href="#"></a>
-                <a href="#"></a>
-                <a href="#"></a>
+                <a href="#silver-ticket">Silver Ticket</a>
             </div>
         </div>
 
@@ -51,8 +50,9 @@
                 <li>Currently <u>Kerberos v5</u> is in use, v4 is not secure since it only supports DES</li>
                 <li>Widely used as the basis for <u>single-sign on (SSO)</u></li>
                 <li>Is the default authentication package for <u>Microsoft Windows</u> (replaced and better than NTLM)</li>
-                <li>Usually NTLM is used with IP addresses, Kerberos is used with hostnames</li>
-                <li><a href="https://datatracker.ietf.org/doc/html/rfc4120" target="_blank">Spec</a></li>
+                <li>Services that use Kerberos include <u>Active Directory, NFS, and Samba</u></li>
+                <li>Usually NTLM is used with IP addresses (client and server are on different domains), Kerberos is used with hostnames (when client and server are on the same domain)</li>
+                <li><a href="https://datatracker.ietf.org/doc/html/rfc4120" target="_blank">RFC4120</a></li>
             </ul>
             <h4>Advantages</h4>
             <ul>
@@ -69,6 +69,12 @@
                 <li>Kerberos keeps a database of clients and their secret keys</li>
                 <li>For human users, the secret key is an encrypted password</li>
                 <li>Client needs to get a separate ticket from the TGS for each service they wish to use</li>
+                <li><u>Service Principal Name (SPN)</u>: this is the service name that the client sends in <b>3. TGS-REQ</b>, the TGS uses the SPN to map what user on the domain is hosting the requested service</li>
+                <li>Example of SPN: MSSQLSvc/sqlserver.htb.local:1433, so sqlserver.htb.local:1433 is hosting MS SQL</li>
+                <pre><code class="language-powershell"># use this to get all users that have an SPN
+# needs to be ran from the domain controller
+import-module activedirectory
+get-aduser -ldapfilter "(serviceprincipalname=*)"</code></pre>
             </ul>
             <hr>
             <h2 id="kerberos-protocol">Protocol</h2>
@@ -95,6 +101,8 @@
                         <li><u>Form</u>: <i>T<sub>c, s</sub></i> = <i>s</i>, {<i>c, a, v, K<sub>c, s</sub></i>}<i>K<sub>s</sub></i></li>
                         <li>Note: <i>a</i> is the client's network address</li>
                     </ul>
+                    <pre><code class="language-powershell"># cached tickets can be seen using klist command
+klist</code></pre>
                 </li>
                 <li><u><b>Authenticators</b></u>:
                     <ul>
@@ -184,7 +192,7 @@
                 <li>However, most network time protocols are insecure</li>
                 <li>This makes Kerberos easily vulnerable to replay attacks</li>
             </ul>
-            <h3 id="password-attacks">Password Attacks</h3>
+            <h3 id="password-attacks">Password Attacks (Kerberoasting)</h3>
             <ul>
                 <li>A network adversary can collect tickets sent over the network and try to decrypt them</li>
                 <li>If the client is using a weak password then it should be trivial for the adversary to crack</li>
@@ -200,6 +208,48 @@
             <h2 id="attacking-kerberos">Attacking Kerberos</h2>
             <h3 id="kerberos-wireshark">Kerberos Wireshark</h3>
             <img src="../../Images/kerberos-wireshark1.png" style="width:750px"/>
+
+            <h3 id="kerberoasting">Kerberoasting</h3>
+            <ul>
+                <li>Gets the user password hash for a Kerberos enabled service</li>
+                <li><u>Attack</u>: get a TGT as in <b>2. AS-REP</b> then use that to get a TGT, use the TGT to crack the service's password</li>
+                <li><u>How it works</u>: The ST in TGS-REP is symmetrically encrypted with the service's user password, since we have the encrypted ST and the plaintext ST we can crack it using hachcat</li>
+                <li><u>Mitigation</u>: normally this will not be an attack vector since almost everyone has pre-auth enabled</li>
+                <li><u><b>Steps</b></u>:
+                    <ol>
+                        <li>First you need to get any user credentials from the domain contoller</li>
+                        <li>Run the Impacket getuserspns.py script to get the SPN's password hash</li>
+                        <li>Use hashcat to crack the hash</li>
+                        <li>Result: this gives you the user password for the service of the SPN you targeted</li>
+                    </ol>
+                </li>
+                <li>Impacket example:
+                    <pre><code class="language-powershell"># you can crack this password using hashcat -m 13100
+getuserspns.py htb.local/asmith:password123 -request</code></pre>
+                </li>
+                <li>If Pre-auth is enabled: then you just need to get the encrypted timestamp from <b>1. AS-REQ</b> and bruteforce it in hashcat, won't work if they have a strong password</li>
+                <li>Pre-auth enabled example:
+                    <pre><code class="language-bash"># you need to get the encrypted AS-REQ timestamp from wireshark
+hashcat -m 19900 -a 0 "$krb5pa$18$hashcat$HASHCATDOMAIN.COM$96c289009b05181bfd32062962740b1b1ce5f74eb12e0266cde74e81094661addab08c0c1a178882c91a0ed89ae4e0e68d2820b9cce69770" rockyou.txt</code></pre>
+
+                </li>
+            </ul>
+
+            <h3 id="impacket-getnpusers">Impacket GetNPUsers</h3>
+            <ul>
+                <li>Attacks user accounts that do not have Kerberos pre-auth enabled</li>
+                <li><u>Attack</u>: impersonating a user to geta TGT and use that to crack the impersonated user's password</li>
+                <li><u>How it works</u>: impersonate as a user (who doesn't have pre-auth enabled) by sending a fake <b>1. AS-REQ</b>, use the TGT encrypted with their password in the AS-REP to crack their password</li>
+                <li><u>Pre-authentication</u>: makes it so the AS-REQ needs to have the current time encrypted with the user's password, this makes it so the domain controller prevents this attack and replay attacks</li>
+                <li>Example:
+                    <pre><code class="language-powershell"># gets encrypted ST for a user on the domain controller
+# use hashcat -m 18200 to crack
+# use domain.local/user to specify a specific user
+getnpusers.py domain.local/ -dc-ip 192.168.0.79 -request</code></pre>
+                </li>
+
+            </ul>
+
             <h3 id="golden-ticket">Golden Ticket</h3>
             <ul>
                 <li>More of as persistence attack that comes after the system is already compromised</li>
@@ -216,8 +266,34 @@
                 </li>
                 <li>Mimikatz example:
                     <pre><code class="language-bash"># this will create a golden ticket to impersonate administrator@company.local
-mimikatz# kerberos::golden /domain:company.local /sid:&lt;SID&gt; /krbtgt:&lt;KRBTGT-NTLM-HASH&gt; /user:administrator /ppt</code></pre>
+mimikatz# kerberos::golden /domain:company.local /sid:&lt;ADMIN_SID&gt; /krbtgt:&lt;KRBTGT_NTLM_HASH&gt; /user:administrator /ppt</code></pre>
                 </li>
+            </ul>
+            <h3 id="silver-ticket">Silver Ticket</h3>
+            <ul>
+                <li>Same as golden ticket but you can only authenticate to one service, not all services</li>
+                <li>This attack is only feasible if the service's password is easy to crack</li>
+                <li><u>Attack</u>: steal the NTLM hash of the service that you want to authenticate with</li>
+                <li>This means you can skip steps AS-REQ, AS-REP, TGS-REQ, and TGS-REP since we can forge our own </li>
+                <li><u>Mitigation</u>: the service server can enable "Pack Validation" in which it sends the Service Ticket to the TGS to validate of the ST is valid</li>
+                <li><u><b>Steps:</b></u>:
+                    <ol>
+                        <li>Use Kerberoasting attack to get the server password hash with a tool like Rubeus</li>
+                        <li>Crack the service's password using the hash and a tool like john or hashcat (only possible with weak password)</li>
+                        <li>With the cracked password, hash it using RC4</li>
+                        <li>Use the RC4 with Rubeus again to make a silver ticket</li>
+                        <li>Result: now you have a ticket that can be used to impersonate Admin on this specific service</li>
+                    </ol>
+                </li>
+                <li>Rubeus example:
+                    <pre><code class="language-powershell"># using rubeus for kerberoasting attack
+rubeus kerberroast /domain:kerb.local /creduser:kerb.local\test /credpassword:testpwd
+# this will hash the password using rc4
+rubeus hash /password:password123
+# this will make a silver ticket 
+rubeus silver /service:MSSQLSvc/sqlserver.htb.local:1433 /rc4:&lt;SERVICE_RC4_HASH&gt; /sid:&lt;ADMIN_SID&gt; /user:Administrator /domain:htb.local /ppt</code></pre>
+                </li>
+
             </ul>
         </div> 
 

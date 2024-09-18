@@ -34,7 +34,7 @@
       </div>
       <a href="#capturing-ntlm-over-dhcp">Capturing NTLM hashes over DHCP</a>
       <div class="sidenav-sublist">
-        <a href="#wpad-poinsoning-responder">WPAD poisoning using Responder</a>
+        <a href="#wpad-poisoning-responder">WPAD poisoning using Responder</a>
       </div>
     </div>
   
@@ -139,10 +139,11 @@ user::domain:challenge:HMAC-MD5:NTLMv2Response(with HMAC-MD5 removed from first 
           </ul>
         </li>
         <li>
-          <u>NBT-NS:</u> sends multicast message when you try to connect to a
+          <u>NBT-NS (udp/137):</u> sends multicast message when you try to connect to an unknown
           hostname (like \\windows03), kind of like ARP for a hostname resolution
         </li>
-        <li><u>LLMNR:</u> modern updated version of NBT-NS</li>
+        <li><u>LLMNR (udp/5355):</u> modern updated version of NBT-NS</li>
+        <li><u>mDNS (udp/5353):</u> updated version of LLMNR, is phasing out LLMNR</li>
         <li>
           If someone tried to authenticate to a hostname that is not there then
           Responder sends a fake NBT-NS/LLMNR packet to that someone so they will
@@ -222,7 +223,7 @@ responder -I eth0</code></pre>
         <li>Note: WPAD configs will stay until the victim machine is rebooted</li>
       </ul>
 
-      <h3 id="wpad-poinsoning-responder">WPAD poisoning using Responder</h3>
+      <h3 id="wpad-poisoning-responder">WPAD poisoning using Responder</h3>
       <pre><code class="language-bash"># -d is needed to use the DHCP module
 responder -I eth0 -rPdv</code></pre>
 
