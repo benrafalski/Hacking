@@ -213,7 +213,7 @@ klist</code></pre>
             <ul>
                 <li>Gets the user password hash for a Kerberos enabled service</li>
                 <li><u>Attack</u>: get a TGT as in <b>2. AS-REP</b> then use that to get a TGT, use the TGT to crack the service's password</li>
-                <li><u>How it works</u>: The ST in TGS-REP is symmetrically encrypted with the service's user password, since we have the encrypted ST and the plaintext ST we can crack it using hachcat</li>
+                <li><u>How it works</u>: The ST in TGS-REP is symmetrically encrypted with the service's user password, since we have the encrypted ST we can crack it using hachcat</li>
                 <li><u>Mitigation</u>: normally this will not be an attack vector since almost everyone has pre-auth enabled</li>
                 <li><u><b>Steps</b></u>:
                     <ol>
