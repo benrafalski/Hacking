@@ -21,10 +21,23 @@
             <a href="#protocol">Protocol</a>
             <div class="sidenav-sublist">
                 <a href="#tcp-ip">TCP/IP</a>
-                <a href="#pub-key-crypto">Public Key Cryptography</a>
+                <a href="#protocol-connection">Connection</a>
+                <div class="sidenav-sublist">
+                    <a href="#protocol-version-exchange">Version Exchange</a>
+                    <a href="#protocol-key-exchange-init">Key Exchange Init</a>
+                    <a href="#protocol-dhke">Diffie-Hellman</a>
+                </div>
+                <a href="#pub-key-crypto">Cryptography</a>
                 <a href="#authencation">Authentication</a> 
             </div>
             <a href="#usage">Usage</a>
+            <div class="sidenav-sublist">
+                <a href="#usage-install">Install</a>
+                <div class="sidenav-sublist">
+                    <a href="#usage-install-linux">Linux</a>
+                    <a href="#usage-install-windows">Windows</a>
+                </div>
+            </div>
             <div class="sidenav-sublist">
                 <a href="#usage-keys">Keys</a>
             </div>
@@ -85,28 +98,156 @@
             </ul>
             <hr>
             <h2 id="protocol">Protocol</h2>
+            <ul>
+                <li><a href="https://www.rfc-editor.org/rfc/rfc4253" target="_blank">RFC</a></li>
+            </ul>
             <h3 id="tcp-ip">TCP/IP</h3>
             <ul>
                 <li>Only uses TCP, no UDP</li>
                 <li>TCP Port Number: 22</li>
-                <li>Packet format: <br>
+                <li>Packet format: 
+                    <ul>
+                        <li><code>uint32    packet_length</code>: length of packet not including the mac or packet_length fields</li>
+                        <li><code>byte      padding_length</code>: length of 'random padding'</li>
+                        <li><code>byte[n1]  payload; n1 = packet_length - padding_length - 1</code></li>
+                        <li><code>byte[n2]  random padding; n2 = padding_length</code>: consists of random bytes, minimum is 4 bytes and maximum is 255 bytes</li>
+                        <li><code>byte[m]   mac (Message Authentication Code - MAC); m = mac_length</code>:
+                            <ul>
+                                <li><code>mac = MAC(key, sequence_number || unencrypted_packet)</code> where <code>unencrypted_packet</code> is the entire packet without the MAC and <code>sequence_number</code> is the packet number starting from 0</li>
+                                <li>MAC algorithms: <code>hmac-sha1, hmac-sha1-96, hmac-md5, hmac-md5-96</code></li>
+                            </ul>
+                        </li>
+                    </ul>
+                    <br>
                     <img src="../../Images/SSH2-Binary-Packet-Protocol.png">
                 </li>
             </ul>
-            <h3 id="pub-key-crypto">Public Key Cryptography</h3>
+            <h3 id="protocol-connection">Connection</h3>
             <ul>
-                <li>Use public key cryptography to negotiate identical shared symmetric keys that are used for the rest of the encryption over channel</li>
-                <li>Mutual authentication: both sides authenticate each other using each other's public/private key pair</li>
-                <li>Procedure:
+                <li>Order goes: (1) Client initiates connection, (2) TCP handshake, (3) version exchange, (4) key exchange init, (5) Diffie-Hellman key exchange</li>
+            </ul>
+            <h4 id="protocol-version-exchange">Version Exchange</h4>
+            <ul>
+                <li>After the TCP connection is established, the below identification string must be sent by both sides to each other.
+                    <pre><code class="language-text">SSH-protoversion-softwareversion SP comments CR LF
+e.g. SSH-2.0-billsSSH_3.6.3q3&lt;CR&gt;&lt;LF&gt;</code></pre>
+                </li>
+                <li>The protoversion should be 2.0 and the comment is optional.</li>
+            </ul>
+            
+            <h4 id="protocol-key-exchange-init">Key Exchange Initialization</h4>
+            <ul>
+                <li>Both the cipher and mac algorithms are chosen during the key exchange</li>
+                <li>Supported algorithms:
+                    <table>
+                        <tr>
+                            <td>Ciphers</td>
+                            <td><code>3des-cbc, blowfish-cbc, twofish256-cbc, twofish-cbc, twofish192-cbc, twofish128-cbc, aes256-cbc, aes192-cbc, aes128-cbc, serpent256-cbc, arcfour, idea-cbc, cast128-cbc</code></td>
+                        </tr>
+                        <tr>
+                            <td>Key exchange</td>
+                            <td><code>diffie-hellman-group1-sha1, diffie-hellman-group14-sha1</code></td>
+                        </tr>
+                        <tr>
+                            <td>Public Key</td>
+                            <td><code>ssh-dss, ssh-rsa, pgp-sign-rsa, pgp-sign-dss</code></td>
+                        </tr>
+                    </table>
+                </li>
+                <li>Steps:
                     <ol>
-                        <li>Public key from local machine is passed to server machine</li>
-                        <li>Server verifies that the key is registered</li>
-                        <li>If the key is registered, the server generates a secret code, encrypts it with the local public key, and sends it back to the local machine</li>
-                        <li>The local machine decrypts the code and sends it back to the server</li>
-                        <li>The server machine then verifies if the local machine using the code</li>
-                        <li>The server machine and local machine now have a shared key</li>
+                        <li>Each side sends name-list of supported algorithms, where each side has a preferred algorithm. The packet format is:
+                            <pre><code class="language-c">struct name_list_packet {
+    uint8_t     SSH_MSG_KEXINIT;                         // const uint16_t SSH_MSG_KEXINIT = 20;
+    uint8_t[16] cookie (random bytes);                   // random value generated by sender
+    char*       kex_algorithms;                          // name-list of key exchange algorithms, first is preferred                            
+    char*       server_host_key_algorithms;              // name-list of key algos server can use
+    char*       encryption_algorithms_client_to_server;  // name-list of ciphers for the client in order of preference
+    char*       encryption_algorithms_server_to_client;  // name-list of ciphers for the server in order of preference
+    char*       mac_algorithms_client_to_server;         // name-list of MAC algos for the client in order of preference
+    char*       mac_algorithms_server_to_client;         // name-list of MAC algos for the server in order of preference
+    char*       compression_algorithms_client_to_server; // name-list of compression algos for the client in order of preference
+    char*       compression_algorithms_server_to_client; // name-list of compression algos for the server in order of preference
+    char*       languages_client_to_server;              // name-list of languages for the client in order of preference, can be empty
+    char*       languages_server_to_client;              // name-list of languages for the server in order of preference, can be empty
+    bool        first_kex_packet_follows;                // TRUE if a guessed key exchange packet is to be sent, otherwise FALSE
+    uint32_t    0;                                       // (reserved for future extension)
+};
+// Optional: each side can choose to send a packet to be the first key exchange packet 
+// if they think both sides have the same preferred algorithms, 
+// if they are wrong then this packet is dropped</code></pre>
+                        </li>
+                            
+                        </li>
+                        <li>Key exchange produces 2 values: a shared secret K and an exchange hash H</li>
+                        <li>H is used as a session identifier</li>
+                        <li>Keys:
+                            <pre><code class="language-python"># hash() is the same hash algorithm specified by the key exchange
+initial_iv_client_to_server = hash(K || H || "A" || session_id)
+initial_iv_server_to_client = hash(K || H || "B" || session_id)
+encryption_key_client_to_server = hash(K || H || "C" || session_id)
+encryption_key_server_to_client = hash(K || H || "D" || session_id)
+integrity_key_client_to_server = hash(K || H || "E" || session_id)
+integrity_key_server_to_client = hash(K || H || "F" || session_id)</code></pre>
+                        </li>
+                        <li>Key exchange ends when each side sends a <code>SSH_MSG_NEWKEYS</code> message (where <code>SSH_MSG_NEWKEYS=21</code>). All message after this must use new keys and algorithms.</li>
                     </ol>
                 </li>
+            </ul>
+            <h4 id="protocol-dhke">Diffie-Hellman Key Exchange</h4>
+            <table>
+                <tr>
+                    <td colspan="2">
+                        <code>g</code> is a generator, 
+                        <code>p</code> is a large prime, 
+                        <code>V_S</code> is the server's identification string,
+                        <code>V_C</code> is the client's identification string,
+                        <code>K_S</code> is the servers public key,
+                        <code>I_C</code> is the client's SSH_MSG_KEXINIT message from the previous step,
+                        <code>I_S</code> is the servers's SSH_MSG_KEXINIT message from the previous step
+                    </td>
+                </tr>
+                <tr>
+                    <td>1</td>
+                    <td><pre><code class="language-c"># client sends e to the server
+struct dhke_msg1 {
+    uint8_t     SSH_MSG_KEXDH_INIT;     // = 20
+    uint64_t    e;                      // e = g^x mod p, where x is a random number               
+    
+};</code></pre></td>
+                </tr>
+                <tr>
+                    <td>2</td>
+                    <td><pre><code class="language-c">// server sends f, H, and K_S to the client
+struct dhke_msg2 {
+    uint8_t     SSH_MSG_KEXDH_REPLY;
+    char*       k_s;                    // server public key
+    uint64_t    f;                      // f = g^y mod p, where y is a random number
+    char*       sig_H;                  // signature of H, H = hash(V_C || V_S || I_C || I_S || K_S || e || f || K)
+}</code></pre></td>
+                </tr>
+                <tr>
+                    <td>3</td>
+                    <td>The client verified that <code>K_S</code> belongs to the server using some certificate authority</td>
+                </tr>
+                <tr>
+                    <td>4</td>
+                    <td>The client computes <code>K = f^x mod p</code> and <code>H = hash(V_C || V_S || I_C || I_S || K_S || e || f || K)</code></td>
+                </tr>
+                <tr>
+                    <td>5</td>
+                    <td>The client verified the signature <code>s</code> on <code>H</code></td>
+                </tr>
+                <tr>
+                    <td>6</td>
+                    <td>Optional: if the client or server want to to perform a key re-exchange, either side can send a <code>SSH_MSG_KEXINIT</code> message.</td>
+                </tr>
+            </table>
+            
+            <h3 id="pub-key-crypto">Cryptography</h3>
+            <ul>
+                <li>Public key cryptography: only used for (mutual) authentication</li>
+                <li>Symmetric cryptography: used for encrypting the entire connection, exchanged using DHKE</li>
             </ul>
             <h3 id="authencation">Authentication</h3>
             <ul>
@@ -122,8 +263,46 @@
 
             <hr>
             <h2 id="usage">Usage</h2>
+            <h3 id="usage-install">Install</h3>
+            <h4 id="usage-install-linux">Linux</h4>
+            <pre><code class="language-sh"># Installing
+# Ubuntu/Debian
+sudo apt update && sudo apt install openssh-server
+# CentOS/RHEL/Fedora 
+sudo yum install openssh-server     # For CentOS/RHEL 7 or older
+sudo dnf install openssh-server     # For CentOS/RHEL 8 or Fedora
+# Arch Linux 
+sudo pacman -S openssh
+
+# Enabling
+# systemd
+sudo systemctl start sshd
+sudo systemctl enable sshd          # Enable to start at boot
+sudo systemctl status sshd          # Confirm status
+# for older init.d systems 
+sudo service sshd start
+sudo chkconfig sshd on              # enable at boot 
+
+# Confirmation
+sudo netstat -tuln | grep :22</code></pre>
+            <h4 id="usage-install-windows">Windows</h4>
+            <pre><code class="language-powershell"># Check if OpenSSH is installed.
+Get-WindowsCapability -Online | Where-Object Name -like 'OpenSSH*'
+# Install OpenSSH Server (if not already installed).
+Add-WindowsCapability -Online -Name OpenSSH.Server~~~~0.0.1.0
+# Install OpenSSH Client (if not already installed).
+Add-WindowsCapability -Online -Name OpenSSH.Client~~~~0.0.1.0
+# Start the SSHD service.
+Start-Service sshd
+# Set SSHD to start automatically at boot (optional but recommended).
+Set-Service -Name sshd -StartupType 'Automatic'
+# Confirm 
+netstat -aon | findstr 22
+ssh -V</code></pre>
             <h3 id="usage-keys">Keys</h3>
             <pre><code class="language-sh"># generate new public-private key pair
+# saves PRIVATE key to /home/user/.ssh/id_rsa
+# saves PUBLIC key to /home/user/.ssh/id_rsa.pub
 bugati@bugati> ssh-keygen
 
 Generating public/private rsa key pair.
@@ -228,16 +407,7 @@ sudoedit /etc/ssh/sshd_config       # edit configs
 sudo systemctl daemon-reload        # reload configs
 sudo systemctl restart sshd         # restart ssh server
         </code></pre>
-            
-            
 
-
-            <!-- https://www.rfc-editor.org/rfc/rfc4253#section-7.1 -->
-            <!-- https://datatracker.ietf.org/doc/html/rfc4253 -->
-            <!-- https://www.youtube.com/watch?v=0Sffl7YO0aY -->
-            <!-- https://www.geeksforgeeks.org/introduction-to-sshsecure-shell-keys/ -->
-            <!-- https://en.wikipedia.org/wiki/Secure_Shell -->
-            <!-- https://www.digitalocean.com/community/tutorials/understanding-the-ssh-encryption-and-connection-process -->
         </div> 
     </body>
 </html>
