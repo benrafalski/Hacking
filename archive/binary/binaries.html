@@ -1,0 +1,108 @@
+<html>
+    <head>
+        <title>Binaries</title>
+        <link rel="icon" type="image/x-icon" href="../Images/hacker.jpg">
+        <link rel="stylesheet" href="../styles/tokyo-night-dark.min.css">
+        <link rel="stylesheet" href="../styles/styles.css">
+        <script src="../styles/highlight.min.js"></script>
+        <script>hljs.highlightAll();</script>
+
+    </head>
+    <body>
+
+
+        <div class="sidenav">
+            <a href="#bin-sec">Binary Security</a>
+            <div class="sidenav-sublist">
+                <a href="#nx">NX</a>
+                <a href="#aslr">ASLR</a>
+                <a href="#canary">Canary</a>
+                <a href="#relro">RELRO</a>
+                <a href="#pie">PIE</a>
+            </div>
+            <a href="#linking">Linking</a>
+            <div class="sidenav-sublist">
+                <a href="#dynamic">Dynamic</a>
+                <a href="#static">Static</a>
+            </div>
+            <a href="#enumeration">Enumeration</a>
+            <a href="#calling-conventions">Calling Conventions</a>
+            <a href="#sections">Sections</a>
+            <div class="sidenav-sublist">
+                <a href="#plt-got">PLT and GOT</a>
+                <a href="#bss">BSS</a>
+                <!-- <a href="#"></a> -->
+            </div>
+        </div>
+        
+        <div class="main">
+            <h1>Binaries</h1>
+            <hr>
+            <h2 id="bin-sec">Binary Security</h2>
+            <h3 id="nx">NX</h3>
+            <h3 id="aslr">ASLR</h3>
+            <h3 id="canary">Canary</h3>
+            <h3 id="relro">RELRO (Relocations Read-only)</h3>
+            <h4>Partial RELRO</h4>
+            <ul>
+                <li>Enable with <code class="code-line">-Wl,-z,relro</code></li>
+                <li>Makes the .got section readonly, the .got.plt is still writable though</li>
+                <li>Rearragnes the sections to make it less likely that global vars can be used to overwrite GOT entries</li>
+            </ul>
+            <h4>Full RELRO</h4>
+            <ul>
+                <li>Enable with <code class="code-line">-Wl,-z,relro,-z,now</code></li>
+                <li>Does all Partial RELRO steps</li>
+                <li>Causes dynamic linker to resolve all symbols at link time (before program execution)</li>
+                <li>Merges .got.plt into .got then makes .got read-only</li>
+            </ul>
+            <h3 id="pie">PIE</h3>
+            <!-- https://www.technovelty.org/c/position-independent-code-and-x86-64-libraries.html -->
+            <hr>
+            <h2 id="linking">Linking</h2>
+            <h3 id="dynamic">Dynamic</h3>
+            <ul>
+                <li>Also called <i>relocation</i></li>
+                <li>Relocations: entries in binaries that are left to be filled later on at either link time or at runtime (check using <code class="code-line">readelf --relocs ./binary</code>)</li>
+                <li>Dynamic linking is when libary functions are linked to <code class="code-line">libc</code> or other library on the system.</li>
+                <li>Allows for smaller file size and easier libary upgrades</li>
+                <li>The <a href="#plt-got">PLT and GOT</a> work together to provide dynamic linking</li>
+                <li><code class="code-line">ld.so</code> is the <i>dynamic linker</i></li>
+                <li>Exploitation: ret2plt or GOT overwrites</li>
+            </ul>
+            <h3 id="static">Static</h3>
+            <ul>
+                <li>Statically linked binaries are self contained, the library functions they use are included in the binary itself</li>
+                <li>Results in large file size</li>
+            </ul>
+            <hr>
+            <h2 id="enumeration">Enumeration</h2>
+            <hr>
+            <h2 id="calling-conventions">Calling Conventions</h2>
+            <hr>
+            <h2 id="sections">Sections</h2>
+            <h3 id="plt-got">PLT and GOT</h3>
+            <h4>Procedure Linkage Table (PLT)</h4>
+            <ul>
+                <li>After ELF is compiled, libary function calls will be replaced with plt address (e.g <code class="code-line">call 0x401030 &lt;puts@plt&gt;</code>)</li>
+                <li>After jumping to the plt address, the plt "stub" function at that address will do one of two things (called lazy binding):
+                    <ol>
+                        <li>If there is a GOT entry for the function it will jump to that address (this will only happen on the first function call)</li>
+                        <li>Else will call <code class="code-line">ld.so</code> to resolve the GOT entry, add it to the GOT (e.g. <code class="code-line">puts@got</code>), and finally jump to it</li>
+                    </ol>
+                </li>
+                <li>The plt stubs are located in the .plt section, the plt stubs will use the .got.plt section to check GOT entries</li>
+                <li>Important: calling the PLT address of a function is the same as calling the function itself</li>
+            </ul>
+            <h4>Global Offset Table (GOT)</h4>
+            <ul>
+                <li>GOT is the actual locations in memory of the <code class="code-line">libc</code> addresses (will change everytime if there is ASLR)</li>
+                <li>The .got section will contain all function pointers that can be statically linked while the .got.plt section will contain all the dynamically linked function pointers</li>
+                <li>Important: the GOT contains addresses of <code class="code-line">libc</code> functions and the GOT is in the binary itself, meaning you can get <code class="code-line">libc</code> base and bypass ASLR with an arbitrary read</li>
+                <li>Important: the GOT is writable, meaning you can change library function addresses to hijack control flow</li>
+            </ul>
+            <h3 id="bss">BSS</h3>
+        </div> 
+
+    </body>
+</html>

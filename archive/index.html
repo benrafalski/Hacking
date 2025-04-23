@@ -1,0 +1,318 @@
+<!DOCTYPE html>
+<html>
+  <head>
+
+    <link rel="icon" type="image/x-icon" href="Images/hacker.jpg">
+    <link rel="stylesheet" href="./styles/styles.css">
+    <title>Security Notes</title>
+
+    <script
+      src="https://code.jquery.com/jquery-3.7.1.js"
+      integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+      crossorigin="anonymous"
+    ></script>
+    <script>
+      $(document).ready(function () {
+
+        $(".dropdown").hide()
+
+        $('.hoverlink').hover(
+          function () {
+            $(this).next('.dropdown').show(); // or .show() to explicitly show
+          },
+          function () {
+            var checkbox = $("#dropdown-checkbox");
+            if(!checkbox.prop('checked')){
+              $(this).next('.dropdown').hide();
+            }
+            
+          }
+        );
+
+
+        $("#dropdown-checkbox").change(function() {
+            if(this.checked) {
+                $(".dropdown").show()
+            }else{
+                $(".dropdown").hide()
+            }
+        });
+
+      });
+    </script>
+  </head>
+  <body>
+    <h1>Hacking Notes</h1>
+    <label for="dropdown-checkbox">Show descriptions</label>
+    <input type="checkbox" id="dropdown-checkbox">
+
+    <hr>
+    <h2>Crypto</h2>
+    <h3>Applied Cryptography</h3>
+    <ul>
+      <li>
+        <a class="hoverlink" href="Crypto\AppliedCryptography\terminology">Terminology</a>
+        <span class="dropdown">Keys, Symmetric crypto, Public key crypto, Cryptoanalysis, steganography, ciphers, one-time pad</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Crypto\AppliedCryptography\protocols">Protocols</a>
+        <span class="dropdown">Types, Attacks, One-way functions, Hybrid protocols, digital signatures, pseudo-random sequence</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Crypto\AppliedCryptography\basicprotocols">Basic Protocols</a>
+        <span class="dropdown">key-exchange, authentication (salt, SKEY, PK auth, mutual auth, SKID), authentication with key-exchange (wide mouth frog, yahalom, needham-schroeder, otway-res, kerberos, neuman-stubblebine, DASS, denning-sacco, woo-lam), multiple key public-key encryption, secret splitting/sharing</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Crypto\AppliedCryptography\intermediateprotocols">Intermediate Protocols</a>
+        <span class="dropdown">Timestamping, Subliminal Channel, Undeniable digital signatures, Designated Confirmer Signatures, Other Digital Signatures, Bit Commitment, Mental Poker, Other Protocols</span>
+      </li>
+
+      <li>
+        <a class="hoverlink" href="Crypto\AppliedCryptography\keyexchangealgorithms">Key Exchange Algorithms</a>
+        <span class="dropdown">Diffie-Hellman</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Crypto\AppliedCryptography\kerberos">Kerberos</a>
+        <span class="dropdown">Kerberos</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Crypto\Cheatsheets\pwn.college">Crypto Cheatsheet</a>
+        <span class="dropdown">OTP, AES, Block Sizes, Diffie-Hellman, RSA, SHA256, Passwords, MITM, Trust, and Certificates</span>
+      </li>
+    </ul>
+    <hr>
+    <h2>Binary Exploitation</h2>
+    <ul>
+      <li>
+        <a class="hoverlink" href="binary\binaries.html">Binaries</a>
+        <span class="dropdown"></span>
+      </li>
+      <li>
+        <a class="hoverlink" href="binary\stack.html">Stack</a>
+        <span class="dropdown"></span>
+      </li>
+      <li>
+        <a class="hoverlink" href="binary\formatstr.html">Format Strings</a>
+        <span class="dropdown"></span>
+      </li>
+      <li>
+        <a class="hoverlink" href="binary\rop.html">ROP</a>
+        <span class="dropdown"></span>
+      </li>
+      <li>
+        <a class="hoverlink" href="binary\heap.html">Heap</a>
+        <span class="dropdown"></span>
+      </li>
+    </ul>
+
+    <hr>
+    <h2>Networks</h2>
+    <h3>Protocols</h3>
+    <ul>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\ftp">FTP</a>
+        <span class="dropdown">File Transfer Protocol</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\ssh">SSH</a>
+        <span class="dropdown">Secure Shell</span>
+      </li>
+      <li>
+        <!-- TODO -->
+        <a class="hoverlink" href="Networks\Protocols\smtp">SMTP</a>
+        <span class="dropdown">Simple Mail Transfer Protocol</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\dns">DNS</a>
+        <span class="dropdown">Domain Name Service</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\dhcp">DHCP</a>
+        <span class="dropdown">Dynamic Host Configuration Protocol</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\http">HTTP</a>
+        <span class="dropdown">Hypertext Transfer Protocol</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\pop3-imap">POP3/IMAP</a>
+        <span class="dropdown">Post Office Protocol, Internet Message Access Protocol</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\ntp">NTP</a>
+        <span class="dropdown">Network Time Protocol</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\snmp">SNMP</a>
+        <span class="dropdown">Simple Network Management Protocol</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\ldap">LDAP</a>
+        <span class="dropdown">Lightweight Directory Access Protocol</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\smb">SMB</a>
+        <span class="dropdown">Server Message Block</span>
+        <ul>
+          <li>
+            <a class="hoverlink" href="windows\smb\ntlm">NTLM</a>
+            <span class="dropdown">NTLM hash in Wireshark, crack NTLM hash, Responder, HMAC</span>
+          </li>
+        </ul>
+      </li>
+      <li>
+        <a class="hoverlink" href="Networks\Protocols\rdp">RDP</a>
+        <span class="dropdown">Remote Desktop Protocol</span>
+      </li>
+    </ul>
+
+
+    <hr>
+    <h2>Web</h2>
+    <h3>Cheatsheets</h3>
+    <ul>
+      <li>
+        <!-- TODO -->
+        <a class="hoverlink" href="Web\Cheatsheets\jquery">jQuery</a>
+        <span class="dropdown">Syntax, Events, Effects</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Web\Cheatsheets\SQL">SQL</a>
+        <span class="dropdown">Create, Update, Delete</span>
+      </li>
+    </ul>
+    <h3>Attacks</h3>
+    <ul>
+      <li>
+        <!-- TODO -->
+        <a class="hoverlink" href="Web\Attacks\XSS">XSS</a>
+        <span class="dropdown"></span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Web\Attacks\XSS">CSRF</a>
+        <span class="dropdown"></span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Web\Attacks\XSS">SSRF</a>
+        <span class="dropdown"></span>
+      </li>
+      <li>
+        <a class="hoverlink" href="Web\Attacks\SQLInjection">SQL Injection</a>
+        <span class="dropdown"></span>
+      </li>
+    </ul>
+
+
+    <hr>
+    <h2>Windows</h2>
+    <h3>Kernel</h3>
+    <h3>Programming</h3>
+    <ul>
+      <li>
+        <!-- TODO -->
+        <a class="hoverlink" href="windows/programming/powershell">PowerShell</a>
+        <span class="dropdown">powershell</span>
+      </li>
+    </ul>
+
+    
+
+
+    <hr>
+    <h2>Linux</h2>
+    <h3>Kernel</h3>
+    <ul>
+      <li>
+        <!-- TODO -->
+        <a class="hoverlink" href="Linux/kernel/firewalls">Firewalls</a>
+        <span class="dropdown">firewalld, iptables</span>
+      </li>
+      <li>
+        <!-- TODO -->
+        <a class="hoverlink" href="Linux/C/sockets">Sockets</a>
+        <span class="dropdown">/etc/services, /etc/hosts, socket, bind, listen, accept, connect, send/recv</span>
+      </li>
+      <li>
+        <!-- https://book.hacktricks.xyz/linux-hardening/privilege-escalation/linux-capabilities -->
+        <a class="hoverlink" href="Linux/priv-esc/capabilities">Capabilities</a>
+        <span class="dropdown"></span>
+      </li>
+    </ul>
+    <h3>Programming</h3>
+    <ul>
+      <!-- ROP -->
+      <!-- Heap Vulnerabilities -->
+    </ul>
+
+
+    <hr>
+    <h2>Firmware</h2>
+    <h3>BIOS</h3>
+    <ul>
+      <li>
+        <a class="hoverlink" href="">Reset Vector</a>
+        <span class="dropdown">Reset Vector</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">Chipsets</a>
+        <span class="dropdown">Chipsets</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">Input-Output</a>
+        <span class="dropdown">MMIO, Port IO</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">PCIe</a>
+        <span class="dropdown">PCIe</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">SPI Flash</a>
+        <span class="dropdown">SPI Flash</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">BIOS</a>
+        <span class="dropdown">BIOS</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">UEFI</a>
+        <span class="dropdown">UEFI</span>
+      </li>
+    </ul>
+    <h3>Serial Buses</h3>
+    <ul>
+      <li>
+        <a class="hoverlink" href="">SPI</a>
+        <span class="dropdown">SPI</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">I2C</a>
+        <span class="dropdown">I2C</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">UART</a>
+        <span class="dropdown">UART</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">SMBUS</a>
+        <span class="dropdown">SMBUS</span>
+      </li>
+      <li>
+        <a class="hoverlink" href="">PMBUS</a>
+        <span class="dropdown">PMBUS</span>
+      </li>
+    </ul>
+    <h3>Power Management</h3>
+    <!-- TODO: IMC, PCI, DMI, Graphics -->
+    <ul>
+      <li>
+        <a class="hoverlink" href="firmware/power/acpi">ACPI</a>
+        <span class="dropdown">ACPI</span>
+      </li>
+    </ul>
+
+
+
+    <br><br><br><br><br><br>
+
+  </body>
+</html>

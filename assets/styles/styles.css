@@ -1,0 +1,135 @@
+body {
+    background-color: #181818;
+    color: #cffbec;
+    font-size: 1rem;
+    padding-top: 56px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .sidebar {
+    width: 180px;
+    height: calc(100vh - 56px); /* 100vh minus topbar height */
+    background-color: #212529;
+    padding: 1rem;
+    overflow-y: auto;
+    position: fixed;
+    top: 56px;
+    left: 0;
+  }
+
+.sidebar .collapse,
+.sidebar .collapsing {
+transition: all 0.4s ease;
+overflow: hidden;
+}
+
+.toc-subsection {
+opacity: 1;
+transform: translateY(0);
+transition: opacity 0.4s ease, transform 0.4s ease;
+padding-left: 2.2rem; /* ← Indents entire group */
+}
+
+.collapsing .toc-subsection {
+opacity: 0;
+transform: translateY(-10px);
+}
+
+.sidebar .collapse a {
+display: block;
+margin-bottom: 0.5rem;
+}
+
+.sidebar .toc-link {
+line-height: 1.6;
+}
+
+
+  .toc-section {
+display: flex;
+align-items: center;
+gap: 0.5rem;
+margin-bottom: 0.5rem;
+}
+
+.toc-section:not(:first-child) {
+margin-top: 1rem;
+}
+
+
+.toc-subsection .toc-link {
+display: block;
+margin-bottom: 0.4rem;
+font-size: 0.9rem;
+color: #6f6f6f;
+}
+
+.toc-subsection .toc-link:hover {
+color: #cffbec;
+}
+
+.toc-toggle {
+background: none;
+border: none;
+color: #ccc;
+cursor: pointer;
+padding: 0;
+width: 1rem;
+display: flex;
+align-items: center;
+justify-content: center;
+transition: transform 0.2s ease;
+}
+
+.toc-toggle .arrow {
+display: inline-block;
+transition: transform 0.2s ease;
+font-size: 1rem;
+}
+
+.toc-toggle[aria-expanded="true"] .arrow {
+transform: rotate(90deg);
+}
+
+.toc-link {
+color: #adb5bd;
+text-decoration: none;
+font-size: 0.95rem;
+flex-grow: 1;
+}
+
+.toc-link:hover {
+color: #cffbec;
+}
+
+
+  .content {
+    margin-left: 180px;
+    padding: 2rem;
+    padding-top: 3rem;
+  }
+
+  h2 {
+    padding-top: 60px;
+    margin-top: -60px;
+  }
+
+  @media (min-width: 992px) {
+.navbar .dropdown:hover > .dropdown-menu {
+  display: block;
+  margin-top: 0;
+}
+
+.navbar .dropdown:hover > .dropdown-toggle {
+  color: #cffbec;
+}
+}
+
+  /* Optional: Make dropdown transition smoother */
+  .dropdown-menu {
+    transition: opacity 0.2s ease;
+  }
+
+  .dropdown-item:hover {
+    background-color: #343a40;
+  }
