@@ -5,19 +5,13 @@
         (function() {
         const base = document.createElement('base');
         if(location.hostname.includes('github.io')){
-          base.href = `/${repoName}/`;
+          base.href = `/HackBook/`;
         }else{
           const pathSegments = window.location.pathname.split('/').filter(element => element !== "");
-          console.log(pathSegments)
           const index = pathSegments.indexOf('HackBook');
           pathSegments.splice(index + 1, pathSegments.length - (index + 1));
-          console.log(pathSegments)
-          console.log(pathSegments.join('/') + '/')
           base.href = pathSegments.join('/') + '/';
-          base.href.replace(/^\/+/, '');
         }
-
-        console.log(base.href)
         document.head.appendChild(base);
       })();
     </script>

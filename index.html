@@ -5,7 +5,7 @@
         (function() {
         const base = document.createElement('base');
         if(location.hostname.includes('github.io')){
-          base.href = `/${repoName}/`;
+          base.href = `/HackBook/`;
         }else{
           const pathSegments = window.location.pathname.split('/').filter(element => element !== "");
           const index = pathSegments.indexOf('HackBook');
