@@ -44,11 +44,11 @@ document.addEventListener("DOMContentLoaded", () => {
           <button class="toc-toggle" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="true" aria-controls="${collapseId}">
             <span class="arrow">&#9656;</span>
           </button>
-          <a href="#${h2Id}" class="toc-link">${data.text}</a>
+          <a href="${window.location.pathname}#${h2Id}" class="toc-link">${data.text}</a>
         </div>
         <div class="collapse show" id="${collapseId}">
           <div class="toc-subsection">
-            ${data.h3s.map(h3 => `<a href="#${h3.id}" class="toc-link">${h3.text}</a>`).join("")}
+            ${data.h3s.map(h3 => `<a href="${window.location.pathname}#${h3.id}" class="toc-link">${h3.text}</a>`).join("")}
           </div>
         </div>
       `;
@@ -59,7 +59,7 @@ document.addEventListener("DOMContentLoaded", () => {
           <button class="toc-toggle" data-bs-toggle="collapse" data-bs-target="#${collapseId}" aria-expanded="true" aria-controls="${collapseId}" style="visibility: hidden;">
             <span class="arrow">&#9656;</span>
           </button>
-          <a href="#${h2Id}" class="toc-link">${data.text}</a>
+          <a href="${window.location.pathname}#${h2Id}" class="toc-link">${data.text}</a>
         </div>
       `;
     }
@@ -73,53 +73,28 @@ document.addEventListener("DOMContentLoaded", () => {
         // Define the entire HTML for the navbar
         const navbarHTML = `
           <nav class="navbar navbar-expand-lg navbar-dark bg-dark position-fixed top-0 w-100 z-3">
-            <div class="container-fluid">
-              <!-- Toggler (hamburger) button -->
-              <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-              </button>
-    
-              <!-- Collapsible content -->
-              <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                  <!-- JavaScript dropdown -->
-                  <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="jsDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      JavaScript
-                    </a>
-                    <ul class="dropdown-menu bg-dark text-light" aria-labelledby="jsDropdown">
-                      <li><a class="dropdown-item text-light" href="#">React</a></li>
-                      <li><a class="dropdown-item text-light" href="#">Vue</a></li>
-                      <li><a class="dropdown-item text-light" href="#">Express</a></li>
-                    </ul>
-                  </li>
-    
-                  <!-- Python dropdown -->
-                  <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="pythonDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      Python
-                    </a>
-                    <ul class="dropdown-menu bg-dark text-light" aria-labelledby="pythonDropdown">
-                      <li><a class="dropdown-item text-light" href="#">Django</a></li>
-                      <li><a class="dropdown-item text-light" href="#">Flask</a></li>
-                    </ul>
-                  </li>
-    
-                  <!-- HTML/CSS dropdown -->
-                  <li class="nav-item dropdown">
-                    <a class="nav-link dropdown-toggle" href="#" id="htmlDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                      HTML/CSS
-                    </a>
-                    <ul class="dropdown-menu bg-dark text-light" aria-labelledby="htmlDropdown">
-                      <li><a class="dropdown-item text-light" href="#">Flexbox</a></li>
-                      <li><a class="dropdown-item text-light" href="#">Grid</a></li>
-                    </ul>
-                  </li>
+        <div class="container-fluid">
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
+            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+          </button>
+
+          <div class="collapse navbar-collapse" id="navbarContent">
+            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item dropdown">
+                <a class="nav-link dropdown-toggle" id="binDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                  Binary Exploitation
+                </a>
+                <ul class="dropdown-menu bg-dark text-light" aria-labelledby="binDropdown">
+                  <li><a class="dropdown-item text-light" href="pages/binary/binaries.html">Binaries</a></li>
+                  <li><a class="dropdown-item text-light" href="pages/binary/rop.html">ROP</a></li>
                 </ul>
-              </div>
-            </div>
-          </nav>
+              </li>
+
+            </ul>
+          </div>
+        </div>
+      </nav>
         `;
     
         // Inject the navbar HTML into the body or header
@@ -133,7 +108,7 @@ document.addEventListener("DOMContentLoaded", () => {
       }
     
       // Load the navbar when the page is ready
-    //   loadNavbar();
+      loadNavbar();
 
       // Reinitialize Bootstrap dropdowns
       const dropdowns = document.querySelectorAll('.dropdown');
@@ -141,4 +116,9 @@ document.addEventListener("DOMContentLoaded", () => {
         new bootstrap.Dropdown(dropdown);
       });
 
+
+      document.querySelectorAll('a.internal-link[href^="#"]').forEach(link => {
+        const hash = link.getAttribute('href');
+        link.setAttribute('href', window.location.pathname + hash);
+      });
 });

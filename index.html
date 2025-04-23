@@ -1,9 +1,27 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <script>
+        (function() {
+        const base = document.createElement('base');
+        if(location.hostname.includes('github.io')){
+          base.href = `/${repoName}/`;
+        }else{
+          const pathSegments = window.location.pathname.split('/').filter(element => element !== "");
+          const index = pathSegments.indexOf('HackBook');
+          pathSegments.splice(index + 1, pathSegments.length - (index + 1));
+          base.href = pathSegments.join('/') + '/';
+        }
+        document.head.appendChild(base);
+      })();
+    </script>
+
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <link rel="icon" type="image/x-icon" href="assets\images\hacker.jpg">
+
+
+
   <title>HackBook</title>
 
   <!-- Bootstrap CSS -->
@@ -21,35 +39,13 @@
 
     <script src="assets\scripts\main.js"></script>
     <link rel="stylesheet" href="assets\styles\styles.css">
+
+
     
     
   
 </head>
 <body>
-
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark position-fixed top-0 w-100 z-3">
-        <div class="container-fluid">
-          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-            aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-          </button>
-
-          <div class="collapse navbar-collapse" id="navbarContent">
-            <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-              <li class="nav-item dropdown">
-                <a class="nav-link dropdown-toggle" id="binDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
-                  Binary Exploitation
-                </a>
-                <ul class="dropdown-menu bg-dark text-light" aria-labelledby="binDropdown">
-                  <li><a class="dropdown-item text-light" href="\HackBook\pages\binary\binaries.html">Binaries</a></li>
-                  <li><a class="dropdown-item text-light" href="\HackBook\pages\binary\binaries.html">ROP</a></li>
-                </ul>
-              </li>
-
-            </ul>
-          </div>
-        </div>
-      </nav>
 
   <!-- Main Content -->
   <div class="content">

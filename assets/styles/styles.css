@@ -109,6 +109,15 @@ color: #cffbec;
     padding-top: 3rem;
   }
 
+  .content a {
+    text-decoration: none;
+    color: #4a5f78;
+  }
+
+  .content a:hover {
+    color: #47ebb4;
+  }
+
   h2 {
     padding-top: 60px;
     margin-top: -60px;
@@ -133,3 +142,12 @@ color: #cffbec;
   .dropdown-item:hover {
     background-color: #343a40;
   }
+
+  .command-line-prompt > span[data-user]:before {
+    content:  attr(data-user) "@" attr(data-host) ":~$";
+  }
+
+  .command-line-prompt{
+    color:#47ebb4;
+  }
+
