@@ -22,7 +22,7 @@
 
 
 
-  <title>HackBook</title>
+  <title>HackBook | Binaries</title>
 
   <!-- Bootstrap CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -92,7 +92,8 @@
             <li>Also called <i>relocation</i></li>
             <li>Relocations: entries in binaries that are left to be filled later on at either link time or at runtime (check using <code>readelf --relocs ./binary</code>)</li>
             <li>Dynamic linking is when libary functions are linked to <code>libc</code> or other library on the system.</li>
-            <li>Allows for smaller file size and easier libary upgrades</li>
+            <li>Reasoning: <code>libc</code> has PIE enabled, so the library function addresses will change every execution.</li>
+            <li>Benefits: allows for smaller file size and easier libary upgrades</li>
             <li>The <a href="#plt-got" class="internal-link">PLT and GOT</a> work together to provide dynamic linking</li>
             <li><code>ld.so</code> is the <i>dynamic linker</i></li>
             <li>Exploitation: ret2plt or GOT overwrites</li>
@@ -132,7 +133,7 @@ file ./vuln_elf
             <li>After jumping to the plt address, the plt "stub" function at that address will do one of two things (called lazy binding):
                 <ol>
                     <li>If there is a GOT entry for the function it will jump to that address (this will only happen on the first function call)</li>
-                    <li>Else will call <code>ld.so</code> to resolve the GOT entry, add it to the GOT (e.g. <code>puts@got</code>), and finally jump to it</li>
+                    <li>Else will jump to first plt entry, which calls <code>ld.so</code> to resolve the GOT entry, add it to the GOT (e.g. <code>puts@got</code>), and finally jump to it</li>
                 </ol>
             </li>
             <li>The plt stubs are located in the .plt section, the plt stubs will use the .got.plt section to check GOT entries</li>
@@ -141,7 +142,7 @@ file ./vuln_elf
         <h4>Global Offset Table (GOT)</h4>
         <ul>
             <li>GOT is the actual locations in memory of the <code>libc</code> addresses (will change everytime if there is ASLR)</li>
-            <li>The .got section will contain all symbols that can be resolved at link time while the .got.plt section will contain all the dynamically linked function pointers</li>
+            <li>The .got section will contain all external symbols that can be resolved at link time while the .got.plt section will contain all the dynamically linked function pointers (is the .got for the .plt)</li>
             <li>Important: the GOT contains addresses of <code>libc</code> functions and the GOT is in the binary itself, meaning you can get <code>libc</code> base and bypass ASLR with an arbitrary read</li>
             <li>Important: the GOT is writable, meaning you can change library function addresses to hijack control flow</li>
         </ul>

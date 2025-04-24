@@ -92,6 +92,10 @@ document.addEventListener("DOMContentLoaded", () => {
               </li>
 
             </ul>
+
+            <div class="d-lg-none mobile-sidebar-scroll">
+              ${tocHTML}
+            </div>
           </div>
         </div>
       </nav>
@@ -121,4 +125,6 @@ document.addEventListener("DOMContentLoaded", () => {
         const hash = link.getAttribute('href');
         link.setAttribute('href', window.location.pathname + hash);
       });
+
+      
 });
