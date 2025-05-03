@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Endianness Diagram - 0xDEADBEEF</title>
+  <style>
+    body { font-family: Arial, sans-serif; }
+    .memory-row {
+      display: flex;
+      margin-bottom: 20px;
+    }
+    .byte {
+      border: 1px solid #000;
+      padding: 10px;
+      margin-right: 5px;
+      text-align: center;
+      width: 60px;
+      background-color: #f0f0f0;
+    }
+    .label {
+      margin-bottom: 5px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <h2>Endianness Diagram: 32-bit Integer (0xDEADBEEF)</h2>
+
+  <div class="label">Big-Endian (MSB First)</div>
+  <div class="memory-row">
+    <div class="byte">DE</div>
+    <div class="byte">AD</div>
+    <div class="byte">BE</div>
+    <div class="byte">EF</div>
+  </div>
+
+  <div class="label">Little-Endian (LSB First)</div>
+  <div class="memory-row">
+    <div class="byte">EF</div>
+    <div class="byte">BE</div>
+    <div class="byte">AD</div>
+    <div class="byte">DE</div>
+  </div>
+
+</body>
+</html>

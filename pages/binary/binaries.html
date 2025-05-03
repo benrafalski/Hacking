@@ -31,6 +31,7 @@
   <!-- Prism JS -->
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-bash.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
   <!-- <link rel="stylesheet" href="https://unpkg.com/dracula-prism/dist/css/dracula-prism.css"> -->
   <link rel="stylesheet" href="https://unpkg.com/prism-themes@1.6.0/themes/prism-duotone-sea.css">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/plugins/command-line/prism-command-line.css">
@@ -103,6 +104,46 @@
             <li>Statically linked binaries are self contained, the library functions they use are included in the binary itself</li>
             <li>Results in large file size</li>
         </ul>
+        <hr>
+        <h2 id="endianess">Endianess</h2>
+        
+        <p>Example with 32-bit Integer (0xDEADBEEF)</p>
+        <div class="label">Big-Endian (MSB First)</div>
+        <div class="memory-row">
+            <div class="byte">DE</div>
+            <div class="byte">AD</div>
+            <div class="byte">BE</div>
+            <div class="byte">EF</div>
+        </div>
+
+        <div class="label">Little-Endian (LSB First)</div>
+        <div class="memory-row">
+            <div class="byte">EF</div>
+            <div class="byte">BE</div>
+            <div class="byte">AD</div>
+            <div class="byte">DE</div>
+        </div>
+        <h4>Usage</h4>
+        <ul>
+            <li><u>Network order</u>: big-endian is used for network transfers, use the <code>hton()</code> function to convert to network order</li>
+            <li><u>Byte Order Mark (BOM)</u>: also called a "magic number," used to confirm endianess of data being sent</li>
+        </ul>
+        <h4>Python examples</h4>
+        <pre><code class="language-python">from pwn import *
+# packing
+p32(0xdeadbeef)                 # b'\xef\xbe\xad\xde'         
+p32(0xdeadbeef, endian='big')   # b'\xde\xad\xbe\xef'
+p64(0xdeadbeef)                 # b'\xef\xbe\xad\xde\x00\x00\x00\x00'
+# make payloads without "payload +="
+payload = [0xdeadbeef, 0xcafebabe]
+flat(payload, word_size=64)    # b'\xef\xbe\xad\xde\x00\x00\x00\x00\xbe\xba\xfe\xca\x00\x00\x00\x00'
+
+# unpacking 
+hex(u64(b'\xef\xbe\xad\xde\x00\x00\x00\x00'))   # 0xdeadbeef
+packed = b'\xef\xbe\xad\xde\x00\x00\x00\x00\xbe\xba\xfe\xca\x00\x00\x00\x00\xad[\xe1\xfe\x00\x00\x00\x00'
+list(map(hex, unpack_many(packed, 64)))         # ['0xdeadbeef', '0xcafebabe', '0xfee15bad']
+
+        </code></pre>
         <hr>
         <h2 id="enumeration">Enumeration</h2>
         <ul>

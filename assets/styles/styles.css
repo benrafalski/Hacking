@@ -6,6 +6,37 @@ body {
     font-family: 'Inter', sans-serif;
   }
 
+  table {
+    width: 100%;
+    border-collapse: collapse; /* Ensures borders don't double up */
+}
+th, td {
+    border: 1px solid #cffbec; /* Adds borders to table cells */
+    padding: 8px; /* Adds padding to table cells */
+    text-align: left; /* Aligns text to the left */
+}
+th {
+    background-color: #343a40; /* Adds a background color to table headers */
+}
+
+.memory-row {
+  display: flex;
+  margin-bottom: 20px;
+}
+.byte {
+  border: 1px solid #000;
+  color: #181818;
+  padding: 10px;
+  margin-right: 5px;
+  text-align: center;
+  width: 60px;
+  background-color: #cffbec;
+}
+.label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
   .sidebar {
     width: 180px;
     height: calc(100vh - 56px); /* 100vh minus topbar height */

